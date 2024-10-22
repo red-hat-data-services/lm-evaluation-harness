@@ -6,8 +6,9 @@ metadata:
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
-      == "konflux-build"
+    pipelinesascode.tekton.dev/on-cel-expression: |
+      event == "push" 
+      && target_branch == "konflux-build"
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: lm-evaluation-harness
@@ -22,7 +23,7 @@ spec:
   - name: revision
     value: '{{revision}}'
   - name: output-image
-    value: quay.io/redhat-user-workloads/rhoai-tenant/ta-lmes-job:{{revision}}
+    value: quay.io/modh/ta-lmes-job:{{target_branch}}
   - name: dockerfile
     value: Dockerfile.lmes-job
   pipelineSpec:
@@ -402,6 +403,9 @@ spec:
       params:
       - name: IMAGE
         value: $(tasks.build-image-index.results.IMAGE_URL)
+      - name: ADDITIONAL_TAGS
+        value:
+          - '{{target_branch}}-ta-lmes-job-{{revision}}'
       runAfter:
       - build-image-index
       taskRef:
