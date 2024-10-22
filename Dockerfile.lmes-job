@@ -3,6 +3,9 @@ FROM registry.access.redhat.com/ubi9/python-311@sha256:fccda5088dd13d2a3f2659e4c
 USER root
 RUN sed -i.bak 's/include-system-site-packages = false/include-system-site-packages = true/' /opt/app-root/pyvenv.cfg
 
+# Copy license
+COPY LICENSE.md /licenses/lm-evaluation-harness.md
+
 USER default
 WORKDIR /opt/app-root/src
 COPY . .
