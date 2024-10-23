@@ -27,6 +27,14 @@ spec:
   - name: dockerfile
     value: Dockerfile.lmes-job
   taskRunSpecs:
+  - pipelineTaskName: ecosystem-cert-preflight-checks
+    computeResources:
+      requests:
+        cpu: '2'
+        memory: 10Gi
+      limits:
+        cpu: '4'
+        memory: 20Gi
   - pipelineTaskName: clair-scan
     computeResources:
       requests:
