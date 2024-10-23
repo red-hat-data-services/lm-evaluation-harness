@@ -26,6 +26,15 @@ spec:
     value: quay.io/modh/ta-lmes-job:{{target_branch}}
   - name: dockerfile
     value: Dockerfile.lmes-job
+  taskRunSpecs:
+  - pipelineTaskName: clair-scan
+    computeResources:
+      requests:
+        cpu: '2'
+        memory: 10Gi
+      limits:
+        cpu: '4'
+        memory: 20Gi
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
