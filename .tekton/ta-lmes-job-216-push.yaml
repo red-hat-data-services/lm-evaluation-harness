@@ -12,6 +12,7 @@ metadata:
       && target_branch == "rhoai-2.16"
       && ( !".tekton/**".pathChanged() || ".tekton/ta-lmes-job-216-push.yaml".pathChanged() ) 
     # && !"config/base/params.env".pathChanged()
+    # comment to force new build
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: ta-lmes-job
