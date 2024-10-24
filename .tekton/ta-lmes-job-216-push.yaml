@@ -6,13 +6,11 @@ metadata:
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    # build.appstudio.openshift.io/build-nudge-files: "config/base/params.env"
+    build.appstudio.openshift.io/build-nudge-files: "config/overlays/rhoai/params.env"
     pipelinesascode.tekton.dev/on-cel-expression: |
       event == "push" 
       && target_branch == "rhoai-2.16"
-      && ( !".tekton/**".pathChanged() || ".tekton/ta-lmes-job-216-push.yaml".pathChanged() ) 
-    # && !"config/base/params.env".pathChanged()
-    # comment to force new build
+      && ( !".tekton/**".pathChanged() || ".tekton/ta-lmes-job-216-push.yaml".pathChanged() )
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: ta-lmes-job
@@ -426,7 +424,7 @@ spec:
         value: $(tasks.build-image-index.results.IMAGE_URL)
       - name: ADDITIONAL_TAGS
         value:
-          - '{{target_branch}}-ta-lmes-job-{{revision}}'
+          - '{{target_branch}}-{{revision}}'
       runAfter:
       - build-image-index
       taskRef:
