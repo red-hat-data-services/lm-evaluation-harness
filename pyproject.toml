@@ -83,6 +83,8 @@ testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
 vllm = ["vllm>=0.4.2"]
 ibm_watsonx_ai = ["ibm-watsonx-ai==1.1.23"]
 gptqmodel = ["gptqmodel==1.0.9"]
+japanese_leaderboard = ["emoji==2.14.0", "neologdn==0.5.3", "fugashi[unidic-lite]==1.4.0", "rouge_score==0.1.2"]
+
 [tool.ruff.lint]
 extend-select = ["I"]
 
