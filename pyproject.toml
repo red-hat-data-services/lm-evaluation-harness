@@ -19,26 +19,25 @@ classifiers = [
 requires-python = ">=3.8"
 license = { "text" = "MIT" }
 dependencies = [
-    "accelerate>=0.26.0",
-    "evaluate",
-    "datasets>=2.16.0",
-    "evaluate>=0.4.0",
-    "jsonlines",
-    "numexpr",
-    "peft>=0.2.0",
-    "pybind11>=2.6.2",
-    "pytablewriter",
-    "rouge-score>=0.0.4",
-    "sacrebleu>=1.5.0",
-    "scikit-learn>=0.24.1",
-    "sqlitedict",
-    "torch>=1.8",
-    "tqdm-multiprocess",
-    "transformers>=4.1",
-    "zstandard",
-    "dill",
-    "word2number",
-    "more_itertools",
+    "accelerate==1.0.1",
+    "evaluate==0.4.3",
+    "datasets==3.1.0",
+    "jsonlines==4.0.0",
+    "numexpr==2.10.1",
+    "peft==0.13.2",
+    "pybind11==2.13.6",
+    "pytablewriter==1.2.0",
+    "rouge-score==0.1.2",
+    "sacrebleu==2.4.3",
+    "scikit-learn==1.5.2",
+    "sqlitedict==2.1.0",
+    "torch==2.5.1",
+    "tqdm-multiprocess==0.0.11",
+    "transformers==4.45.2",
+    "zstandard==0.23.0",
+    "dill==0.3.8",
+    "word2number==1.1",
+    "more_itertools==10.5.0",
 ]
 
 [tool.setuptools.packages.find]
@@ -57,24 +56,24 @@ Homepage = "https://github.com/EleutherAI/lm-evaluation-harness"
 Repository = "https://github.com/EleutherAI/lm-evaluation-harness"
 
 [project.optional-dependencies]
-api = ["requests", "aiohttp", "tenacity", "tqdm", "tiktoken"]
-dev = ["pytest", "pytest-cov", "pytest-xdist", "pre-commit", "mypy"]
+api = ["requests==2.32.3", "aiohttp==3.10.10", "tenacity==9.0.0", "tqdm==4.66.6", "tiktoken==0.8.0"]
+dev = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1", "pre-commit==4.0.1", "mypy==1.13.0"]
 deepsparse = ["deepsparse-nightly[llm]>=1.8.0.20240404"]
 gptq = ["auto-gptq[triton]>=0.6.0"]
 hf_transfer = ["hf_transfer"]
-ifeval = ["langdetect", "immutabledict", "nltk>=3.9.1"]
+ifeval = ["langdetect", "immutabledict", "nltk==3.9.1"]
 neuronx = ["optimum[neuronx]"]
 mamba = ["mamba_ssm", "causal-conv1d==1.0.2"]
-math = ["sympy>=1.12", "antlr4-python3-runtime==4.11"]
+math = ["sympy==1.13.1", "antlr4-python3-runtime==4.11"]
 multilingual = ["nagisa>=0.2.7", "jieba>=0.42.1", "pycountry"]
 optimum = ["optimum[openvino]"]
 promptsource = ["promptsource>=0.2.3"]
-sentencepiece = ["sentencepiece>=0.1.98"]
+sentencepiece = ["sentencepiece==0.2.0"]
 sparseml = ["sparseml-nightly[llm]>=1.8.0.20240404"]
-testing = ["pytest", "pytest-cov", "pytest-xdist"]
+testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
 vllm = ["vllm>=0.4.2"]
-zeno = ["pandas", "zeno-client"]
-wandb = ["wandb>=0.16.3", "pandas", "numpy"]
+zeno = ["pandas==2.2.3", "zeno-client"]
+wandb = ["wandb>=0.16.3", "pandas==2.2.3", "numpy==2.1.2"]
 all = [
     "lm_eval[anthropic]",
     "lm_eval[dev]",
