@@ -6,8 +6,10 @@ metadata:
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
-      == "rhoai-2.17"
+    pipelinesascode.tekton.dev/on-cel-expression: |
+      event == "push" 
+      && target_branch == "rhoai-2.17"
+      && ( !".tekton/**".pathChanged() || ".tekton/ta-lmes-job-217-push.yaml".pathChanged() )
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: ta-lmes-job
@@ -22,9 +24,26 @@ spec:
   - name: revision
     value: '{{revision}}'
   - name: output-image
-    value: quay.io/redhat-user-workloads/rhoai-tenant/ta-lmes-job-217:{{revision}}
+    value: quay.io/modh/ta-lmes-job:{{target_branch}}
   - name: dockerfile
     value: Dockerfile.lmes-job
+  taskRunSpecs:
+  - pipelineTaskName: ecosystem-cert-preflight-checks
+    computeResources:
+      requests:
+        cpu: '2'
+        memory: 10Gi
+      limits:
+        cpu: '4'
+        memory: 20Gi
+  - pipelineTaskName: clair-scan
+    computeResources:
+      requests:
+        cpu: '2'
+        memory: 10Gi
+      limits:
+        cpu: '4'
+        memory: 20Gi
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
