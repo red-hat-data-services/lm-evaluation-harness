@@ -12,6 +12,23 @@ from lm_eval.loggers import EvaluationTracker, WandbLogger
 from lm_eval.tasks import TaskManager
 from lm_eval.utils import handle_non_serializable, make_table, simple_parse_args_string
 
+# If running in offline mode, use the offline metrics
+if os.environ.get("HF_EVALUATE_OFFLINE") == "1":
+    import evaluate
+
+    evaluate_load = evaluate.load
+
+    # Use the specified metrics prefix. If not set use the default.
+    LMEVAL_METRICS_PREFIX = os.getenv("LMEVAL_METRICS_PREFIX", "metrics")
+
+    # Load the metrics from the centralised folder
+    def load_from_path(path, *args, **kwargs):
+        prefixed_metric = os.path.join(LMEVAL_METRICS_PREFIX, path)
+        # If the prefixed metric path does not exist, default to the original
+        return evaluate_load(prefixed_metric if os.path.exists(prefixed_metric) else path,
+                             *args, **kwargs)
+
+    evaluate.load = load_from_path
 
 def _int_or_none_list_arg_type(
     min_len: int, max_len: int, defaults: str, value: str, split_char: str = ","
