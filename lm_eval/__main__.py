@@ -25,8 +25,9 @@ if os.environ.get("HF_EVALUATE_OFFLINE") == "1":
     def load_from_path(path, *args, **kwargs):
         prefixed_metric = os.path.join(LMEVAL_METRICS_PREFIX, path)
         # If the prefixed metric path does not exist, default to the original
-        return evaluate_load(prefixed_metric if os.path.exists(prefixed_metric) else path,
-                             *args, **kwargs)
+        new_path = prefixed_metric if os.path.exists(prefixed_metric) else path
+        logging.info(f"Loading metric {path} from {new_path}")
+        return evaluate_load(new_path,*args, **kwargs)
 
     evaluate.load = load_from_path
 
