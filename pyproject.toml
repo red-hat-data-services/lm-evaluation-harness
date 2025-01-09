@@ -39,6 +39,7 @@ dependencies = [
     "word2number==1.1",
     "more_itertools==10.5.0",
     "unitxt==1.15.7",
+    "jiwer==3.0.5"
 ]
 
 [tool.setuptools.packages.find]
