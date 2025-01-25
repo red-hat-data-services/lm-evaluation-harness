@@ -76,7 +76,7 @@ testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
 vllm = ["vllm>=0.4.2"]
 zeno = ["pandas==2.2.3", "zeno-client"]
 wandb = ["wandb>=0.16.3", "pandas==2.2.3", "numpy==2.1.2"]
-ibm_watsonx_ai = ["ibm-watsonx-ai==1.1.23" ]
+ibm_watsonx_ai = ["ibm-watsonx-ai==1.2.2" ]
 all = [
     "lm_eval[anthropic]",
     "lm_eval[dev]",
