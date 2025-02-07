@@ -5,9 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "lm_eval"
 version = "0.4.5"
-authors = [
-    {name="EleutherAI", email="contact@eleuther.ai"}
-]
+authors = [{ name = "EleutherAI", email = "contact@eleuther.ai" }]
 description = "A framework for evaluating language models"
 readme = "README.md"
 classifiers = [
@@ -39,7 +37,8 @@ dependencies = [
     "word2number==1.1",
     "more_itertools==10.5.0",
     "unitxt==1.15.7",
-    "jiwer==3.0.5"
+    "jiwer==3.0.5",
+    "boto3==1.36.11",
 ]
 
 [tool.setuptools.packages.find]
@@ -58,8 +57,20 @@ Homepage = "https://github.com/EleutherAI/lm-evaluation-harness"
 Repository = "https://github.com/EleutherAI/lm-evaluation-harness"
 
 [project.optional-dependencies]
-api = ["requests==2.32.3", "aiohttp==3.10.10", "tenacity==9.0.0", "tqdm==4.66.6", "tiktoken==0.8.0"]
-dev = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1", "pre-commit==4.0.1", "mypy==1.13.0"]
+api = [
+    "requests==2.32.3",
+    "aiohttp==3.10.10",
+    "tenacity==9.0.0",
+    "tqdm==4.66.6",
+    "tiktoken==0.8.0",
+]
+dev = [
+    "pytest==8.3.3",
+    "pytest-cov==6.0.0",
+    "pytest-xdist==3.6.1",
+    "pre-commit==4.0.1",
+    "mypy==1.13.0",
+]
 deepsparse = ["deepsparse-nightly[llm]>=1.8.0.20240404"]
 gptq = ["auto-gptq[triton]>=0.6.0"]
 hf_transfer = ["hf_transfer"]
@@ -76,7 +87,7 @@ testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
 vllm = ["vllm>=0.4.2"]
 zeno = ["pandas==2.2.3", "zeno-client"]
 wandb = ["wandb>=0.16.3", "pandas==2.2.3", "numpy==2.1.2"]
-ibm_watsonx_ai = ["ibm-watsonx-ai==1.1.23" ]
+ibm_watsonx_ai = ["ibm-watsonx-ai==1.1.23"]
 all = [
     "lm_eval[anthropic]",
     "lm_eval[dev]",
@@ -95,7 +106,7 @@ all = [
     "lm_eval[vllm]",
     "lm_eval[zeno]",
     "lm_eval[wandb]",
-    "lm_eval[ibm_watsonx_ai]"
+    "lm_eval[ibm_watsonx_ai]",
 ]
 
 [tool.ruff.lint]
@@ -106,5 +117,5 @@ lines-after-imports = 2
 known-first-party = ["lm_eval"]
 
 [tool.ruff.lint.extend-per-file-ignores]
-"__init__.py" = ["F401","F402","F403"]
+"__init__.py" = ["F401", "F402", "F403"]
 "utils.py" = ["F401"]
