@@ -24,7 +24,7 @@ dependencies = [
     "numexpr==2.10.1",
     "peft==0.13.2",
     "pybind11==2.13.6",
-    "pytablewriter==1.2.0",
+    "pytablewriter==1.2.1",
     "rouge-score==0.1.2",
     "sacrebleu==2.4.3",
     "scikit-learn==1.5.2",
