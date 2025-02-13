@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/python-311@sha256:fccda5088dd13d2a3f2659e4c904beb42fc164a0c909e765f01af31c58affae3
+FROM registry.access.redhat.com/ubi9/python-311:latest
 
 USER root
 RUN sed -i.bak 's/include-system-site-packages = false/include-system-site-packages = true/' /opt/app-root/pyvenv.cfg
@@ -24,4 +24,5 @@ ENV PYTHONPATH=/opt/app-root/src/.local/lib/python3.11/site-packages:/opt/app-ro
 ENV HF_HOME=/opt/app-root/src/hf_home
 ENV UNITXT_CATALOGS=/opt/app-root/src/my_catalogs
 
+USER 65532:65532
 CMD ["/opt/app-root/bin/python"]
