@@ -1,4 +1,6 @@
 import copy
+import json
+import logging
 import os
 from functools import lru_cache
 from typing import Any, Dict, List, NamedTuple, Optional, Tuple, Type, cast
@@ -8,7 +10,11 @@ from tqdm import tqdm
 from lm_eval.api.instance import Instance
 from lm_eval.api.model import LM
 from lm_eval.api.registry import register_model
-from lm_eval.utils import eval_logger, simple_parse_args_string
+from lm_eval.models.api_models import JsonChatStr
+from lm_eval.utils import simple_parse_args_string
+
+
+eval_logger = logging.getLogger(__name__)
 
 
 class LogLikelihoodResult(NamedTuple):
@@ -378,3 +384,13 @@ class WatsonxLLM(LM):
             )
 
         return cast(List[Tuple[float, bool]], results)
+
+    @property
+    def tokenizer_name(self) -> str:
+        return ""
+
+    def apply_chat_template(
+        self, chat_history: List[Dict[str, str]]
+    ) -> List[Dict[str, str]]:
+        # A hack similar from api_model to allow encoding for cache
+        return JsonChatStr(json.dumps(chat_history))
