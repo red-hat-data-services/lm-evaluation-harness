@@ -1560,9 +1560,9 @@ torch==2.5.1 ; python_version >= "3.10" and python_version < "3.13" \
 tqdm-multiprocess==0.0.11 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:3ebdf03e7a675150fa0bbceaa9c3c64b8cb556e9ffafa4fe6c078e51820524aa \
     --hash=sha256:a74002a1222ea9cbe8cdc9bd460108c6009be359621fbee9b92d0515d4d180f7
-tqdm==4.66.6 ; python_version >= "3.10" and python_version < "3.13" \
-    --hash=sha256:223e8b5359c2efc4b30555531f09e9f2f3589bcd7fdd389271191031b49b7a63 \
-    --hash=sha256:4bdd694238bef1485ce839d67967ab50af8f9272aab687c0d7702a01da0be090
+tqdm==4.67.1; python_version >= "3.10" and python_version < "3.13" \
+    --hash=sha256:26445eca388f82e72884e0d580d5464cd801a3ea01e63e5601bdff9ba6a48de2 \
+    --hash=sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2
 transformers==4.45.2 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:72bc390f6b203892561f05f86bbfaa0e234aab8e927a83e62b9d92ea7e3ae101 \
     --hash=sha256:c551b33660cfc815bae1f9f097ecfd1e65be623f13c6ee0dda372bd881460210
