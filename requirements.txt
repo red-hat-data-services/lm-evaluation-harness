@@ -1423,9 +1423,9 @@ tabulate==0.9.0 ; python_version >= "3.10" and python_version < "3.13" \
 tcolorpy==0.1.7 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:0fbf6bf238890bbc2e32662aa25736769a29bf6d880328f310c910a327632614 \
     --hash=sha256:26a59d52027e175a37e0aba72efc99dda43f074db71f55b316d3de37d3251378
-threadpoolctl==3.5.0 ; python_version >= "3.10" and python_version < "3.13" \
-    --hash=sha256:082433502dd922bf738de0d8bcc4fdcbf0979ff44c42bd40f5af8a282f6fa107 \
-    --hash=sha256:56c1e26c150397e58c4926da8eeee87533b1e32bef131bd4bf6a2f45f3185467
+threadpoolctl==3.6.0; python_version >= "3.10" and python_version < "3.13" \
+    --hash=sha256:43a0b8fd5a2928500110039e43a5eed8480b918967083ea48dc3ab9f13c4a7fb \
+    --hash=sha256:8ab8b4aa3491d812b623328249fab5302a68d2d71745c8a4c719a2fcaba9f44e
 tokenizers==0.20.3 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:04627b7b502fa6a2a005e1bd446fa4247d89abcb1afaa1b81eb90e21aba9a60f \
     --hash=sha256:07d7851a72717321022f3774e84aa9d595a041d643fafa2e87fbc9b18711dac0 \
