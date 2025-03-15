@@ -1310,9 +1310,9 @@ rouge-score==0.1.2 ; python_version >= "3.10" and python_version < "3.13" \
 s3transfer==0.11.2 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:3b39185cb72f5acc77db1a58b6e25b977f28d20496b6e58d6813d75f464d632f \
     --hash=sha256:be6ecb39fadd986ef1701097771f87e4d2f821f27f6071c872143884d2950fbc
-sacrebleu==2.4.3 ; python_version >= "3.10" and python_version < "3.13" \
-    --hash=sha256:a976fd6998d8ced267a722120ec7fc47083c8e9745d8808ccee6424464a0aa31 \
-    --hash=sha256:e734b1e0baeaea6ade0fefc9d23bac3df50bf15775d8b78edc108db63654192a
+sacrebleu==2.5.1; python_version >= "3.10" and python_version < "3.13" \
+    --hash=sha256:1a088cc1c74ffaff0759c3191a85db09eecfa7a52e09be244e319d8d64e2fb11 \
+    --hash=sha256:7c9f7ee75bec3a5bf19dd87112dfd654952130e403ad30c48298fb7da3212d5d
 safetensors==0.5.2 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:03c937100f38c9ff4c1507abea9928a6a9b02c9c1c9c3609ed4fb2bf413d4975 \
     --hash=sha256:1506e4c2eda1431099cebe9abf6c76853e95d0b7a95addceaa74c6019c65d8cf \
