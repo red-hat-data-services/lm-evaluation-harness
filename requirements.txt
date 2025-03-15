@@ -4,9 +4,9 @@ absl-py==2.1.0 ; python_version >= "3.10" and python_version < "3.13" \
 accelerate==1.0.1 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:c6aa0c7b8a797cb150471e90e3ca36ac41f5d4b40512cdd6f058b8bf25589467 \
     --hash=sha256:e8f95fc2db14915dc0a9182edfcf3068e5ddb2fa310b583717ad44e5c442399c
-aiohappyeyeballs==2.4.6 ; python_version >= "3.10" and python_version < "3.13" \
-    --hash=sha256:147ec992cf873d74f5062644332c539fcd42956dc69453fe5204195e560517e1 \
-    --hash=sha256:9b05052f9042985d32ecbe4b59a77ae19c006a78f1344d7fdad69d28ded3d0b0
+aiohappyeyeballs==2.6.1; python_version >= "3.10" and python_version < "3.13" \
+    --hash=sha256:c3f9d0113123803ccadfdf3f0faa505bc78e6a72d1cc4806cbd719826e943558 \
+    --hash=sha256:f349ba8f4b75cb25c99c5c2d84e997e485204d2902a9597802b0371f09331fb8
 aiohttp==3.10.10 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:007ec22fbc573e5eb2fb7dec4198ef8f6bf2fe4ce20020798b2eb5d0abda6138 \
     --hash=sha256:00819de9e45d42584bed046314c40ea7e9aea95411b38971082cad449392b08c \
