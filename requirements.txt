@@ -1042,9 +1042,9 @@ pytablewriter==1.2.0 ; python_version >= "3.10" and python_version < "3.13" \
 python-dateutil==2.9.0.post0 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3 \
     --hash=sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427
-pytz==2025.1 ; python_version >= "3.10" and python_version < "3.13" \
-    --hash=sha256:89dd22dca55b46eac6eda23b2d72721bf1bdfef212645d81513ef5d03038de57 \
-    --hash=sha256:c2db42be2a2518b28e65f9207c4d05e6ff547d1efa4086469ef855e4ab70178e
+pytz==2025.2; python_version >= "3.10" and python_version < "3.13" \
+    --hash=sha256:360b9e3dbb49a209c21ad61809c7fb453643e048b38924c765813546746e81c3 \
+    --hash=sha256:5ddf76296dd8c44c26eb8f4b6f35488f3ccbf6fbbd7adee0b7262d43f0ec2f00
 pywin32==308 ; python_version >= "3.10" and python_version < "3.13" and platform_system == "Windows" \
     --hash=sha256:00b3e11ef09ede56c6a43c71f2d31857cf7c54b0ab6e78ac659497abd2834f47 \
     --hash=sha256:100a5442b7332070983c4cd03f2e906a5648a5104b8a7f50175f7906efd16bb6 \
