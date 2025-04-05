@@ -1,9 +1,9 @@
 absl-py==2.1.0 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:526a04eadab8b4ee719ce68f204172ead1027549089702d99b9059f129ff1308 \
     --hash=sha256:7820790efbb316739cde8b4e19357243fc3608a152024288513dd968d7d959ff
-accelerate==1.0.1 ; python_version >= "3.10" and python_version < "3.13" \
-    --hash=sha256:c6aa0c7b8a797cb150471e90e3ca36ac41f5d4b40512cdd6f058b8bf25589467 \
-    --hash=sha256:e8f95fc2db14915dc0a9182edfcf3068e5ddb2fa310b583717ad44e5c442399c
+accelerate==1.6.0; python_version >= "3.10" and python_version < "3.13" \
+    --hash=sha256:1aee717d3d3735ad6d09710a7c26990ee4652b79b4e93df46551551b5227c2aa \
+    --hash=sha256:28c1ef1846e690944f98b68dc7b8bb6c51d032d45e85dcbb3adb0c8b99dffb32
 aiohappyeyeballs==2.4.6 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:147ec992cf873d74f5062644332c539fcd42956dc69453fe5204195e560517e1 \
     --hash=sha256:9b05052f9042985d32ecbe4b59a77ae19c006a78f1344d7fdad69d28ded3d0b0
