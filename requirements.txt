@@ -293,9 +293,9 @@ dataproperty==1.1.0 ; python_version >= "3.10" and python_version < "3.13" \
 datasets==3.1.0 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:c92cac049e0f9f85b0dd63739c68e564c657b1624bc2b66b1e13489062832e27 \
     --hash=sha256:dc8808a6d17838fe05e13b39aa7ac3ea0fd0806ed7004eaf4d4eb2c2a356bc61
-dill==0.3.8 ; python_version >= "3.10" and python_version < "3.13" \
-    --hash=sha256:3ebe3c479ad625c4553aca177444d89b486b1d84982eeacded644afc0cf797ca \
-    --hash=sha256:c36ca9ffb54365bdd2f8eb3eff7d2a21237f8452b57ace88b1ac615b7e815bd7
+dill==0.4.0; python_version >= "3.10" and python_version < "3.13" \
+    --hash=sha256:0633f1d2df477324f53a895b02c901fb961bdbf65a17122586ea7019292cbcf0 \
+    --hash=sha256:44f54bf6412c2c8464c14e8243eb163690a9800dbe2c367330883b19c7561049
 evaluate==0.4.3 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:3a5700cf83aabee9549264e1e5666f116367c61dbd4d38352015e859a5e2098d \
     --hash=sha256:47d8770bdea76e2c2ed0d40189273027d1a41ccea861bcc7ba12d30ec5d1e517
