@@ -4,8 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lm_eval"
-version = "0.4.5"
-authors = [{ name = "EleutherAI", email = "contact@eleuther.ai" }]
+version = "0.4.8"
+authors = [
+    {name="EleutherAI", email="contact@eleuther.ai"}
+]
 description = "A framework for evaluating language models"
 readme = "README.md"
 classifiers = [
@@ -75,13 +77,21 @@ hf_transfer = ["hf_transfer"]
 ifeval = ["langdetect", "immutabledict", "nltk==3.9.1"]
 neuronx = ["optimum[neuronx]"]
 mamba = ["mamba_ssm", "causal-conv1d==1.0.2"]
-math = ["sympy==1.13.1", "antlr4-python3-runtime==4.11"]
+math = ["sympy==1.13.1", "antlr4-python3-runtime==4.11", "math_verify[antlr4_11_0]==0.7.0"]
 multilingual = ["nagisa>=0.2.7", "jieba>=0.42.1", "pycountry"]
 optimum = ["optimum[openvino]"]
 sentencepiece = ["sentencepiece==0.2.0"]
 testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
+promptsource = ["promptsource>=0.2.3"]
+sae_lens = ["sae_lens"]
+sentencepiece = ["sentencepiece>=0.1.98"]
+sparsify = ["sparsify"]
+sparseml = ["sparseml-nightly[llm]>=1.8.0.20240404"]
+testing = ["pytest", "pytest-cov", "pytest-xdist"]
 vllm = ["vllm>=0.4.2"]
 ibm_watsonx_ai = ["ibm-watsonx-ai==1.1.23"]
+gptqmodel = ["gptqmodel==1.0.9"]
+japanese_leaderboard = ["emoji==2.14.0", "neologdn==0.5.3", "fugashi[unidic-lite]==1.4.0", "rouge_score==0.1.2"]
 
 [tool.ruff.lint]
 extend-select = ["I"]
