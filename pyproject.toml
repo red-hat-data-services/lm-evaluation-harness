@@ -29,7 +29,7 @@ dependencies = [
     "sacrebleu==2.4.3",
     "scikit-learn==1.5.2",
     "sqlitedict==2.1.0",
-    "torch==2.5.1",
+    "torch==2.6.0",
     "tqdm-multiprocess==0.0.11",
     "transformers==4.45.2",
     "zstandard==0.23.0",
@@ -64,23 +64,6 @@ api = [
     "tqdm==4.66.6",
     "tiktoken==0.8.0",
 ]
-dev = [
-    "pytest==8.3.3",
-    "pytest-cov==6.0.0",
-    "pytest-xdist==3.6.1",
-    "pre-commit==4.0.1",
-    "mypy==1.13.0",
-]
-hf_transfer = ["hf_transfer"]
-ifeval = ["langdetect", "immutabledict", "nltk==3.9.1"]
-neuronx = ["optimum[neuronx]"]
-mamba = ["mamba_ssm", "causal-conv1d==1.0.2"]
-math = ["sympy==1.13.1", "antlr4-python3-runtime==4.11"]
-multilingual = ["nagisa>=0.2.7", "jieba>=0.42.1", "pycountry"]
-optimum = ["optimum[openvino]"]
-sentencepiece = ["sentencepiece==0.2.0"]
-testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
-vllm = ["vllm>=0.4.2"]
 ibm_watsonx_ai = ["ibm-watsonx-ai==1.1.23"]
 
 [tool.ruff.lint]
