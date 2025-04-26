@@ -434,8 +434,8 @@ huggingface-hub==0.30.2 \
 ibm-cos-sdk==2.13.5 \
     --hash=sha256:1aff7f9863ac9072a3db2f0053bec99478b26f3fb5fa797ce96a15bbb13cd40e
     # via ibm-watsonx-ai
-ibm-cos-sdk-core==2.13.5 \
-    --hash=sha256:d3a99d8b06b3f8c00b1a9501f85538d592463e63ddf8cec32672ab5a0b107b83
+ibm-cos-sdk-core==2.14.0 \
+    --hash=sha256:2905e00a9cc61aed945a4f58daa6037ae7c2ca76fa0ae75b2949b300557bf5ca
     # via
     #   ibm-cos-sdk
     #   ibm-cos-sdk-s3transfer
