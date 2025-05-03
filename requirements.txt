@@ -949,10 +949,10 @@ nvidia-curand-cu12==10.3.5.147 \
     --hash=sha256:a88f583d4e0bb643c49743469964103aa59f7f708d862c3ddb0fc07f851e3b8b \
     --hash=sha256:f307cc191f96efe9e8f05a87096abc20d08845a841889ef78cb06924437f6771
     # via torch
-nvidia-cusolver-cu12==11.6.1.9 \
-    --hash=sha256:19e33fa442bcfd085b3086c4ebf7e8debc07cfe01e11513cc6d332fd918ac260 \
-    --hash=sha256:d338f155f174f90724bbde3758b7ac375a70ce8e706d70b018dd3375545fc84e \
-    --hash=sha256:e77314c9d7b694fcebc84f58989f3aa4fb4cb442f12ca1a9bde50f5e8f6d1b9c
+nvidia-cusolver-cu12==11.7.4.40 \
+    --hash=sha256:288993d2c3bd8167baa3f7b581e219175db576a54d2c36ad62b163a07de923c5 \
+    --hash=sha256:75e64d827e391a4e0c75832c7c35ca24fdcadcd048b3de18dcc639a783187a7f \
+    --hash=sha256:7fb531b95d46f71ca9c296d49a59212ded0a8349560e1664e1b3ce4b35ec0bd7
     # via torch
 nvidia-cusparse-cu12==12.3.1.170 \
     --hash=sha256:9bc90fb087bc7b4c15641521f31c0371e9a612fc2ba12c338d3ae032e6b6797f \
