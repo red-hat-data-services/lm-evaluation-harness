@@ -466,7 +466,8 @@ spec:
       optional: true
     - name: netrc
       optional: true
-  taskRunTemplate: {}
+  taskRunTemplate:
+    serviceAccountName: build-pipeline-ta-lmes-job-216
   workspaces:
   - name: git-auth
     secret:
