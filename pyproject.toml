@@ -14,7 +14,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-requires-python = "<3.13,>=3.10"
+requires-python = "<3.14,>=3.13"
 license = { "text" = "MIT" }
 dependencies = [
     "accelerate==1.0.1",
