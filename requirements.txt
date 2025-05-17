@@ -431,8 +431,8 @@ huggingface-hub==0.30.2 \
     #   peft
     #   tokenizers
     #   transformers
-ibm-cos-sdk==2.13.5 \
-    --hash=sha256:1aff7f9863ac9072a3db2f0053bec99478b26f3fb5fa797ce96a15bbb13cd40e
+ibm-cos-sdk==2.14.1 \
+    --hash=sha256:f66caeab0468544fd28f25fad62bd02ec35a63255a4de4c28f47b38b140af59f
     # via ibm-watsonx-ai
 ibm-cos-sdk-core==2.13.5 \
     --hash=sha256:d3a99d8b06b3f8c00b1a9501f85538d592463e63ddf8cec32672ab5a0b107b83
