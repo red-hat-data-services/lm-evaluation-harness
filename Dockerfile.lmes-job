@@ -14,10 +14,10 @@ COPY . .
 COPY requirements.txt .
 
 # Install the pinned dependencies
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Install the package
-RUN pip install --no-cache-dir --user -e .
+RUN pip install --no-cache-dir -e .
 
 RUN mkdir /opt/app-root/src/hf_home && chmod g+rwx /opt/app-root/src/hf_home
 RUN mkdir /opt/app-root/src/output && chmod g+rwx /opt/app-root/src/output

@@ -5,6 +5,8 @@ Addressing this need, we present Unitxt, an innovative library for customizable 
 """
 
 import importlib.util
+import re
+from collections.abc import Callable
 from functools import partial
 from typing import Any, Dict, Optional
 
@@ -95,6 +97,31 @@ class Unitxt(ConfigurableTask):
     def doc_to_target(self, doc):
         doc["target"]
 
+    def get_arguments(self, doc, ctx):
+        return (ctx, {"until": ["\n"]})
+
+    def fewshot_context(
+        self,
+        doc: str,
+        num_fewshot: int,
+        system_instruction: Optional[str] = None,
+        apply_chat_template: bool = False,
+        fewshot_as_multiturn: bool = False,
+        chat_template: Optional[Callable] = None,
+        gen_prefix: Optional[str] = None,
+    ) -> str:
+        source = self.doc_to_text(doc)
+        if isinstance(source, list):
+            if apply_chat_template:
+                formated_source = chat_template(self.doc_to_text(doc))
+                return formated_source
+            else:
+                raise Exception(
+                    "Got chat template format from Unitxt, but apply_chat_template is false. Add '--apply_chat_template' to command line."
+                )
+        else:
+            return source
+
     def construct_requests(self, doc, ctx, **kwargs):
         """Uses RequestFactory to construct Requests and returns an iterable of
         Requests which will be sent to the LM.
@@ -106,12 +133,13 @@ class Unitxt(ConfigurableTask):
             language description, as well as the few shot examples, and the question
             part of the document for `doc`.
         """
-
+        kwargs.pop("apply_chat_template", False)  # Not used by unitxt
+        kwargs.pop("chat_template", False)  # Not used by unitxt
         return [
             Instance(
                 request_type="generate_until",
                 doc=doc,
-                arguments=(ctx, {"until": ["\n"]}),
+                arguments=self.get_arguments(doc, ctx),
                 idx=0,
                 **kwargs,
             )
@@ -156,3 +184,34 @@ class Unitxt(ConfigurableTask):
             whether a higher value of the submetric is better
         """
         return {metric.replace("metrics.", ""): True for metric in self.metrics}
+
+
+images_regex = r'<img\s+src=["\'](.*?)["\']\s*/?>'
+image_source_regex = r'<img\s+src=["\'](.*?)["\']'
+
+
+def extract_images(text, instance):
+    image_sources = re.findall(image_source_regex, text)
+    images = []
+    for image_source in image_sources:
+        current = instance
+        for key in image_source.split("/"):
+            if key.isdigit():
+                key = int(key)
+            current = current[key]
+        images.append(current)
+    return images
+
+
+class UnitxtMultiModal(Unitxt):
+    MULTIMODAL = True
+
+    def doc_to_text(self, doc):
+        return re.sub(images_regex, "<image>", doc["source"])
+
+    def doc_to_image(self, doc):
+        images = extract_images(doc["source"], doc)
+        return [self.image_decoder.decode_example(image) for image in images]
+
+    def get_arguments(self, doc, ctx):
+        return (ctx, {"until": ["\n"]}, {"visual": self.doc_to_image(doc)})

@@ -1,11 +1,13 @@
 [build-system]
-requires = ["setuptools==70.0.0", "wheel"]
+requires = ["setuptools==70.0.0", "wheel==0.45.1"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "lm_eval"
-version = "0.4.5"
-authors = [{ name = "EleutherAI", email = "contact@eleuther.ai" }]
+version = "0.4.8"
+authors = [
+    {name="EleutherAI", email="contact@eleuther.ai"}
+]
 description = "A framework for evaluating language models"
 readme = "README.md"
 classifiers = [
@@ -31,12 +33,12 @@ dependencies = [
     "sqlitedict==2.1.0",
     "torch==2.6.0",
     "tqdm-multiprocess==0.0.11",
-    "transformers==4.48.2",
+    "transformers==4.45.2",
     "zstandard==0.23.0",
     "dill==0.3.8",
     "word2number==1.1",
     "more_itertools==10.5.0",
-    "unitxt==1.15.7",
+    "unitxt==1.17.2",
     "jiwer==3.0.5",
     "boto3==1.36.11",
 ]
@@ -71,16 +73,8 @@ dev = [
     "pre-commit==4.0.1",
     "mypy==1.13.0",
 ]
-hf_transfer = ["hf_transfer"]
-ifeval = ["langdetect", "immutabledict", "nltk==3.9.1"]
-neuronx = ["optimum[neuronx]"]
-mamba = ["mamba_ssm", "causal-conv1d==1.0.2"]
-math = ["sympy==1.13.1", "antlr4-python3-runtime==4.11"]
-multilingual = ["nagisa>=0.2.7", "jieba>=0.42.1", "pycountry"]
-optimum = ["optimum[openvino]"]
-sentencepiece = ["sentencepiece==0.2.0"]
+hf_transfer = ["hf-transfer==0.1.9"]
 testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
-vllm = ["vllm>=0.4.2"]
 ibm_watsonx_ai = ["ibm-watsonx-ai==1.1.23"]
 
 [tool.ruff.lint]
