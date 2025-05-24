@@ -37,7 +37,7 @@ dependencies = [
     "zstandard==0.23.0",
     "dill==0.3.8",
     "word2number==1.1",
-    "more_itertools==10.5.0",
+    "more_itertools==10.7.0",
     "unitxt==1.17.2",
     "jiwer==3.0.5",
     "boto3==1.36.11",
