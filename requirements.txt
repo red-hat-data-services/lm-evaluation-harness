@@ -108,9 +108,9 @@ async-timeout==4.0.3 ; python_version == "3.10" \
 attrs==25.1.0 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:1c97078a80c814273a76b2a298a932eb681c87415c11dee0a6921de7f1b02c3e \
     --hash=sha256:c75a69e28a550a7e93789579c22aa26b0f5b83b75dc4e08fe092980051e1090a
-boto3==1.36.11 ; python_version >= "3.10" and python_version < "3.13" \
-    --hash=sha256:641dd772eac111d9443258f0f5491c57c2af47bddae94a8d32de19edb5bf7b1c \
-    --hash=sha256:b40fbf2c0f22e55b67df95475a68bb72be5169097180a875726b6b884339ac8b
+boto3==1.38.32; python_version >= "3.10" and python_version < "3.13" \
+    --hash=sha256:3faa2c328a61745f3215a63039606a6fcf55d9afe1cc76e3a5e27b9db58cdbf6 \
+    --hash=sha256:b998edac72f6740bd5d9d585cf3880f2dfeb4842e626b34430fd0e9623378011
 botocore==1.36.22 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:59520247d5a479731724f97c995d5a1c2aae3b303b324f39d99efcfad1d3019e \
     --hash=sha256:75d6b34acb0686ee4d54ff6eb285e78ccfe318407428769d1e3e13351714d890
