@@ -1032,9 +1032,9 @@ peft==0.13.2 \
     --hash=sha256:0e0cbd40ebdf5fe4ea79f255880d02f96712d18899509369a2cc5768ad46d672 \
     --hash=sha256:d4e0951ec78eac11c45a051801c569913436888c578d48e5ce86996b715bc6ef
     # via lm_eval (pyproject.toml)
-portalocker==3.1.1 \
-    --hash=sha256:80e984e24de292ff258a5bea0e4f3f778fff84c0ae1275dbaebc4658de4aacb3 \
-    --hash=sha256:ec20f6dda2ad9ce89fa399a5f31f4f1495f515958f0cb7ca6543cef7bb5a749e
+portalocker==3.2.0 \
+    --hash=sha256:1f3002956a54a8c3730586c5c77bf18fae4149e07eaf1c29fc3faf4d5a3f89ac \
+    --hash=sha256:3cdc5f565312224bc570c49337bd21428bba0ef363bbcf58b9ef4a9f11779968
     # via sacrebleu
 propcache==0.3.1 \
     --hash=sha256:050b571b2e96ec942898f8eb46ea4bfbb19bd5502424747e83badc2d4a99a44e \
