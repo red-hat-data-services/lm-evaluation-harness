@@ -1028,9 +1028,9 @@ pathvalidate==3.2.3 \
     --hash=sha256:59b5b9278e30382d6d213497623043ebe63f10e29055be4419a9c04c721739cb \
     --hash=sha256:5eaf0562e345d4b6d0c0239d0f690c3bd84d2a9a3c4c73b99ea667401b27bee1
     # via pytablewriter
-peft==0.13.2 \
-    --hash=sha256:0e0cbd40ebdf5fe4ea79f255880d02f96712d18899509369a2cc5768ad46d672 \
-    --hash=sha256:d4e0951ec78eac11c45a051801c569913436888c578d48e5ce86996b715bc6ef
+peft==0.16.0 \
+    --hash=sha256:b5a2e08c053d12ddd0cf16ac7a320b2737e111943fc294d41173e72f780eeaef \
+    --hash=sha256:d7596bc938b0aac0a25b17b6b523c062ad7dd424dbd4d2398d1cc7ed0dc4eebf
     # via lm_eval (pyproject.toml)
 portalocker==3.1.1 \
     --hash=sha256:80e984e24de292ff258a5bea0e4f3f778fff84c0ae1275dbaebc4658de4aacb3 \
