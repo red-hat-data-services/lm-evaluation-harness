@@ -1190,6 +1190,19 @@ files = [
 all = ["flake8 (>=7.1.1)", "mypy (>=1.11.2)", "pytest (>=8.3.2)", "ruff (>=0.6.2)"]
 
 [[package]]
+name = "immutabledict"
+version = "4.2.1"
+description = "Immutable wrapper around dictionaries (a fork of frozendict)"
+optional = true
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "extra == \"ifeval\""
+files = [
+    {file = "immutabledict-4.2.1-py3-none-any.whl", hash = "sha256:c56a26ced38c236f79e74af3ccce53772827cef5c3bce7cab33ff2060f756373"},
+    {file = "immutabledict-4.2.1.tar.gz", hash = "sha256:d91017248981c72eb66c8ff9834e99c2f53562346f23e7f51e7a5ebcf66a3bcc"},
+]
+
+[[package]]
 name = "importlib-metadata"
 version = "8.7.0"
 description = "Read metadata from Python packages"
@@ -1310,6 +1323,22 @@ files = [
 
 [package.dependencies]
 attrs = ">=19.2.0"
+
+[[package]]
+name = "langdetect"
+version = "1.0.9"
+description = "Language detection library ported from Google's language-detection."
+optional = true
+python-versions = "*"
+groups = ["main"]
+markers = "extra == \"ifeval\""
+files = [
+    {file = "langdetect-1.0.9-py2-none-any.whl", hash = "sha256:7cbc0746252f19e76f77c0b1690aadf01963be835ef0cd4b56dddf2a8f1dfc2a"},
+    {file = "langdetect-1.0.9.tar.gz", hash = "sha256:cbc1fef89f8d062739774bd51eda3da3274006b3661d199c2655f6b3f6d605a0"},
+]
+
+[package.dependencies]
+six = "*"
 
 [[package]]
 name = "lomond"
@@ -4321,9 +4350,10 @@ api = ["aiohttp", "requests", "tenacity", "tiktoken", "tqdm"]
 dev = ["mypy", "pre-commit", "pytest", "pytest-cov", "pytest-xdist"]
 hf-transfer = ["hf-transfer"]
 ibm-watsonx-ai = ["ibm-watsonx-ai"]
+ifeval = ["immutabledict", "langdetect", "nltk"]
 testing = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = "<3.13,>=3.10"
-content-hash = "a081df161d43901cd18f0398b0da0ed7e726dc8f06ad4ec6db3772966f1e8747"
+content-hash = "0245f6cfa9d711932ae75d3e8ae8977420b2e116bcf77bd7d86feff50a1b1c4e"
