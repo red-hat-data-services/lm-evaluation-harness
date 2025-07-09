@@ -4351,6 +4351,7 @@ dev = ["mypy", "pre-commit", "pytest", "pytest-cov", "pytest-xdist"]
 hf-transfer = ["hf-transfer"]
 ibm-watsonx-ai = ["ibm-watsonx-ai"]
 ifeval = ["immutabledict", "langdetect", "nltk"]
+math = ["math_verify", "antlr4-python3-runtime", "sympy"]
 testing = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [metadata]
