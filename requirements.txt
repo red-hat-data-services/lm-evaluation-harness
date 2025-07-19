@@ -1755,9 +1755,9 @@ tzdata==2025.2 \
     --hash=sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8 \
     --hash=sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9
     # via pandas
-unitxt==1.15.7 \
-    --hash=sha256:17084d4f54a75552d84337289414f40f68da9bb814949c046c0192e7590de8f0 \
-    --hash=sha256:66989c826b1365fca99ca196a923e8445cf86044a5adcc43c9ccf6264e0cfada
+unitxt==1.26.3 \
+    --hash=sha256:07a8dd1b5143c6c7528dfa019843c5fd926039dcfb452c6bec2c9db1339b488b \
+    --hash=sha256:8480b304120df12a49376dbb0cdb21a112954440fb9036516a14bc3415de4bfc
     # via lm_eval (pyproject.toml)
 urllib3==2.1.0 \
     --hash=sha256:55901e917a5896a349ff771be919f8bd99aff50b79fe58fec595eb37bbc56bb3 \
