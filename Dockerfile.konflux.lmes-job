@@ -1,0 +1,45 @@
+FROM registry.access.redhat.com/ubi9/python-311:latest
+
+USER root
+RUN sed -i.bak 's/include-system-site-packages = false/include-system-site-packages = true/' /opt/app-root/pyvenv.cfg
+
+# Copy license
+COPY LICENSE.md /licenses/lm-evaluation-harness.md
+
+USER default
+WORKDIR /opt/app-root/src
+COPY . .
+
+# Copy the pinned requirements file
+COPY requirements.txt .
+
+# Install the pinned dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install the package
+RUN pip install --no-cache-dir -e .
+
+RUN mkdir /opt/app-root/src/hf_home && chmod g+rwx /opt/app-root/src/hf_home
+RUN mkdir /opt/app-root/src/output && chmod g+rwx /opt/app-root/src/output
+RUN mkdir /opt/app-root/src/my_tasks && chmod g+rwx /opt/app-root/src/my_tasks
+RUN mkdir -p /opt/app-root/src/my_catalogs/cards && chmod -R g+rwx /opt/app-root/src/my_catalogs
+RUN mkdir -p /opt/app-root/src/.cache
+ENV PATH="/opt/app-root/bin:/opt/app-root/src/.local/bin/:/opt/app-root/src/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+RUN python -c 'from lm_eval.tasks.unitxt import task; import os.path; print("class: !function " + task.__file__.replace("task.py", "task.Unitxt"))' > ./my_tasks/unitxt
+
+ENV PYTHONPATH=/opt/app-root/src/.local/lib/python3.11/site-packages:/opt/app-root/src/lm-evaluation-harness:/opt/app-root/src:/opt/app-root/src/server
+ENV HF_HOME=/opt/app-root/src/hf_home
+ENV UNITXT_CATALOGS=/opt/app-root/src/my_catalogs
+
+USER 65532:65532
+CMD ["/opt/app-root/bin/python"]
+
+LABEL name="rhoai/odh-ta-lmes-job-rhel9" \
+      com.redhat.component="odh-ta-lmes-job-rhel9" \
+      io.k8s.display-name="odh-ta-lmes-job-rhel9" \
+      io.k8s.description="LMEval serves as a secure, batch-oriented execution environment for language model evaluations with lm-evaluation-harness, providing a standardized runtime, Unitxt framework integration, and support for custom tasks and metrics. It is designed for one-shot evaluation workloads, handling model testing with output management." \
+      description="LMEval serves as a secure, batch-oriented execution environment for language model evaluations with lm-evaluation-harness, providing a standardized runtime, Unitxt framework integration, and support for custom tasks and metrics. It is designed for one-shot evaluation workloads, handling model testing with output management." \
+      summary="LMEval is a secure, batch-oriented runtime for one-shot language model evaluations" \
+      com.redhat.license_terms="https://www.redhat.com/licenses/Red_Hat_Standard_EULA_20191108.pdf"
+      
