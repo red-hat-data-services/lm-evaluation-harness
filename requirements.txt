@@ -1666,7 +1666,7 @@ tiktoken==0.8.0 \
     --hash=sha256:f13d13c981511331eac0d01a59b5df7c0d4060a8be1e378672822213da51e0a2 \
     --hash=sha256:fe9399bdc3f29d428f16a2f86c3c8ec20be3eac5f53693ce4980371c3245729b
     # via lm_eval (pyproject.toml)
-tokenizers==0.21.1 \
+tokenizers==0.21.4 \
     --hash=sha256:0f0dcbcc9f6e13e675a66d7a5f2f225a736745ce484c1a4e07476a89ccdad382 \
     --hash=sha256:1039a3a5734944e09de1d48761ade94e00d0fa760c0e0551151d4dd851ba63e3 \
     --hash=sha256:28da6b72d4fb14ee200a1bd386ff74ade8992d7f725f2bde2c495a9a98cf4d9f \
