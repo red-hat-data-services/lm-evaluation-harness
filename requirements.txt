@@ -439,7 +439,7 @@ ibm-cos-sdk-core==2.13.5 \
     # via
     #   ibm-cos-sdk
     #   ibm-cos-sdk-s3transfer
-ibm-cos-sdk-s3transfer==2.13.5 \
+ibm-cos-sdk-s3transfer==2.14.3 \
     --hash=sha256:9649b1f2201c6de96ff5a6b5a3686de3a809e6ef3b8b12c7c4f2f7ce72da7749
     # via ibm-cos-sdk
 ibm-watsonx-ai==1.1.23 \
