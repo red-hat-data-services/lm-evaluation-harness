@@ -10,7 +10,7 @@ absl-py==2.2.2 \
     # via
     #   rouge-score
     #   unitxt
-accelerate==1.0.1 \
+accelerate==1.10.1 \
     --hash=sha256:c6aa0c7b8a797cb150471e90e3ca36ac41f5d4b40512cdd6f058b8bf25589467 \
     --hash=sha256:e8f95fc2db14915dc0a9182edfcf3068e5ddb2fa310b583717ad44e5c442399c
     # via
