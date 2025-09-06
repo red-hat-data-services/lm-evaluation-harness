@@ -66,7 +66,7 @@ api = [
 ]
 dev = [
     "pytest==8.3.3",
-    "pytest-cov==6.0.0",
+    "pytest-cov==6.3.0",
     "pytest-xdist==3.6.1",
     "pre-commit==4.0.1",
     "mypy==1.13.0",
@@ -83,7 +83,7 @@ optimum = ["optimum[openvino]"]
 promptsource = ["promptsource>=0.2.3"]
 sentencepiece = ["sentencepiece==0.2.0"]
 sparseml = ["sparseml-nightly[llm]>=1.8.0.20240404"]
-testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
+testing = ["pytest==8.3.3", "pytest-cov==6.3.0", "pytest-xdist==3.6.1"]
 vllm = ["vllm>=0.4.2"]
 zeno = ["pandas==2.2.3", "zeno-client"]
 wandb = ["wandb>=0.16.3", "pandas==2.2.3", "numpy==2.1.2"]
