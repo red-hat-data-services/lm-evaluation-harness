@@ -18,7 +18,7 @@ requires-python = ">=3.8"
 license = { "text" = "MIT" }
 dependencies = [
     "accelerate==1.0.1",
-    "evaluate==0.4.3",
+    "evaluate==0.4.6",
     "datasets==3.1.0",
     "jsonlines==4.0.0",
     "numexpr==2.10.1",
