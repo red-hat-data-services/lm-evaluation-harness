@@ -279,7 +279,7 @@ dill==0.3.8 \
     #   evaluate
     #   lm_eval (pyproject.toml)
     #   multiprocess
-evaluate==0.4.3 \
+evaluate==0.4.6 \
     --hash=sha256:3a5700cf83aabee9549264e1e5666f116367c61dbd4d38352015e859a5e2098d \
     --hash=sha256:47d8770bdea76e2c2ed0d40189273027d1a41ccea861bcc7ba12d30ec5d1e517
     # via
