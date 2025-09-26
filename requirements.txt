@@ -994,7 +994,7 @@ packaging==25.0 \
     #   peft
     #   transformers
     #   typepy
-pandas==2.1.4 \
+pandas==2.3.2 \
     --hash=sha256:00028e6737c594feac3c2df15636d73ace46b8314d236100b57ed7e4b9ebe8d9 \
     --hash=sha256:0aa6e92e639da0d6e2017d9ccff563222f4eb31e4b2c3cf32a2a392fc3103c0d \
     --hash=sha256:1ebfd771110b50055712b3b711b51bee5d50135429364d0498e1213a7adc2be8 \
