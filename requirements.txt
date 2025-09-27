@@ -1136,7 +1136,7 @@ propcache==0.3.1 \
     --hash=sha256:fb6e0faf8cb6b4beea5d6ed7b5a578254c6d7df54c36ccd3d8b3eb00d6770277 \
     --hash=sha256:feccd282de1f6322f56f6845bf1207a537227812f0a9bf5571df52bb418d79d5
     # via yarl
-psutil==7.0.0 \
+psutil==7.1.0 \
     --hash=sha256:101d71dc322e3cffd7cea0650b09b3d08b8e7c4109dd6809fe452dfd00e58b25 \
     --hash=sha256:1e744154a6580bc968a0195fd25e80432d3afec619daf145b9e5ba16cc1d688e \
     --hash=sha256:1fcee592b4c6f146991ca55919ea3d1f8926497a713ed7faaf8225e174581e91 \
