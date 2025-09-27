@@ -66,7 +66,7 @@ api = [
 ]
 dev = [
     "pytest==8.3.3",
-    "pytest-cov==6.0.0",
+    "pytest-cov==6.3.0",
     "pytest-xdist==3.6.1",
     "pre-commit==4.0.1",
     "mypy==1.13.0",
@@ -79,7 +79,7 @@ math = ["sympy==1.13.1", "antlr4-python3-runtime==4.11"]
 multilingual = ["nagisa>=0.2.7", "jieba>=0.42.1", "pycountry"]
 optimum = ["optimum[openvino]"]
 sentencepiece = ["sentencepiece==0.2.0"]
-testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
+testing = ["pytest==8.3.3", "pytest-cov==6.3.0", "pytest-xdist==3.6.1"]
 vllm = ["vllm>=0.4.2"]
 ibm_watsonx_ai = ["ibm-watsonx-ai==1.1.23"]
 
