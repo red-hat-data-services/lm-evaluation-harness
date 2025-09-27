@@ -1028,7 +1028,7 @@ pathvalidate==3.2.3 \
     --hash=sha256:59b5b9278e30382d6d213497623043ebe63f10e29055be4419a9c04c721739cb \
     --hash=sha256:5eaf0562e345d4b6d0c0239d0f690c3bd84d2a9a3c4c73b99ea667401b27bee1
     # via pytablewriter
-peft==0.13.2 \
+peft==0.17.1 \
     --hash=sha256:0e0cbd40ebdf5fe4ea79f255880d02f96712d18899509369a2cc5768ad46d672 \
     --hash=sha256:d4e0951ec78eac11c45a051801c569913436888c578d48e5ce86996b715bc6ef
     # via lm_eval (pyproject.toml)
