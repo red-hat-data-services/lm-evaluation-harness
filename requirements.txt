@@ -1487,7 +1487,7 @@ requests==2.32.3 \
 rouge-score==0.1.2 \
     --hash=sha256:c7d4da2683e68c9abf0135ef915d63a46643666f848e558a1b9f7ead17ff0f04
     # via lm_eval (pyproject.toml)
-s3transfer==0.11.3 \
+s3transfer==0.14.0 \
     --hash=sha256:ca855bdeb885174b5ffa95b9913622459d4ad8e331fc98eb01e6d5eb6a30655d \
     --hash=sha256:edae4977e3a122445660c7c114bba949f9d191bae3b34a096f18a1c8c354527a
     # via boto3
