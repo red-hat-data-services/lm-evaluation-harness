@@ -1515,7 +1515,7 @@ safetensors==0.5.3 \
     #   accelerate
     #   peft
     #   transformers
-scikit-learn==1.5.2 \
+scikit-learn==1.7.2 \
     --hash=sha256:03b6158efa3faaf1feea3faa884c840ebd61b6484167c711548fce208ea09445 \
     --hash=sha256:178ddd0a5cb0044464fc1bfc4cca5b1833bfc7bb022d70b05db8530da4bb3dd3 \
     --hash=sha256:1ff45e26928d3b4eb767a8f14a9a6efbf1cbff7c05d1fb0f95f211a89fd4f5de \
