@@ -1730,7 +1730,7 @@ transformers==4.48.2 \
     # via
     #   lm_eval (pyproject.toml)
     #   peft
-triton==3.2.0 \
+triton==3.4.0 \
     --hash=sha256:30ceed0eff2c4a73b14eb63e052992f44bbdf175f3fad21e1ac8097a772de7ee \
     --hash=sha256:8009a1fb093ee8546495e96731336a33fb8856a38e45bb4ab6affd6dbc3ba220 \
     --hash=sha256:8d9b215efc1c26fa7eefb9a157915c92d52e000d2bf83e5f69704047e63f125c \
