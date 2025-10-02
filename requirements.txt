@@ -863,7 +863,7 @@ numexpr==2.10.1 \
     --hash=sha256:fcbf013bb8494e8ef1d11fa3457827c1571c6a3153982d709e5d17594999d4dd \
     --hash=sha256:fecdf4bf3c1250e56583db0a4a80382a259ba4c2e1efa13e04ed43f0938071f5
     # via lm_eval (pyproject.toml)
-numpy==1.26.4 \
+numpy==2.3.3 \
     --hash=sha256:03a8c78d01d9781b28a6989f6fa1bb2c4f2d51201cf99d3dd875df6fbd96b23b \
     --hash=sha256:08beddf13648eb95f8d867350f6a018a4be2e5ad54c8d8caed89ebca558b2818 \
     --hash=sha256:1af303d6b2210eb850fcf03064d364652b7120803a0b872f5211f5234b399f20 \
