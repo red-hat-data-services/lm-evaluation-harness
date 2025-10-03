@@ -1770,7 +1770,7 @@ urllib3==2.1.0 \
 word2number==1.1 \
     --hash=sha256:70e27a5d387f67b04c71fbb7621c05930b19bfd26efd6851e6e0f9969dcde7d0
     # via lm_eval (pyproject.toml)
-xxhash==3.5.0 \
+xxhash==3.6.0 \
     --hash=sha256:02c2e816896dc6f85922ced60097bcf6f008dedfc5073dcba32f9c8dd786f3c1 \
     --hash=sha256:0691bfcc4f9c656bcb96cc5db94b4d75980b9d5589f2e59de790091028580837 \
     --hash=sha256:07fda5de378626e502b42b311b049848c2ef38784d0d67b6f30bb5008642f8eb \
