@@ -293,7 +293,7 @@ filelock==3.18.0 \
     #   huggingface-hub
     #   torch
     #   transformers
-frozenlist==1.6.0 \
+frozenlist==1.8.0 \
     --hash=sha256:01bcaa305a0fdad12745502bfd16a1c75b14558dabae226852f9159364573117 \
     --hash=sha256:03572933a1969a6d6ab509d509e5af82ef80d4a5d4e1e9f2e1cdd22c77a3f4d2 \
     --hash=sha256:0dbae96c225d584f834b8d3cc688825911960f003a85cb0fd20b6e5512468c42 \
