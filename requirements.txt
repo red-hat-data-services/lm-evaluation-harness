@@ -1633,7 +1633,7 @@ threadpoolctl==3.6.0 \
     --hash=sha256:43a0b8fd5a2928500110039e43a5eed8480b918967083ea48dc3ab9f13c4a7fb \
     --hash=sha256:8ab8b4aa3491d812b623328249fab5302a68d2d71745c8a4c719a2fcaba9f44e
     # via scikit-learn
-tiktoken==0.8.0 \
+tiktoken==0.12.0 \
     --hash=sha256:02be1666096aff7da6cbd7cdaa8e7917bfed3467cd64b38b1f112e96d3b06a24 \
     --hash=sha256:1473cfe584252dc3fa62adceb5b1c763c1874e04511b197da4e6de51d6ce5a02 \
     --hash=sha256:18228d624807d66c87acd8f25fc135665617cab220671eb65b50f5d70fa51f69 \
