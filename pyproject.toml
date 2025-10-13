@@ -21,7 +21,7 @@ dependencies = [
     "evaluate==0.4.3",
     "datasets==3.1.0",
     "jsonlines==4.0.0",
-    "numexpr==2.10.1",
+    "numexpr==2.14.1",
     "peft==0.13.2",
     "pybind11==2.13.6",
     "pytablewriter==1.2.0",
