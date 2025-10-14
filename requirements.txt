@@ -446,7 +446,7 @@ ibm-watsonx-ai==1.1.23 \
     --hash=sha256:71b13e593e02735c332919459f4f930bc3a8de7c4b3efc00d97eafae8cd336f8 \
     --hash=sha256:f97ce8ba88c5e4e220b7a723ea1423a83c56265664b6088c686e8e135b395b18
     # via lm_eval (pyproject.toml)
-idna==3.10 \
+idna==3.11 \
     --hash=sha256:12f65c9b470abda6dc35cf8e63cc574b1c52b11df2c86030af0ac09b01b13ea9 \
     --hash=sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3
     # via
