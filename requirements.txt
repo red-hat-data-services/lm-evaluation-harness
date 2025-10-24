@@ -1150,7 +1150,7 @@ psutil==7.0.0 \
     # via
     #   accelerate
     #   peft
-pyarrow==19.0.1 \
+pyarrow==22.0.0 \
     --hash=sha256:008a4009efdb4ea3d2e18f05cd31f9d43c388aad29c636112c2966605ba33466 \
     --hash=sha256:0148bb4fc158bfbc3d6dfe5001d93ebeed253793fff4435167f6ce1dc4bddeae \
     --hash=sha256:1b93ef2c93e77c442c979b0d596af45e4665d8b96da598db145b0fec014b9136 \
