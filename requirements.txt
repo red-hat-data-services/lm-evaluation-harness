@@ -1276,7 +1276,7 @@ pyyaml==6.0.2 \
     #   huggingface-hub
     #   peft
     #   transformers
-rapidfuzz==3.13.0 \
+rapidfuzz==3.14.3 \
     --hash=sha256:09e908064d3684c541d312bd4c7b05acb99a2c764f6231bd507d4b4b65226c23 \
     --hash=sha256:0da54aa8547b3c2c188db3d1c7eb4d1bb6dd80baa8cdaeaec3d1da3346ec9caa \
     --hash=sha256:0e1d08cb884805a543f2de1f6744069495ef527e279e05370dd7c83416af83f8 \
