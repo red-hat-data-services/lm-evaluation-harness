@@ -1372,7 +1372,7 @@ rapidfuzz==3.13.0 \
     --hash=sha256:fe5790a36d33a5d0a6a1f802aa42ecae282bf29ac6f7506d8e12510847b82a45 \
     --hash=sha256:fedd316c165beed6307bf754dee54d3faca2c47e1f3bcbd67595001dfa11e969
     # via jiwer
-regex==2024.11.6 \
+regex==2025.11.3 \
     --hash=sha256:02a02d2bb04fec86ad61f3ea7f49c015a0681bf76abb9857f945d26159d2968c \
     --hash=sha256:02e28184be537f0e75c1f9b2f8847dc51e08e6e171c6bde130b2687e0c33cf60 \
     --hash=sha256:040df6fe1a5504eb0f04f048e6d09cd7c7110fef851d7c567a6b6e09942feb7d \
