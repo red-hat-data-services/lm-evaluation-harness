@@ -41,6 +41,7 @@ dependencies = [
     "unitxt==1.17.2",
     "jiwer==3.0.5",
     "boto3==1.36.11",
+    "olot==0.1.13",
 ]
 
 [tool.setuptools.packages.find]
