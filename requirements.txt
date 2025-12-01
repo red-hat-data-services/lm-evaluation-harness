@@ -1487,9 +1487,9 @@ requests==2.32.3 \
 rouge-score==0.1.2 \
     --hash=sha256:c7d4da2683e68c9abf0135ef915d63a46643666f848e558a1b9f7ead17ff0f04
     # via lm_eval (pyproject.toml)
-s3transfer==0.11.3 \
-    --hash=sha256:ca855bdeb885174b5ffa95b9913622459d4ad8e331fc98eb01e6d5eb6a30655d \
-    --hash=sha256:edae4977e3a122445660c7c114bba949f9d191bae3b34a096f18a1c8c354527a
+s3transfer==0.16.0 \
+    --hash=sha256:18e25d66fed509e3868dc1572b3f427ff947dd2c56f844a5bf09481ad3f3b2fe \
+    --hash=sha256:8e990f13268025792229cd52fa10cb7163744bf56e719e0b9cb925ab79abf920
     # via boto3
 sacrebleu==2.4.3 \
     --hash=sha256:a976fd6998d8ced267a722120ec7fc47083c8e9745d8808ccee6424464a0aa31 \
