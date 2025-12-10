@@ -29,7 +29,7 @@ dependencies = [
     "pytablewriter==1.2.0",
     "rouge-score==0.1.2",
     "sacrebleu==2.4.3",
-    "scikit-learn==1.5.2",
+    "scikit-learn==1.8.0",
     "sqlitedict==2.1.0",
     "torch==2.6.0",
     "tqdm-multiprocess==0.0.11",
