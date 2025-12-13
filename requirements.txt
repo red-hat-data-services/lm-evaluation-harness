@@ -1751,9 +1751,9 @@ typing-extensions==4.13.2 \
     #   anyio
     #   huggingface-hub
     #   torch
-tzdata==2025.2 \
-    --hash=sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8 \
-    --hash=sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9
+tzdata==2025.3 \
+    --hash=sha256:06a47e5700f3081aab02b2e513160914ff0694bce9947d6b76ebd6bf57cfc5d1 \
+    --hash=sha256:de39c2ca5dc7b0344f2eba86f49d614019d29f060fc4ebc8a417896a620b56a7
     # via pandas
 unitxt==1.15.7 \
     --hash=sha256:17084d4f54a75552d84337289414f40f68da9bb814949c046c0192e7590de8f0 \
