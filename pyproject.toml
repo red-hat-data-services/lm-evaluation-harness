@@ -69,7 +69,7 @@ dev = [
     "pytest-cov==6.0.0",
     "pytest-xdist==3.6.1",
     "pre-commit==4.0.1",
-    "mypy==1.13.0",
+    "mypy==1.19.1",
 ]
 deepsparse = ["deepsparse-nightly[llm]>=1.8.0.20240404"]
 gptq = ["auto-gptq[triton]>=0.6.0"]
