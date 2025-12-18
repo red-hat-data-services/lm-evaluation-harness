@@ -3271,14 +3271,14 @@ crt = ["botocore[crt] (>=1.37.4,<2.0a.0)"]
 
 [[package]]
 name = "sacrebleu"
-version = "2.4.3"
+version = "2.5.1"
 description = "Hassle-free computation of shareable, comparable, and reproducible BLEU, chrF, and TER scores"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "sacrebleu-2.4.3-py3-none-any.whl", hash = "sha256:a976fd6998d8ced267a722120ec7fc47083c8e9745d8808ccee6424464a0aa31"},
-    {file = "sacrebleu-2.4.3.tar.gz", hash = "sha256:e734b1e0baeaea6ade0fefc9d23bac3df50bf15775d8b78edc108db63654192a"},
+    {file = "sacrebleu-2.5.1-py3-none-any.whl", hash = "sha256:7c9f7ee75bec3a5bf19dd87112dfd654952130e403ad30c48298fb7da3212d5d"},
+    {file = "sacrebleu-2.5.1.tar.gz", hash = "sha256:1a088cc1c74ffaff0759c3191a85db09eecfa7a52e09be244e319d8d64e2fb11"},
 ]
 
 [package.dependencies]
@@ -4391,4 +4391,4 @@ testing = ["pytest", "pytest-cov", "pytest-xdist"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.13"
-content-hash = "a8e1df0bcd399b061d28969ddd381697d99af066595638ac848fc4984b22908c"
+content-hash = "17693cbccd280d8886223d5c8cbd7def37564dde6d06d193c1b7ba27014489aa"
