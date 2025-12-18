@@ -1626,14 +1626,14 @@ test = ["Faker (>=1.0.2)", "pytest (>=6.0.1)", "pytest-md-report (>=0.6.2)"]
 
 [[package]]
 name = "more-itertools"
-version = "10.5.0"
+version = "10.8.0"
 description = "More routines for operating on iterables, beyond itertools"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "more-itertools-10.5.0.tar.gz", hash = "sha256:5482bfef7849c25dc3c6dd53a6173ae4795da2a41a80faea6700d9f5846c5da6"},
-    {file = "more_itertools-10.5.0-py3-none-any.whl", hash = "sha256:037b0d3203ce90cca8ab1defbbdac29d5f993fc20131f3664dc8d6acfa872aef"},
+    {file = "more_itertools-10.8.0-py3-none-any.whl", hash = "sha256:52d4362373dcf7c52546bc4af9a86ee7c4579df9a8dc268be0a2f949d376cc9b"},
+    {file = "more_itertools-10.8.0.tar.gz", hash = "sha256:f638ddf8a1a0d134181275fb5d58b086ead7c6a72429ad725c67503f13ba30bd"},
 ]
 
 [[package]]
@@ -4391,4 +4391,4 @@ testing = ["pytest", "pytest-cov", "pytest-xdist"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.13"
-content-hash = "a8e1df0bcd399b061d28969ddd381697d99af066595638ac848fc4984b22908c"
+content-hash = "bc9cf9cac9e6e20be9c63c1dca8db5b7fb3bbd284a7308c669c1b5dfb69f6bba"
