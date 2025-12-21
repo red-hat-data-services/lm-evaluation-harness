@@ -454,9 +454,9 @@ idna==3.10 \
     #   httpx
     #   requests
     #   yarl
-importlib-metadata==8.6.1 \
-    --hash=sha256:02a89390c1e15fdfdc0d7c6b25cb3e62650d0494005c97d6f148bf5b9787525e \
-    --hash=sha256:310b41d755445d74569f993ccfc22838295d9fe005425094fad953d7f15c8580
+importlib-metadata==8.7.1 \
+    --hash=sha256:49fef1ae6440c182052f407c8d34a68f72efc36db9ca90dc0113398f2fdde8bb \
+    --hash=sha256:5a1f80bf1daa489495071efbb095d75a634cf28a8bc299581244063b53176151
     # via ibm-watsonx-ai
 ipadic==1.0.0 \
     --hash=sha256:f5923d31eca6131acaaf18ed28d8998665b1347b640d3a6476f64650e9a71c07
