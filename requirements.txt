@@ -130,9 +130,9 @@ attrs==25.3.0 \
     # via
     #   aiohttp
     #   jsonlines
-boto3==1.36.11 \
-    --hash=sha256:641dd772eac111d9443258f0f5491c57c2af47bddae94a8d32de19edb5bf7b1c \
-    --hash=sha256:b40fbf2c0f22e55b67df95475a68bb72be5169097180a875726b6b884339ac8b
+boto3==1.42.17 \
+    --hash=sha256:8a2e345e96d5ceba755c55539c93f99705f403fbfdeef2e838eabdc56750828b \
+    --hash=sha256:e0ee40f7102712452f6776af891c8f49b5ae9133bdaf22711d6f4a78963c2614
     # via lm_eval (pyproject.toml)
 botocore==1.36.26 \
     --hash=sha256:4a63bcef7ecf6146fd3a61dc4f9b33b7473b49bdaf1770e9aaca6eee0c9eab62 \
