@@ -439,8 +439,8 @@ ibm-cos-sdk-core==2.13.5 \
     # via
     #   ibm-cos-sdk
     #   ibm-cos-sdk-s3transfer
-ibm-cos-sdk-s3transfer==2.13.5 \
-    --hash=sha256:9649b1f2201c6de96ff5a6b5a3686de3a809e6ef3b8b12c7c4f2f7ce72da7749
+ibm-cos-sdk-s3transfer==2.16.0 \
+    --hash=sha256:5cca69c48dcb7a1442b39cadb3a635162fbc2cf002820c8cd6cb170056d27c5c
     # via ibm-cos-sdk
 ibm-watsonx-ai==1.1.23 \
     --hash=sha256:71b13e593e02735c332919459f4f930bc3a8de7c4b3efc00d97eafae8cd336f8 \
