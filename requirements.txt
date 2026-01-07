@@ -1759,9 +1759,9 @@ unitxt==1.15.7 \
     --hash=sha256:17084d4f54a75552d84337289414f40f68da9bb814949c046c0192e7590de8f0 \
     --hash=sha256:66989c826b1365fca99ca196a923e8445cf86044a5adcc43c9ccf6264e0cfada
     # via lm_eval (pyproject.toml)
-urllib3==2.1.0 \
-    --hash=sha256:55901e917a5896a349ff771be919f8bd99aff50b79fe58fec595eb37bbc56bb3 \
-    --hash=sha256:df7aa8afb0148fa78488e7899b2c59b5f4ffcfa82e6c54ccb9dd37c1d7b52d54
+urllib3==2.6.3 \
+    --hash=sha256:1b62b6884944a57dbe321509ab94fd4d3b307075e0c2eae991ac71ee15ad38ed \
+    --hash=sha256:bf272323e553dfb2e87d9bfd225ca7b0f467b919d7bbd355436d3fd37cb0acd4
     # via
     #   botocore
     #   ibm-cos-sdk-core
