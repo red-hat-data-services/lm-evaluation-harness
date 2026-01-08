@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/python-311@sha256:fccda5088dd13d2a3f2659e4c904beb42fc164a0c909e765f01af31c58affae3
+FROM registry.access.redhat.com/ubi9/python-311@sha256:99438cd522c6958f0101ee7a35cb7cfeb048e13a20bbe40dd8807ab555961da7
 
 USER root
 RUN sed -i.bak 's/include-system-site-packages = false/include-system-site-packages = true/' /opt/app-root/pyvenv.cfg
