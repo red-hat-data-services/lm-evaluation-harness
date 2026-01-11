@@ -15,7 +15,7 @@ ARG TARGETARCH
 # Install dependencies
 RUN dnf install -y skopeo && dnf clean all
 RUN if [ "$TARGETARCH" = "s390x" ]; then \
-        dnf install -y gcc-toolset-13 make wget unzip rust cargo gcc-gfortran python3-devel openblas-devel pkgconfig zlib-devel lz4-devel libzstd-devel bzip2-devel brotli-devel binutils && \
+        dnf install -y gcc-toolset-13 make wget unzip rust cargo gcc-gfortran openblas-devel pkgconfig && \
         dnf clean all                                             ; \
     elif [ "$TARGETARCH" = "ppc64le" ]; then                        \
         dnf install -y gcc-toolset-13 make wget unzip rust cargo && \
