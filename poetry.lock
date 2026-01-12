@@ -230,27 +230,23 @@ files = [
 
 [[package]]
 name = "anyio"
-version = "4.9.0"
-description = "High level compatibility layer for multiple asynchronous event loop implementations"
+version = "4.12.1"
+description = "High-level concurrency and networking framework on top of asyncio or Trio"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "extra == \"ibm-watsonx-ai\""
+markers = "python_version >= \"3.11\" and extra == \"ibm-watsonx-ai\""
 files = [
-    {file = "anyio-4.9.0-py3-none-any.whl", hash = "sha256:9f76d541cad6e36af7beb62e978876f3b41e3e04f2c1fbf0884604c0a9c4d93c"},
-    {file = "anyio-4.9.0.tar.gz", hash = "sha256:673c0c244e15788651a4ff38710fea9675823028a6f08a5eda409e0c9840a028"},
+    {file = "anyio-4.12.1-py3-none-any.whl", hash = "sha256:d405828884fc140aa80a3c667b8beed277f1dfedec42ba031bd6ac3db606ab6c"},
+    {file = "anyio-4.12.1.tar.gz", hash = "sha256:41cfcc3a4c85d3f05c932da7c26d0201ac36f72abd4435ba90d0464a3ffed703"},
 ]
 
 [package.dependencies]
-exceptiongroup = {version = ">=1.0.2", markers = "python_version < \"3.11\""}
 idna = ">=2.8"
-sniffio = ">=1.1"
 typing_extensions = {version = ">=4.5", markers = "python_version < \"3.13\""}
 
 [package.extras]
-doc = ["Sphinx (>=8.2,<9.0)", "packaging", "sphinx-autodoc-typehints (>=1.2.0)", "sphinx_rtd_theme"]
-test = ["anyio[trio]", "blockbuster (>=1.5.23)", "coverage[toml] (>=7)", "exceptiongroup (>=1.2.0)", "hypothesis (>=4.0)", "psutil (>=5.9)", "pytest (>=7.0)", "trustme", "truststore (>=0.9.1) ; python_version >= \"3.10\"", "uvloop (>=0.21) ; platform_python_implementation == \"CPython\" and platform_system != \"Windows\" and python_version < \"3.14\""]
-trio = ["trio (>=0.26.1)"]
+trio = ["trio (>=0.31.0) ; python_version < \"3.10\"", "trio (>=0.32.0) ; python_version >= \"3.10\""]
 
 [[package]]
 name = "async-timeout"
@@ -324,6 +320,19 @@ urllib3 = {version = ">=1.25.4,<2.2.0 || >2.2.0,<3", markers = "python_version >
 
 [package.extras]
 crt = ["awscrt (==0.23.8)"]
+
+[[package]]
+name = "cachetools"
+version = "6.2.4"
+description = "Extensible memoizing collections and decorators"
+optional = true
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "python_version >= \"3.11\" and extra == \"ibm-watsonx-ai\""
+files = [
+    {file = "cachetools-6.2.4-py3-none-any.whl", hash = "sha256:69a7a52634fed8b8bf6e24a050fb60bff1c9bd8f6d24572b99c32d4e71e62a51"},
+    {file = "cachetools-6.2.4.tar.gz", hash = "sha256:82c5c05585e70b6ba2d3ae09ea60b79548872185d2f24ae1f2709d37299fd607"},
+]
 
 [[package]]
 name = "certifi"
@@ -787,7 +796,7 @@ description = "Backport of PEP 654 (exception groups)"
 optional = true
 python-versions = ">=3.7"
 groups = ["main"]
-markers = "(extra == \"dev\" or extra == \"testing\" or extra == \"ibm-watsonx-ai\") and python_version == \"3.10\""
+markers = "(extra == \"dev\" or extra == \"testing\") and python_version == \"3.10\""
 files = [
     {file = "exceptiongroup-1.2.2-py3-none-any.whl", hash = "sha256:3111b9d131c238bec2f8f516e123e14ba243563fb135d3fe885990585aa7795b"},
     {file = "exceptiongroup-1.2.2.tar.gz", hash = "sha256:47c2edf7c6738fafb49fd34290706d1a1a2f4d1c6df275526b62cbb4aa5393cc"},
@@ -993,7 +1002,7 @@ description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"ibm-watsonx-ai\""
+markers = "python_version >= \"3.11\" and extra == \"ibm-watsonx-ai\""
 files = [
     {file = "h11-0.16.0-py3-none-any.whl", hash = "sha256:63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86"},
     {file = "h11-0.16.0.tar.gz", hash = "sha256:4e35b956cf45792e4caa5885e69fba00bdbc6ffafbfa020300e549b208ee5ff1"},
@@ -1042,7 +1051,7 @@ description = "A minimal low-level HTTP client."
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"ibm-watsonx-ai\""
+markers = "python_version >= \"3.11\" and extra == \"ibm-watsonx-ai\""
 files = [
     {file = "httpcore-1.0.9-py3-none-any.whl", hash = "sha256:2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55"},
     {file = "httpcore-1.0.9.tar.gz", hash = "sha256:6e34463af53fd2ab5d807f399a9b45ea31c3dfa2276f15a2c3f00afff6e176e8"},
@@ -1065,7 +1074,7 @@ description = "The next generation HTTP client."
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"ibm-watsonx-ai\""
+markers = "python_version >= \"3.11\" and extra == \"ibm-watsonx-ai\""
 files = [
     {file = "httpx-0.28.1-py3-none-any.whl", hash = "sha256:d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad"},
     {file = "httpx-0.28.1.tar.gz", hash = "sha256:75e98c5f16b0f35b567856f597f06ff2270a374470a5c2392242528e3e3e42fc"},
@@ -1122,85 +1131,82 @@ typing = ["types-PyYAML", "types-requests", "types-simplejson", "types-toml", "t
 
 [[package]]
 name = "ibm-cos-sdk"
-version = "2.13.5"
+version = "2.14.3"
 description = "IBM SDK for Python"
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"ibm-watsonx-ai\""
+markers = "python_version >= \"3.11\" and extra == \"ibm-watsonx-ai\""
 files = [
-    {file = "ibm-cos-sdk-2.13.5.tar.gz", hash = "sha256:1aff7f9863ac9072a3db2f0053bec99478b26f3fb5fa797ce96a15bbb13cd40e"},
+    {file = "ibm_cos_sdk-2.14.3.tar.gz", hash = "sha256:643b6f2aa1683adad7f432df23407d11ae5adb9d9ad01214115bee77dc64364a"},
 ]
 
 [package.dependencies]
-ibm-cos-sdk-core = "2.13.5"
-ibm-cos-sdk-s3transfer = "2.13.5"
+ibm-cos-sdk-core = "2.14.3"
+ibm-cos-sdk-s3transfer = "2.14.3"
 jmespath = ">=0.10.0,<=1.0.1"
 
 [[package]]
 name = "ibm-cos-sdk-core"
-version = "2.13.5"
+version = "2.14.3"
 description = "Low-level, data-driven core of IBM SDK for Python"
 optional = true
 python-versions = ">=3.6"
 groups = ["main"]
-markers = "extra == \"ibm-watsonx-ai\""
+markers = "python_version >= \"3.11\" and extra == \"ibm-watsonx-ai\""
 files = [
-    {file = "ibm-cos-sdk-core-2.13.5.tar.gz", hash = "sha256:d3a99d8b06b3f8c00b1a9501f85538d592463e63ddf8cec32672ab5a0b107b83"},
+    {file = "ibm_cos_sdk_core-2.14.3.tar.gz", hash = "sha256:85dee7790c92e8db69bf39dae4c02cac211e3c1d81bb86e64fa2d1e929674623"},
 ]
 
 [package.dependencies]
 jmespath = ">=0.10.0,<=1.0.1"
 python-dateutil = ">=2.9.0,<3.0.0"
-requests = ">=2.32.3,<3.0"
-urllib3 = {version = ">=1.26.18,<2.2", markers = "python_version >= \"3.10\""}
+requests = ">=2.32.4,<3.0.0"
+urllib3 = ">=2.5.0,<3"
 
 [[package]]
 name = "ibm-cos-sdk-s3transfer"
-version = "2.13.5"
+version = "2.14.3"
 description = "IBM S3 Transfer Manager"
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"ibm-watsonx-ai\""
+markers = "python_version >= \"3.11\" and extra == \"ibm-watsonx-ai\""
 files = [
-    {file = "ibm-cos-sdk-s3transfer-2.13.5.tar.gz", hash = "sha256:9649b1f2201c6de96ff5a6b5a3686de3a809e6ef3b8b12c7c4f2f7ce72da7749"},
+    {file = "ibm_cos_sdk_s3transfer-2.14.3.tar.gz", hash = "sha256:2251ebfc4a46144401e431f4a5d9f04c262a0d6f95c88a8e71071da056e55f72"},
 ]
 
 [package.dependencies]
-ibm-cos-sdk-core = "2.13.5"
+ibm-cos-sdk-core = "2.14.3"
 
 [[package]]
 name = "ibm-watsonx-ai"
-version = "1.1.23"
+version = "1.4.11"
 description = "IBM watsonx.ai API Client"
 optional = true
-python-versions = "<3.13,>=3.10"
+python-versions = "<3.14,>=3.11"
 groups = ["main"]
-markers = "extra == \"ibm-watsonx-ai\""
+markers = "python_version >= \"3.11\" and extra == \"ibm-watsonx-ai\""
 files = [
-    {file = "ibm_watsonx_ai-1.1.23-py3-none-any.whl", hash = "sha256:f97ce8ba88c5e4e220b7a723ea1423a83c56265664b6088c686e8e135b395b18"},
-    {file = "ibm_watsonx_ai-1.1.23.tar.gz", hash = "sha256:71b13e593e02735c332919459f4f930bc3a8de7c4b3efc00d97eafae8cd336f8"},
+    {file = "ibm_watsonx_ai-1.4.11-py3-none-any.whl", hash = "sha256:52c108f111deb234c0dde43a474d187d97d9f5710239ad4c979fdd211532a9c8"},
+    {file = "ibm_watsonx_ai-1.4.11.tar.gz", hash = "sha256:a11b96bb3e7730669645b7eaef9ac5852569bca3f19a7cd4b46faa0fce5e8b5b"},
 ]
 
 [package.dependencies]
+cachetools = "*"
 certifi = "*"
-httpx = "*"
-ibm-cos-sdk = ">=2.12.0,<2.14.0"
-importlib-metadata = "*"
+httpx = ">=0.27,<0.29"
+ibm-cos-sdk = ">=2.12.0,<2.15.0"
 lomond = "*"
 packaging = "*"
-pandas = ">=0.24.2,<2.2.0"
+pandas = ">=0.24.2,<2.3.0"
 requests = "*"
 tabulate = "*"
 urllib3 = "*"
 
 [package.extras]
-fl-crypto = ["pyhelayers (==1.5.0.3)"]
-fl-crypto-rt24-1 = ["pyhelayers (==1.5.3.1)"]
-fl-rt23-1-py3-10 = ["GPUtil", "cryptography (==42.0.5)", "ddsketch (==2.0.4)", "diffprivlib (==0.5.1)", "environs (==9.5.0)", "gym", "image (==1.5.33)", "joblib (==1.1.1)", "lz4", "msgpack (==1.0.7)", "msgpack-numpy (==0.4.8)", "numcompress (==0.1.2)", "numpy (==1.23.5)", "pandas (==1.5.3)", "parse (==1.19.0)", "pathlib2 (==2.3.6)", "protobuf (==4.22.1)", "psutil", "pyYAML (==6.0.1)", "pytest (==6.2.5)", "requests (==2.32.3)", "scikit-learn (==1.1.1)", "scipy (==1.10.1)", "setproctitle", "skops (==0.9.0)", "skorch (==0.12.0)", "tabulate (==0.8.9)", "tensorflow (==2.12.0)", "torch (==2.0.1)", "websockets (==10.1)"]
-fl-rt24-1-py3-11 = ["GPUtil", "cryptography (==42.0.5)", "ddsketch (==2.0.4)", "diffprivlib (==0.5.1)", "environs (==9.5.0)", "gym", "image (==1.5.33)", "joblib (==1.3.2)", "lz4", "msgpack (==1.0.7)", "msgpack-numpy (==0.4.8)", "numcompress (==0.1.2)", "numpy (==1.26.4)", "pandas (==2.1.4)", "parse (==1.19.0)", "pathlib2 (==2.3.6)", "protobuf (==4.22.1)", "psutil", "pyYAML (==6.0.1)", "pytest (==6.2.5)", "requests (==2.32.3)", "scikit-learn (==1.3.0)", "scipy (==1.11.4)", "setproctitle", "skops (==0.9.0)", "skorch (==0.12.0)", "tabulate (==0.8.9)", "tensorflow (==2.14.1)", "torch (==2.1.2)", "websockets (==10.1)"]
-rag = ["beautifulsoup4 (==4.12.3)", "grpcio (>=1.54.3)", "langchain (>=0.3,<0.4)", "langchain-chroma (==0.1.4)", "langchain-community (>=0.3,<0.4)", "langchain-core (>=0.3,<0.4)", "langchain-elasticsearch (==0.3.0)", "langchain-ibm (>=0.3,<0.4)", "langchain-milvus (==0.1.6)", "markdown (==3.4.1)", "pypdf (==4.2.0)", "python-docx (==1.1.2)"]
+mcp = ["mcp (>=1.6.0,<2.0)"]
+rag = ["beautifulsoup4 (>=4.12.3,<=4.13.5)", "grpcio (>=1.54.3)", "langchain (>=0.3,<0.4)", "langchain-chroma (>=0.1.4,<=0.2.5)", "langchain-community (>=0.3,<0.4)", "langchain-core (>=0.3.80,<0.4)", "langchain-db2 (>=0.1,<0.2)", "langchain-elasticsearch (>=0.3.0,<=0.3.2)", "langchain-ibm (>=0.3,<0.4)", "langchain-milvus (>=0.1.8,<=0.2.1)", "langgraph (>=0.2.40,<0.7)", "markdown (>=3.4.1,<=3.8.2)", "openpyxl (==3.1.5)", "pyYAML (>=5.1.2)", "pypdf (>=4.2.0)", "python-docx (>=1.1.2,<=1.2.0)", "python-pptx (==1.0.2)", "scikit-learn (>=1.3.0)"]
 
 [[package]]
 name = "identify"
@@ -1245,31 +1251,6 @@ files = [
     {file = "immutabledict-4.2.1-py3-none-any.whl", hash = "sha256:c56a26ced38c236f79e74af3ccce53772827cef5c3bce7cab33ff2060f756373"},
     {file = "immutabledict-4.2.1.tar.gz", hash = "sha256:d91017248981c72eb66c8ff9834e99c2f53562346f23e7f51e7a5ebcf66a3bcc"},
 ]
-
-[[package]]
-name = "importlib-metadata"
-version = "8.7.0"
-description = "Read metadata from Python packages"
-optional = true
-python-versions = ">=3.9"
-groups = ["main"]
-markers = "extra == \"ibm-watsonx-ai\""
-files = [
-    {file = "importlib_metadata-8.7.0-py3-none-any.whl", hash = "sha256:e5dd1551894c77868a30651cef00984d50e1002d06942a7101d34870c5f02afd"},
-    {file = "importlib_metadata-8.7.0.tar.gz", hash = "sha256:d13b81ad223b890aa16c5471f2ac3056cf76c5f10f82d6f9292f0b415f389000"},
-]
-
-[package.dependencies]
-zipp = ">=3.20"
-
-[package.extras]
-check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1) ; sys_platform != \"cygwin\""]
-cover = ["pytest-cov"]
-doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
-enabler = ["pytest-enabler (>=2.2)"]
-perf = ["ipython"]
-test = ["flufl.flake8", "importlib_resources (>=1.3) ; python_version < \"3.9\"", "jaraco.test (>=5.4)", "packaging", "pyfakefs", "pytest (>=6,!=8.1.*)", "pytest-perf (>=0.9.2)"]
-type = ["pytest-mypy"]
 
 [[package]]
 name = "iniconfig"
@@ -1417,7 +1398,7 @@ description = "Websocket Client Library"
 optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "extra == \"ibm-watsonx-ai\""
+markers = "python_version >= \"3.11\" and extra == \"ibm-watsonx-ai\""
 files = [
     {file = "lomond-0.3.3-py2.py3-none-any.whl", hash = "sha256:df1dd4dd7b802a12b71907ab1abb08b8ce9950195311207579379eb3b1553de7"},
     {file = "lomond-0.3.3.tar.gz", hash = "sha256:427936596b144b4ec387ead99aac1560b77c8a78107d3d49415d3abbe79acbd3"},
@@ -3136,19 +3117,19 @@ files = [
 
 [[package]]
 name = "requests"
-version = "2.32.3"
+version = "2.32.5"
 description = "Python HTTP for Humans."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "requests-2.32.3-py3-none-any.whl", hash = "sha256:70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6"},
-    {file = "requests-2.32.3.tar.gz", hash = "sha256:55365417734eb18255590a9ff9eb97e9e1da868d4ccd6402399eaf68af20a760"},
+    {file = "requests-2.32.5-py3-none-any.whl", hash = "sha256:2462f94637a34fd532264295e186976db0f5d453d1cdd31473c85a6a161affb6"},
+    {file = "requests-2.32.5.tar.gz", hash = "sha256:dbba0bac56e100853db0ea71b82b4dfd5fe2bf6d3754a8893c3af500cec7d7cf"},
 ]
 
 [package.dependencies]
 certifi = ">=2017.4.17"
-charset-normalizer = ">=2,<4"
+charset_normalizer = ">=2,<4"
 idna = ">=2.5,<4"
 urllib3 = ">=1.21.1,<3"
 
@@ -3400,19 +3381,6 @@ groups = ["main"]
 files = [
     {file = "six-1.17.0-py2.py3-none-any.whl", hash = "sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274"},
     {file = "six-1.17.0.tar.gz", hash = "sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81"},
-]
-
-[[package]]
-name = "sniffio"
-version = "1.3.1"
-description = "Sniff out which async library your code is running under"
-optional = true
-python-versions = ">=3.7"
-groups = ["main"]
-markers = "extra == \"ibm-watsonx-ai\""
-files = [
-    {file = "sniffio-1.3.1-py3-none-any.whl", hash = "sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2"},
-    {file = "sniffio-1.3.1.tar.gz", hash = "sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc"},
 ]
 
 [[package]]
@@ -3915,20 +3883,21 @@ watsonx = ["ibm-watsonx-ai (==1.1.14)"]
 
 [[package]]
 name = "urllib3"
-version = "2.1.0"
+version = "2.6.3"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "urllib3-2.1.0-py3-none-any.whl", hash = "sha256:55901e917a5896a349ff771be919f8bd99aff50b79fe58fec595eb37bbc56bb3"},
-    {file = "urllib3-2.1.0.tar.gz", hash = "sha256:df7aa8afb0148fa78488e7899b2c59b5f4ffcfa82e6c54ccb9dd37c1d7b52d54"},
+    {file = "urllib3-2.6.3-py3-none-any.whl", hash = "sha256:bf272323e553dfb2e87d9bfd225ca7b0f467b919d7bbd355436d3fd37cb0acd4"},
+    {file = "urllib3-2.6.3.tar.gz", hash = "sha256:1b62b6884944a57dbe321509ab94fd4d3b307075e0c2eae991ac71ee15ad38ed"},
 ]
 
 [package.extras]
-brotli = ["brotli (>=1.0.9) ; platform_python_implementation == \"CPython\"", "brotlicffi (>=0.8.0) ; platform_python_implementation != \"CPython\""]
+brotli = ["brotli (>=1.2.0) ; platform_python_implementation == \"CPython\"", "brotlicffi (>=1.2.0.0) ; platform_python_implementation != \"CPython\""]
+h2 = ["h2 (>=4,<5)"]
 socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
-zstd = ["zstandard (>=0.18.0)"]
+zstd = ["backports-zstd (>=1.0.0) ; python_version < \"3.14\""]
 
 [[package]]
 name = "virtualenv"
@@ -4216,27 +4185,6 @@ multidict = ">=4.0"
 propcache = ">=0.2.1"
 
 [[package]]
-name = "zipp"
-version = "3.21.0"
-description = "Backport of pathlib-compatible object wrapper for zip files"
-optional = true
-python-versions = ">=3.9"
-groups = ["main"]
-markers = "extra == \"ibm-watsonx-ai\""
-files = [
-    {file = "zipp-3.21.0-py3-none-any.whl", hash = "sha256:ac1bbe05fd2991f160ebce24ffbac5f6d11d83dc90891255885223d42b3cd931"},
-    {file = "zipp-3.21.0.tar.gz", hash = "sha256:2c9958f6430a2040341a52eb608ed6dd93ef4392e02ffe219417c1b28b5dd1f4"},
-]
-
-[package.extras]
-check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1) ; sys_platform != \"cygwin\""]
-cover = ["pytest-cov"]
-doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
-enabler = ["pytest-enabler (>=2.2)"]
-test = ["big-O", "importlib-resources ; python_version < \"3.9\"", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more-itertools", "pytest (>=6,!=8.1.*)", "pytest-ignore-flaky"]
-type = ["pytest-mypy"]
-
-[[package]]
 name = "zstandard"
 version = "0.23.0"
 description = "Zstandard bindings for Python"
@@ -4361,4 +4309,4 @@ testing = ["pytest", "pytest-cov", "pytest-xdist"]
 [metadata]
 lock-version = "2.1"
 python-versions = "<3.13,>=3.10"
-content-hash = "68673c3f3d187efea1cafb460bd096563e5d9fa6189be9db04a70c695e0de3a7"
+content-hash = "601cc3b254c31528f161045dd68c480dd795957b144cdc36ffbadd70cb5c8151"
