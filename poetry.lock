@@ -708,6 +708,18 @@ graph = ["objgraph (>=1.7.2)"]
 profile = ["gprof2dot (>=2022.7.29)"]
 
 [[package]]
+name = "diskcache"
+version = "5.6.3"
+description = "Disk Cache -- Disk and file backed persistent cache."
+optional = false
+python-versions = ">=3"
+groups = ["main"]
+files = [
+    {file = "diskcache-5.6.3-py3-none-any.whl", hash = "sha256:5e31b2d5fbad117cc363ebaf6b689474db18a1f6438bc82358b024abd4c2ca19"},
+    {file = "diskcache-5.6.3.tar.gz", hash = "sha256:2c3a3fa2743d8535d832ec61c2054a1641f41775aa7c556758a109941e33e4fc"},
+]
+
+[[package]]
 name = "distlib"
 version = "0.3.9"
 description = "Distribution utilities"
@@ -1214,17 +1226,6 @@ markers = "extra == \"dev\" or extra == \"testing\""
 files = [
     {file = "iniconfig-2.1.0-py3-none-any.whl", hash = "sha256:9deba5723312380e77435581c6bf4935c94cbfab9b1ed33ef8d238ea168eb760"},
     {file = "iniconfig-2.1.0.tar.gz", hash = "sha256:3abbd2e30b36733fee78f9c7f7308f2d0050e88f0087fd25c2645f63c773e1c7"},
-]
-
-[[package]]
-name = "ipadic"
-version = "1.0.0"
-description = "IPAdic packaged for Python"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "ipadic-1.0.0.tar.gz", hash = "sha256:f5923d31eca6131acaaf18ed28d8998665b1347b640d3a6476f64650e9a71c07"},
 ]
 
 [[package]]
@@ -3934,34 +3935,37 @@ files = [
 
 [[package]]
 name = "unitxt"
-version = "1.17.2"
+version = "1.26.9"
 description = "Load any mixture of text to text data in one line of code"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "unitxt-1.17.2-py3-none-any.whl", hash = "sha256:0876ac3bae14daa215f50f4afc4f3dfc3b47e3792b504f0f3d161a1eab608410"},
-    {file = "unitxt-1.17.2.tar.gz", hash = "sha256:6af8abc8c6198d82a49b1628f3ba4fd50029115c031c70f39aca3196df718b7a"},
+    {file = "unitxt-1.26.9-py3-none-any.whl", hash = "sha256:0c95c8ad562243684f2ec1ac088d0df9f6b3fab8c93ca50ab847a7cef88be2b8"},
+    {file = "unitxt-1.26.9.tar.gz", hash = "sha256:7a18e9486da33646489e4b07917b37e05a405dbf731a881b816a7deff5424604"},
 ]
 
 [package.dependencies]
-absl-py = "*"
 datasets = ">=2.16.0"
+diskcache = "*"
 evaluate = "*"
-ipadic = "*"
-scipy = "*"
+scipy = ">=1.10.1"
 
 [package.extras]
-all = ["unitxt[assistant]", "unitxt[base]", "unitxt[dev]", "unitxt[docs]", "unitxt[helm]", "unitxt[service]", "unitxt[tests]", "unitxt[ui]", "unitxt[watsonx]"]
+all = ["unitxt[assistant]", "unitxt[base]", "unitxt[dev]", "unitxt[docs]", "unitxt[helm]", "unitxt[service]", "unitxt[tests]", "unitxt[text2sql]", "unitxt[ui]", "unitxt[watsonx]"]
 assistant = ["litellm", "streamlit", "watchdog"]
-dev = ["codespell", "detect-secrets", "fuzzywuzzy", "httpretty", "pre-commit", "ruff", "tomli"]
-docs = ["absl-py", "datasets", "editdistance", "evaluate", "fuzzywuzzy", "jiwer", "nltk", "piccolo_theme", "rouge_score", "sacrebleu", "scikit-learn", "sphinx_rtd_theme", "sphinxext-opengraph"]
+bluebench = ["bert_score", "conllu", "nltk", "rouge_score", "sacrebleu[ko]", "scikit-learn", "sympy", "unitxt[local-inference]", "unitxt[remote-inference]"]
+dev = ["codespell", "detect-secrets", "fuzzywuzzy", "httpretty", "pre-commit", "psutil", "ruff", "tomli"]
+docs = ["datasets (>=2.16.0,<4.0)", "editdistance", "evaluate", "fuzzywuzzy", "jiwer", "nltk", "piccolo_theme", "pydantic", "rouge_score", "scikit-learn", "sphinx_rtd_theme", "sphinxext-opengraph"]
 helm = ["crfm-helm[unitxt] (>=0.5.3)"]
-inference-tests = ["diskcache", "litellm (==v1.52.9)", "numpy (==1.26.4)", "tenacity"]
+inference-tests = ["diskcache", "litellm (>=1.52.9)", "numpy (==1.26.4)", "ollama", "tenacity"]
+local-inference = ["accelerate", "torch", "transformers"]
+remote-inference = ["diskcache", "litellm (>=1.52.9)", "tenacity"]
 service = ["fastapi (==0.109.0)", "python-jose[cryptography] (==3.3.0)", "torch (==1.12.1)", "transformers", "uvicorn[standard] (==0.27.0.post1)"]
-tests = ["SentencePiece", "Wikipedia-API", "accelerate", "bert_score", "bs4", "conllu", "editdistance", "func_timeout (==4.3.5)", "fuzzywuzzy", "httpretty (>=1.1.4,<1.2.0)", "ibm-cos-sdk", "ibm-generative-ai", "jiwer", "kaggle (==1.6.14)", "llama-index-core", "llama-index-llms-openai", "mecab-python3", "nltk", "openai", "opendatasets", "pytrec-eval", "rouge-score", "sacrebleu[ko]", "scikit-learn (<=1.5.2)", "sentence_transformers", "spacy", "sqlglot", "tenacity (==8.3.0)", "transformers"]
+tests = ["SentencePiece", "Wikipedia-API", "accelerate", "bert_score", "bs4", "conllu", "diskcache", "editdistance", "func_timeout (==4.3.5)", "fuzzywuzzy", "httpretty (>=1.1.4,<1.2.0)", "ibm-cos-sdk", "ibm-generative-ai", "jiwer", "jsonschema_rs", "kaggle (==1.6.14)", "llama-index-core", "llama-index-llms-openai", "nltk", "openai", "opendatasets", "pydantic", "pytrec-eval", "rouge-score", "sacrebleu[ja,ko]", "scikit-learn (<=1.5.2)", "sentence_transformers", "sqlglot", "sqlparse", "tenacity (==8.3.0)", "transformers"]
+text2sql = ["func_timeout (==4.3.5)", "sqlglot", "sqlparse", "tabulate"]
 ui = ["gradio", "transformers"]
-watsonx = ["ibm-watsonx-ai (==1.1.14)"]
+watsonx = ["ibm-watsonx-ai (==1.2.10)"]
 
 [[package]]
 name = "urllib3"
@@ -4391,4 +4395,4 @@ testing = ["pytest", "pytest-cov", "pytest-xdist"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.13"
-content-hash = "a8e1df0bcd399b061d28969ddd381697d99af066595638ac848fc4984b22908c"
+content-hash = "8014b7ff2a1ddecee2adc169fd1a8694b8cca3056ca23c69462c1e57f6ad0483"
