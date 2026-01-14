@@ -1181,15 +1181,15 @@ ibm-cos-sdk-core = "2.14.3"
 
 [[package]]
 name = "ibm-watsonx-ai"
-version = "1.4.11"
+version = "1.5.0"
 description = "IBM watsonx.ai API Client"
 optional = true
 python-versions = "<3.14,>=3.11"
 groups = ["main"]
 markers = "python_version >= \"3.11\" and extra == \"ibm-watsonx-ai\""
 files = [
-    {file = "ibm_watsonx_ai-1.4.11-py3-none-any.whl", hash = "sha256:52c108f111deb234c0dde43a474d187d97d9f5710239ad4c979fdd211532a9c8"},
-    {file = "ibm_watsonx_ai-1.4.11.tar.gz", hash = "sha256:a11b96bb3e7730669645b7eaef9ac5852569bca3f19a7cd4b46faa0fce5e8b5b"},
+    {file = "ibm_watsonx_ai-1.5.0-py3-none-any.whl", hash = "sha256:875d339f8d6889485f4181321e5f93504cf36ecd5c8d9aa726aaa889d78a560b"},
+    {file = "ibm_watsonx_ai-1.5.0.tar.gz", hash = "sha256:a3ee19fa4c60e76889631094ecb586edac338cc4dded4037de190b4dbdc8e689"},
 ]
 
 [package.dependencies]
@@ -4309,4 +4309,4 @@ testing = ["pytest", "pytest-cov", "pytest-xdist"]
 [metadata]
 lock-version = "2.1"
 python-versions = "<3.13,>=3.10"
-content-hash = "601cc3b254c31528f161045dd68c480dd795957b144cdc36ffbadd70cb5c8151"
+content-hash = "6828d22dd51ccbd7071813fbd694690e112e89ce7e1d9daa9fbf22254f0e10fe"
