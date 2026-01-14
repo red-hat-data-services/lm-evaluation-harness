@@ -71,13 +71,13 @@ ifeval = ["langdetect==1.0.9", "immutabledict==4.2.1", "nltk==3.9.1"]
 math = ["sympy>=1.12", "antlr4-python3-runtime==4.11", "math_verify[antlr4_11_0]"]
 dev = [
     "pytest==8.3.3",
-    "pytest-cov==6.0.0",
+    "pytest-cov==6.3.0",
     "pytest-xdist==3.6.1",
     "pre-commit==4.0.1",
     "mypy==1.13.0",
 ]
 hf_transfer = ["hf-transfer==0.1.9"]
-testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
+testing = ["pytest==8.3.3", "pytest-cov==6.3.0", "pytest-xdist==3.6.1"]
 ibm_watsonx_ai = ["ibm-watsonx-ai==1.4.11; python_version >= \"3.11\""]
 
 [tool.ruff.lint]
