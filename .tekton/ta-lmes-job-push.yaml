@@ -12,7 +12,7 @@ metadata:
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: opendatahub-builds
-    appstudio.openshift.io/component: ta-lmes-job
+    appstudio.openshift.io/component: ta-lmes-job-ci
     pipelines.appstudio.openshift.io/type: build
   name: ta-lmes-job-on-push
   namespace: open-data-hub-tenant
