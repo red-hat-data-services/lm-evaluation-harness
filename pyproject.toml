@@ -58,7 +58,7 @@ Homepage = "https://github.com/EleutherAI/lm-evaluation-harness"
 Repository = "https://github.com/EleutherAI/lm-evaluation-harness"
 
 [project.optional-dependencies]
-api = ["requests==2.32.3", "aiohttp==3.10.10", "tenacity==9.0.0", "tqdm==4.66.6", "tiktoken==0.8.0"]
+api = ["requests==2.32.5", "aiohttp==3.10.10", "tenacity==9.0.0", "tqdm==4.66.6", "tiktoken==0.8.0"]
 ibm_watsonx_ai = ["ibm-watsonx-ai==1.1.23" ]
 
 [tool.ruff.lint]
