@@ -421,9 +421,9 @@ httpx==0.28.1 \
     --hash=sha256:75e98c5f16b0f35b567856f597f06ff2270a374470a5c2392242528e3e3e42fc \
     --hash=sha256:d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad
     # via ibm-watsonx-ai
-huggingface-hub==0.30.2 \
-    --hash=sha256:68ff05969927058cfa41df4f2155d4bb48f5f54f719dd0390103eefa9b191e28 \
-    --hash=sha256:9a7897c5b6fd9dad3168a794a8998d6378210f5b9688d0dfc180b1a228dc2466
+huggingface-hub==1.3.4 \
+    --hash=sha256:a0c526e76eb316e96a91e8a1a7a93cf66b0dd210be1a17bd5fc5ae53cba76bfd \
+    --hash=sha256:c20d5484a611b7b7891d272e8fc9f77d5de025b0480bdacfa858efb3780b455f
     # via
     #   accelerate
     #   datasets
