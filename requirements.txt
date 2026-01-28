@@ -4,9 +4,9 @@
 #
 #    pip-compile --extra=api --extra=ibm_watsonx_ai --generate-hashes --output-file=requirements.txt pyproject.toml
 #
-absl-py==2.2.2 \
-    --hash=sha256:bf25b2c2eed013ca456918c453d687eab4e8309fba81ee2f4c1a6aa2494175eb \
-    --hash=sha256:e5797bc6abe45f64fd95dc06394ca3f2bedf3b5d895e9da691c9ee3397d70092
+absl-py==2.4.0 \
+    --hash=sha256:88476fd881ca8aab94ffa78b7b6c632a782ab3ba1cd19c9bd423abc4fb4cd28d \
+    --hash=sha256:8c6af82722b35cf71e0f4d1d47dcaebfff286e27110a99fc359349b247dfb5d4
     # via
     #   rouge-score
     #   unitxt
