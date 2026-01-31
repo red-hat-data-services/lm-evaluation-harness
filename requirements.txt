@@ -1708,9 +1708,9 @@ torch==2.6.0 \
     #   accelerate
     #   lm_eval (pyproject.toml)
     #   peft
-tqdm==4.66.6 \
-    --hash=sha256:223e8b5359c2efc4b30555531f09e9f2f3589bcd7fdd389271191031b49b7a63 \
-    --hash=sha256:4bdd694238bef1485ce839d67967ab50af8f9272aab687c0d7702a01da0be090
+tqdm==4.67.2 \
+    --hash=sha256:649aac53964b2cb8dec76a14b405a4c0d13612cb8933aae547dd144eacc99653 \
+    --hash=sha256:9a12abcbbff58b6036b2167d9d3853042b9d436fe7330f06ae047867f2f8e0a7
     # via
     #   datasets
     #   evaluate
