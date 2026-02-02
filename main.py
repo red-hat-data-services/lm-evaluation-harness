@@ -33,8 +33,10 @@ from evalhub.adapter import (
     JobStatusUpdate,
     OCIArtifactSpec,
 )
+
 from lm_eval import simple_evaluate
 from lm_eval.tasks import TaskManager
+
 
 # Configure logging
 logging.basicConfig(
@@ -80,7 +82,9 @@ def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
     # Build completions URL from model.url
     base = str(model_spec.url or "").rstrip("/")
     if not base:
-        raise ValueError("Job spec.model.url is required for OpenAI-compatible endpoints")
+        raise ValueError(
+            "Job spec.model.url is required for OpenAI-compatible endpoints"
+        )
 
     if base.endswith("/completions"):
         completions_url = base
@@ -245,7 +249,9 @@ class LMEvalAdapter(FrameworkAdapter):
 
             # Get number of examples evaluated
             samples = results.get("samples", {}).get(benchmark_id, [])
-            num_examples_evaluated = len(samples) if isinstance(samples, list) else num_examples
+            num_examples_evaluated = (
+                len(samples) if isinstance(samples, list) else num_examples
+            )
 
             duration = time.time() - start_time
 
@@ -378,7 +384,9 @@ def main() -> int:
         # Initialize callbacks using adapter settings
         callbacks = DefaultCallbacks(
             job_id=adapter.job_spec.job_id,
-            sidecar_url=str(adapter.settings.service_url) if adapter.settings.service_url else None,
+            sidecar_url=str(adapter.settings.service_url)
+            if adapter.settings.service_url
+            else None,
             registry_url=adapter.settings.registry_url,
             registry_username=adapter.settings.registry_username,
             registry_password=adapter.settings.registry_password,
