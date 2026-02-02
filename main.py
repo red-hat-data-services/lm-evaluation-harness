@@ -2,9 +2,9 @@
 """LMEval adapter main entry point for evalhub.
 
 Configuration is provided via a job spec JSON file (see `meta/job.json` for an example).
+The callback_url in the job spec defines where status updates and results are sent.
 
 Required environment variables:
-- SERVICE_URL: URL of evalhub service for status updates (e.g., http://localhost:8080)
 - REGISTRY_URL: OCI registry URL
 
 Optional environment variables:
@@ -377,16 +377,14 @@ def main() -> int:
         few_shot = adapter.job_spec.benchmark_config.get("num_few_shot")
         logger.info(f"  Few-shot: {few_shot}")
         logger.info("=" * 80)
-        logger.info(f"Using evalhub service at {adapter.settings.service_url}")
+        logger.info(f"Callback URL: {adapter.job_spec.callback_url}")
         logger.info(f"OCI registry configured: {adapter.settings.registry_url}")
         logger.info("=" * 80)
 
-        # Initialize callbacks using adapter settings
+        # Initialize callbacks using job spec callback_url and adapter settings
         callbacks = DefaultCallbacks(
             job_id=adapter.job_spec.job_id,
-            sidecar_url=str(adapter.settings.service_url)
-            if adapter.settings.service_url
-            else None,
+            sidecar_url=adapter.job_spec.callback_url,
             registry_url=adapter.settings.registry_url,
             registry_username=adapter.settings.registry_username,
             registry_password=adapter.settings.registry_password,
