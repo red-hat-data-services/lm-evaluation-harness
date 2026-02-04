@@ -14,7 +14,7 @@ ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
 ARG TARGETARCH
 # Install dependencies
 RUN if [ "$TARGETARCH" = "s390x" ]; then \
-        dnf --disableplugin=subscription-manager install -y gcc-toolset-13 make wget unzip rust cargo gcc-gfortran python3-devel openblas-devel pkgconfig  && \
+        dnf install -y gcc-toolset-13 make wget unzip rust cargo gcc-gfortran openblas-devel pkgconfig && \
         dnf --disableplugin=subscription-manager clean all        ; \
     elif [ "$TARGETARCH" = "ppc64le" ]; then                        \
         dnf install -y gcc-toolset-13 make wget unzip rust cargo && \
