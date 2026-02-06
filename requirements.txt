@@ -401,9 +401,9 @@ frozenlist==1.6.0 \
     # via
     #   aiohttp
     #   aiosignal
-fsspec[http]==2024.9.0 \
-    --hash=sha256:4b0afb90c2f21832df142f292649035d80b421f60a9e1c027802e5a0da2b04e8 \
-    --hash=sha256:a0947d552d8a6efa72cc2c730b12c41d043509156966cca4fb157b0f2a0c574b
+fsspec[http]==2026.2.0 \
+    --hash=sha256:6544e34b16869f5aacd5b90bdf1a71acb37792ea3ddf6125ee69a22a53fb8bff \
+    --hash=sha256:98de475b5cb3bd66bedd5c4679e87b4fdfe1a3bf4d707b151b3c07e58c9a2437
     # via
     #   datasets
     #   evaluate
