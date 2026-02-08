@@ -24,6 +24,7 @@ from typing import Any
 from evalhub.adapter import (
     DefaultCallbacks,
     EvaluationResult,
+    ErrorInfo,
     FrameworkAdapter,
     JobCallbacks,
     JobPhase,
@@ -31,6 +32,7 @@ from evalhub.adapter import (
     JobSpec,
     JobStatus,
     JobStatusUpdate,
+    MessageInfo,
     OCIArtifactSpec,
 )
 
@@ -56,6 +58,10 @@ def _jsonable(value: Any) -> Any:
     if isinstance(value, (list, tuple)):
         return [_jsonable(v) for v in value]
     return str(value)
+
+
+def _status_message(text: str, code: str = "status_update") -> MessageInfo:
+    return MessageInfo(message=text, message_code=code)
 
 
 def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
@@ -130,6 +136,16 @@ class LMEvalAdapter(FrameworkAdapter):
     allowing benchmarks to be executed as EvalHub jobs.
     """
 
+    def __init__(self, job_spec_path: str | None = None):
+        """Initialize the LMEval adapter.
+
+        Args:
+            job_spec_path: Optional path to job specification file.
+                          If not provided, uses EVALHUB_JOB_SPEC_PATH env var or default.
+        """
+        super().__init__(job_spec_path=job_spec_path)
+        logger.info("LMEval adapter initialized")
+
     def run_benchmark_job(self, config: JobSpec, callbacks: JobCallbacks) -> JobResults:
         """Run LMEval benchmark with evalhub callbacks.
 
@@ -146,13 +162,13 @@ class LMEvalAdapter(FrameworkAdapter):
         start_time = time.time()
 
         try:
-            job_id = config.job_id
+            job_id = config.id
             benchmark_id = config.benchmark_id
             model_name = config.model.name
-            num_examples = config.num_examples
 
             # Adapter-specific params from benchmark_config
             benchmark_cfg = config.benchmark_config
+            num_examples = benchmark_cfg.get("limit")
             num_fewshot = int(benchmark_cfg.get("num_few_shot", 0))
             random_seed = int(benchmark_cfg.get("random_seed", 42))
 
@@ -164,7 +180,9 @@ class LMEvalAdapter(FrameworkAdapter):
                     status=JobStatus.RUNNING,
                     phase=JobPhase.INITIALIZING,
                     progress=0.0,
-                    message=f"Initializing evaluation for {benchmark_id}",
+                    message=_status_message(
+                        f"Initializing evaluation for {benchmark_id}"
+                    ),
                 )
             )
 
@@ -182,7 +200,9 @@ class LMEvalAdapter(FrameworkAdapter):
                     status=JobStatus.RUNNING,
                     phase=JobPhase.LOADING_DATA,
                     progress=0.1,
-                    message=f"Loading benchmark data for {benchmark_id}",
+                    message=_status_message(
+                        f"Loading benchmark data for {benchmark_id}"
+                    ),
                 )
             )
 
@@ -195,7 +215,7 @@ class LMEvalAdapter(FrameworkAdapter):
                     status=JobStatus.RUNNING,
                     phase=JobPhase.RUNNING_EVALUATION,
                     progress=0.2,
-                    message=f"Running evaluation on {model_name}",
+                    message=_status_message(f"Running evaluation on {model_name}"),
                 )
             )
 
@@ -222,7 +242,7 @@ class LMEvalAdapter(FrameworkAdapter):
                     status=JobStatus.RUNNING,
                     phase=JobPhase.POST_PROCESSING,
                     progress=0.8,
-                    message="Processing evaluation results",
+                    message=_status_message("Processing evaluation results"),
                 )
             )
 
@@ -261,7 +281,7 @@ class LMEvalAdapter(FrameworkAdapter):
 
             # Create job results
             job_results = JobResults(
-                job_id=job_id,
+                id=job_id,
                 benchmark_id=benchmark_id,
                 model_name=model_name,
                 results=evaluation_results,
@@ -285,7 +305,7 @@ class LMEvalAdapter(FrameworkAdapter):
                     status=JobStatus.RUNNING,
                     phase=JobPhase.PERSISTING_ARTIFACTS,
                     progress=0.9,
-                    message="Persisting evaluation artifacts",
+                    message=_status_message("Persisting evaluation artifacts"),
                 )
             )
 
@@ -314,7 +334,7 @@ class LMEvalAdapter(FrameworkAdapter):
                     "org.evalhub.model": model_name,
                     "org.evalhub.job_id": job_id,
                 },
-                job_id=job_id,
+                id=job_id,
                 benchmark_id=benchmark_id,
                 model_name=model_name,
             )
@@ -323,19 +343,7 @@ class LMEvalAdapter(FrameworkAdapter):
             job_results.oci_artifact = oci_result
             logger.info(f"OCI artifact created: {oci_result.reference}")
 
-            # Phase 6: Completed
-            callbacks.report_status(
-                JobStatusUpdate(
-                    status=JobStatus.COMPLETED,
-                    phase=JobPhase.COMPLETED,
-                    progress=1.0,
-                    message="Evaluation completed successfully",
-                )
-            )
-
-            # Report final results
-            callbacks.report_results(job_results)
-
+            # Return results (will be reported by entrypoint)
             return job_results
 
         except Exception as e:
@@ -347,8 +355,13 @@ class LMEvalAdapter(FrameworkAdapter):
                     status=JobStatus.FAILED,
                     phase=JobPhase.COMPLETED,
                     progress=0.0,
-                    message="Evaluation failed",
-                    error_message=str(e),
+                    message=_status_message(
+                        "Evaluation failed", code="evaluation_failed"
+                    ),
+                    error=ErrorInfo(
+                        message=str(e),
+                        message_code="evaluation_failed",
+                    ),
                     error_details={"exception_type": type(e).__name__},
                 )
             )
@@ -359,18 +372,26 @@ class LMEvalAdapter(FrameworkAdapter):
 def main() -> int:
     """Main entry point.
 
+    The adapter automatically loads:
+    - Settings from environment variables (REGISTRY_URL, etc.)
+    - JobSpec from /meta/job.json (mounted via ConfigMap in Kubernetes)
+
     Returns:
         int: Exit code (0 for success, 1 for failure)
     """
+    import os
+
     try:
-        # Create adapter (automatically loads settings and JobSpec)
-        adapter = LMEvalAdapter()
+        # Create adapter with job spec path from environment or default
+        job_spec_path = os.getenv("EVALHUB_JOB_SPEC_PATH", "/meta/job.json")
+        adapter = LMEvalAdapter(job_spec_path=job_spec_path)
 
         logger.info("=" * 80)
         logger.info("LMEval EvalHub Adapter")
         logger.info("=" * 80)
+        logger.info(f"Loaded job spec from: {job_spec_path}")
         logger.info("Job spec configuration:")
-        logger.info(f"  Job ID: {adapter.job_spec.job_id}")
+        logger.info(f"  Job ID: {adapter.job_spec.id}")
         logger.info(f"  Benchmark: {adapter.job_spec.benchmark_id}")
         logger.info(f"  Model: {adapter.job_spec.model.name}")
         logger.info(f"  Examples: {adapter.job_spec.num_examples}")
@@ -378,12 +399,14 @@ def main() -> int:
         logger.info(f"  Few-shot: {few_shot}")
         logger.info("=" * 80)
         logger.info(f"Callback URL: {adapter.job_spec.callback_url}")
+        logger.info(f"Provider ID: lm_evaluation_harness")
         logger.info(f"OCI registry configured: {adapter.settings.registry_url}")
         logger.info("=" * 80)
 
         # Initialize callbacks using job spec callback_url and adapter settings
         callbacks = DefaultCallbacks(
-            job_id=adapter.job_spec.job_id,
+            job_id=adapter.job_spec.id,
+            benchmark_id=adapter.job_spec.benchmark_id,
             sidecar_url=adapter.job_spec.callback_url,
             registry_url=adapter.settings.registry_url,
             registry_username=adapter.settings.registry_username,
