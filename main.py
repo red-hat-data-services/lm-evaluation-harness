@@ -166,9 +166,12 @@ class LMEvalAdapter(FrameworkAdapter):
             benchmark_id = config.benchmark_id
             model_name = config.model.name
 
+            # Number of examples from top-level JobSpec field
+            # (extracted from benchmark_config by the service)
+            num_examples = config.num_examples
+
             # Adapter-specific params from benchmark_config
             benchmark_cfg = config.benchmark_config
-            num_examples = benchmark_cfg.get("limit")
             num_fewshot = int(benchmark_cfg.get("num_few_shot", 0))
             random_seed = int(benchmark_cfg.get("random_seed", 42))
 
