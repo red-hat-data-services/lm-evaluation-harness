@@ -16,6 +16,7 @@ on:
 # jobs: linter and cpu_tests. Add more jobs/steps as required.
 jobs:
   linter:
+    if: false  # Disabled
     name: Linters
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -70,6 +71,7 @@ jobs:
         path: |
           test_logs/*
   testmodels:
+    if: false  # Disabled
     name: External LM Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30

@@ -1,0 +1,7 @@
+__pycache__
+caching
+*.egg-info
+.git
+.idea
+.tekton
+.venv
