@@ -11,6 +11,7 @@ on:
 # comment/edit out the above to stop/change the triggers
 jobs:
   changed_files:
+    if: false  # Disabled
     runs-on: ubuntu-latest  # windows-latest || macos-latest
     timeout-minutes: 120
     name: Scan for changed tasks
