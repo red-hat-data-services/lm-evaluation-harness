@@ -6,7 +6,7 @@ FROM registry.access.redhat.com/ubi9/python-311:latest AS builder
 USER root
 
 ENV TORCH_VERSION=2.6.0
-ENV PYARROW_VERSION=20.0.0
+ENV PYARROW_VERSION=23.0.0
 ENV PATH="$HOME/.cargo/bin:$PATH"
 ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib64:/usr/lib
 ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
