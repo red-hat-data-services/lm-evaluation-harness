@@ -402,7 +402,7 @@ def main() -> int:
         logger.info(f"  Few-shot: {few_shot}")
         logger.info("=" * 80)
         logger.info(f"Callback URL: {adapter.job_spec.callback_url}")
-        logger.info(f"Provider ID: lm_evaluation_harness")
+        logger.info(f"Provider ID: {adapter.job_spec.provider_id}")
         logger.info(f"OCI registry configured: {adapter.settings.registry_url}")
         logger.info("=" * 80)
 
@@ -410,6 +410,7 @@ def main() -> int:
         callbacks = DefaultCallbacks(
             job_id=adapter.job_spec.id,
             benchmark_id=adapter.job_spec.benchmark_id,
+            provider_id=adapter.job_spec.provider_id,
             sidecar_url=adapter.job_spec.callback_url,
             registry_url=adapter.settings.registry_url,
             registry_username=adapter.settings.registry_username,

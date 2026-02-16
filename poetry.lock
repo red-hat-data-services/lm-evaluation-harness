@@ -808,14 +808,14 @@ files = [
 
 [[package]]
 name = "eval-hub-sdk"
-version = "0.1.0a6"
+version = "0.1.0a7"
 description = "Python SDK for EvalHub: common models, REST API client, and framework adapter SDK"
 optional = false
 python-versions = ">=3.11"
 groups = ["main"]
 files = [
-    {file = "eval_hub_sdk-0.1.0a6-py3-none-any.whl", hash = "sha256:d1313230f918791fea447b4f7d72c003e6c567e69438bc6a99c16665f36de5f4"},
-    {file = "eval_hub_sdk-0.1.0a6.tar.gz", hash = "sha256:942187d242f43ef3e86292b2e59aeac753415c54ecec02db85bf393f1051b9c1"},
+    {file = "eval_hub_sdk-0.1.0a7-py3-none-any.whl", hash = "sha256:d9b06d15737f13af9faa96a6d940ae7bbca289af0b09efb9e129eac09e07e36f"},
+    {file = "eval_hub_sdk-0.1.0a7.tar.gz", hash = "sha256:6a0c4a403e4a534272c0b0ef470a7dd8e247dfc89b737d4d9839f10605f394fe"},
 ]
 
 [package.dependencies]
@@ -4930,4 +4930,4 @@ testing = ["pytest", "pytest-cov", "pytest-xdist"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.13"
-content-hash = "b29dcde95a01a4eea5dbfda42c0f20b219aadeffae0c4de5a5b6154e07b59424"
+content-hash = "2759de6f3ccd3daa224367971367708d0782eff7e070470612560bb8510e7e2e"
