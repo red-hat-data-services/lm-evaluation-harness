@@ -79,7 +79,7 @@ def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
 
     # Adapter-specific settings from benchmark_config
     batch_size = int(benchmark_config.get("batch_size", 1))
-    timeout_seconds = int(job_spec.timeout_seconds or 300)
+    timeout_seconds = int(benchmark_config.get("timeout_seconds", 300))
 
     # Optional generation parameters for generate_until tasks.
     parameters = benchmark_config.get("parameters", {})
