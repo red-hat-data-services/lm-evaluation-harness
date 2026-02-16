@@ -5,8 +5,6 @@
 FROM registry.access.redhat.com/ubi9/python-311:latest AS builder
 USER root
 
-ENV TORCH_VERSION=2.6.0
-ENV PYARROW_VERSION=20.0.0
 ENV PATH="$HOME/.cargo/bin:$PATH"
 ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib64:/usr/lib
 ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
@@ -23,6 +21,8 @@ RUN if [ "$TARGETARCH" = "s390x" ]; then \
     fi                                                           && \
     pip install --upgrade pip 'cmake<4' setuptools wheel
 
+COPY requirements.txt .
+
 # Create a dummy file to trigger build dependency
 RUN touch /tmp/control
 
@@ -37,6 +37,12 @@ ARG TARGETARCH
 RUN mkdir -p /arrowwheels
 
 RUN if [ "$TARGETARCH" = "ppc64le" ] ; then \
+    PYARROW_VERSION=$(sed -n 's/^pyarrow==\([^ ;]*\).*/\1/p' requirements.txt) ; \
+    if [ -z "$PYARROW_VERSION" ]; then \
+        echo "ERROR: pyarrow version not found in requirements.txt" >&2 ; \
+        exit 1 ; \
+    fi ; \
+    export PYARROW_VERSION ; \
     git clone -b apache-arrow-${PYARROW_VERSION} https://github.com/apache/arrow.git --recursive && \
     cd arrow && rm -rf .git && mkdir dist                                  && \
     pip3 install -r python/requirements-build.txt                          && \
@@ -137,6 +143,12 @@ RUN mkdir -p /torchwheels
 
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "s390x" ] || [ "$TARGETARCH" = "ppc64le" ]; then \
+    TORCH_VERSION=$(sed -n 's/^torch==\([^ ;]*\).*/\1/p' requirements.txt) ; \
+    if [ -z "$TORCH_VERSION" ]; then \
+        echo "ERROR: torch version not found in requirements.txt" >&2 ; \
+        exit 1 ; \
+    fi ; \
+    export TORCH_VERSION ; \
     source /opt/rh/gcc-toolset-13/enable &&  \
     git clone --recursive https://github.com/pytorch/pytorch.git -b v${TORCH_VERSION} && \
     cd pytorch && pip install -r requirements.txt && \
