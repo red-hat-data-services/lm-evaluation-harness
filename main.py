@@ -431,6 +431,9 @@ def main() -> int:
         # Report final results
         callbacks.report_results(results)
 
+        # Log metrics to MLflow if experiment is configured
+        callbacks.report_metrics_to_mlflow(results, adapter.job_spec)
+
         return 0
 
     except Exception as e:
