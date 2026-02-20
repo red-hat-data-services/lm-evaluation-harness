@@ -23,7 +23,7 @@ dependencies = [
     "accelerate==1.0.1",
     "evaluate==0.4.3",
     "eval-hub-sdk[adapter]==0.1.0a4",
-    "datasets==3.1.0",
+    "datasets==3.6.0",
     "jsonlines==4.0.0",
     "numexpr==2.10.1",
     "peft==0.13.2",
