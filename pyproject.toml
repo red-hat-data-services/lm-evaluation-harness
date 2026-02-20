@@ -22,7 +22,7 @@ dependencies = [
     "urllib3==2.6.3",
     "accelerate==1.0.1",
     "evaluate==0.4.3",
-    "eval-hub-sdk[adapter]==0.1.0a4",
+    "eval-hub-sdk[adapter]==0.1.0a8",
     "datasets==3.1.0",
     "jsonlines==4.0.0",
     "numexpr==2.10.1",
