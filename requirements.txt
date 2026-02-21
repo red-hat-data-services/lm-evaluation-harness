@@ -29,7 +29,7 @@ hf-xet==1.2.0 ; python_version >= "3.11" and python_version < "3.13" and (platfo
 httpcore==1.0.9 ; python_version >= "3.11" and python_version < "3.13"
 httpx==0.28.1 ; python_version >= "3.11" and python_version < "3.13"
 huggingface-hub==0.36.1 ; python_version >= "3.11" and python_version < "3.13"
-ibm-cos-sdk-core==2.14.3 ; python_version >= "3.11" and python_version < "3.13"
+ibm-cos-sdk-core==2.16.0 ; python_version >= "3.11" and python_version < "3.13"
 ibm-cos-sdk-s3transfer==2.14.3 ; python_version >= "3.11" and python_version < "3.13"
 ibm-cos-sdk==2.14.3 ; python_version >= "3.11" and python_version < "3.13"
 ibm-watsonx-ai==1.4.11 ; python_version >= "3.11" and python_version < "3.13"
