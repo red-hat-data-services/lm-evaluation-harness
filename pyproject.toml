@@ -80,7 +80,7 @@ dev = [
 ]
 hf_transfer = ["hf-transfer==0.1.9"]
 testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
-ibm_watsonx_ai = ["ibm-watsonx-ai==1.4.11"]
+ibm_watsonx_ai = ["ibm-watsonx-ai==1.5.3"]
 
 [tool.ruff.lint]
 extend-select = ["I"]
