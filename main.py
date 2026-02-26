@@ -15,6 +15,7 @@ Optional environment variables:
 
 import json
 import logging
+import os
 import sys
 import time
 from datetime import UTC, datetime
@@ -35,6 +36,7 @@ from evalhub.adapter import (
     MessageInfo,
     OCIArtifactSpec,
 )
+from evalhub.adapter.auth import resolve_model_credentials
 
 from lm_eval import simple_evaluate
 from lm_eval.tasks import TaskManager
@@ -162,6 +164,17 @@ class LMEvalAdapter(FrameworkAdapter):
         start_time = time.time()
 
         try:
+            creds = resolve_model_credentials()
+            if creds.api_key:
+                os.environ["OPENAI_API_KEY"] = creds.api_key
+            else:
+                auth_value = creds.auth_headers.get("Authorization", "")
+                if auth_value:
+                    os.environ["MODEL_AUTH_HEADER"] = auth_value
+            if creds.ca_cert_path:
+                # Note: this sets a global CA bundle for requests.
+                os.environ["REQUESTS_CA_BUNDLE"] = creds.ca_cert_path
+                os.environ["SSL_CERT_FILE"] = creds.ca_cert_path
             job_id = config.id
             benchmark_id = config.benchmark_id
             model_name = config.model.name
