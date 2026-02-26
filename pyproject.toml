@@ -81,7 +81,7 @@ optimum = ["optimum[openvino]"]
 sentencepiece = ["sentencepiece==0.2.0"]
 testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
 vllm = ["vllm>=0.4.2"]
-ibm_watsonx_ai = ["ibm-watsonx-ai==1.1.23"]
+ibm_watsonx_ai = ["ibm-watsonx-ai==1.5.3"]
 
 [tool.ruff.lint]
 extend-select = ["I"]
