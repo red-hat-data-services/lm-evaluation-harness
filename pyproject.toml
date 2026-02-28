@@ -22,7 +22,7 @@ dependencies = [
     "urllib3==2.6.2",
     "accelerate==1.0.1",
     "evaluate==0.4.3",
-    "datasets==3.1.0",
+    "datasets==4.6.1",
     "jsonlines==4.0.0",
     "numexpr==2.10.1",
     "peft==0.13.2",
