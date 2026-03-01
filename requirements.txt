@@ -72,7 +72,7 @@ nvidia-nvjitlink-cu12==12.4.127 ; python_version >= "3.11" and python_version < 
 nvidia-nvtx-cu12==12.4.127 ; python_version >= "3.11" and python_version < "3.13" and platform_system == "Linux" and platform_machine == "x86_64"
 olot==0.1.13 ; python_version >= "3.11" and python_version < "3.13"
 packaging==26.0 ; python_version >= "3.11" and python_version < "3.13"
-pandas==2.2.3 ; python_version >= "3.11" and python_version < "3.13"
+pandas==2.3.3 ; python_version >= "3.11" and python_version < "3.13"
 pathvalidate==3.3.1 ; python_version >= "3.11" and python_version < "3.13"
 peft==0.13.2 ; python_version >= "3.11" and python_version < "3.13"
 portalocker==3.2.0 ; python_version >= "3.11" and python_version < "3.13"
