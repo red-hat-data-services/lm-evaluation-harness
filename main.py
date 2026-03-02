@@ -169,8 +169,9 @@ class LMEvalAdapter(FrameworkAdapter):
                 os.environ["OPENAI_API_KEY"] = creds.api_key
             else:
                 auth_value = creds.auth_headers.get("Authorization", "")
-                if auth_value:
-                    os.environ["MODEL_AUTH_HEADER"] = auth_value
+                if auth_value.startswith("Bearer "):
+                    token = auth_value.replace("Bearer ", "").strip()
+                    os.environ["OPENAI_API_KEY"] = token
             if creds.ca_cert_path:
                 # Note: this sets a global CA bundle for requests.
                 os.environ["REQUESTS_CA_BUNDLE"] = creds.ca_cert_path

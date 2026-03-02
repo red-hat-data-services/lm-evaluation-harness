@@ -4,7 +4,6 @@ import copy
 import itertools
 import json
 import logging
-import os
 from functools import cached_property
 from typing import (
     Any,
@@ -243,9 +242,6 @@ class TemplateAPI(TemplateLM):
     @cached_property
     def header(self) -> dict:
         """Override this property to return the headers for the API request."""
-        auth_value = os.environ.get("MODEL_AUTH_HEADER", "").strip()
-        if auth_value:
-            return {"Authorization": auth_value}
         return {"Authorization": f"Bearer {self.api_key}"}
 
     @property
