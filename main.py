@@ -417,7 +417,12 @@ def main() -> int:
         logger.info("=" * 80)
         logger.info(f"Callback URL: {adapter.job_spec.callback_url}")
         logger.info(f"Provider ID: {adapter.job_spec.provider_id}")
-        logger.info(f"OCI registry configured: {adapter.settings.registry_url}")
+        logger.info(
+            "OCI registry auth config present: %s",
+            bool(adapter.settings.oci_auth_config_path),
+        )
+        logger.info("OCI insecure: %s", adapter.settings.oci_insecure)
+        logger.info("EvalHub insecure: %s", adapter.settings.evalhub_insecure)
         logger.info("=" * 80)
 
         # Initialize callbacks using job spec callback_url and adapter settings
@@ -426,10 +431,11 @@ def main() -> int:
             benchmark_id=adapter.job_spec.benchmark_id,
             provider_id=adapter.job_spec.provider_id,
             sidecar_url=adapter.job_spec.callback_url,
-            registry_url=adapter.settings.registry_url,
-            registry_username=adapter.settings.registry_username,
-            registry_password=adapter.settings.registry_password,
-            insecure=bool(adapter.settings.registry_insecure),
+            insecure=bool(adapter.settings.evalhub_insecure),
+            auth_token_path=adapter.settings.resolved_auth_token_path,
+            ca_bundle_path=adapter.settings.resolved_ca_bundle_path,
+            oci_auth_config_path=adapter.settings.oci_auth_config_path,
+            oci_insecure=bool(adapter.settings.oci_insecure),
         )
 
         # Run evaluation
