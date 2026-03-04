@@ -300,6 +300,7 @@ class LMEvalAdapter(FrameworkAdapter):
             job_results = JobResults(
                 id=job_id,
                 benchmark_id=benchmark_id,
+                benchmark_index=config.benchmark_index,
                 model_name=model_name,
                 results=evaluation_results,
                 overall_score=overall_score,
@@ -339,26 +340,27 @@ class LMEvalAdapter(FrameworkAdapter):
                     default=str,
                 )
 
-            # Create OCI artifact
-            oci_spec = OCIArtifactSpec(
-                files=[results_file],
-                base_path=output_dir,
-                title=f"LMEval Results - {benchmark_id}",
-                description=f"Evaluation results for {model_name} on {benchmark_id}",
-                annotations={
-                    "org.opencontainers.image.created": datetime.now(UTC).isoformat(),
-                    "org.evalhub.benchmark": benchmark_id,
-                    "org.evalhub.model": model_name,
-                    "org.evalhub.job_id": job_id,
-                },
-                id=job_id,
-                benchmark_id=benchmark_id,
-                model_name=model_name,
-            )
-
-            oci_result = callbacks.create_oci_artifact(oci_spec)
-            job_results.oci_artifact = oci_result
-            logger.info(f"OCI artifact created: {oci_result.reference}")
+            # Create OCI artifact (only when exports are configured)
+            oci_exports = config.exports.oci if config.exports else None
+            if oci_exports is not None:
+                coords = oci_exports.coordinates.model_copy(deep=True)
+                coords.annotations.update(
+                    {
+                        "org.opencontainers.image.created": datetime.now(UTC).isoformat(),
+                        "org.evalhub.benchmark": benchmark_id,
+                        "org.evalhub.model": model_name,
+                        "org.evalhub.job_id": job_id,
+                    }
+                )
+                oci_spec = OCIArtifactSpec(
+                    files_path=output_dir,
+                    coordinates=coords,
+                )
+                oci_result = callbacks.create_oci_artifact(oci_spec)
+                job_results.oci_artifact = oci_result
+                logger.info(f"OCI artifact created: {oci_result.reference}")
+            else:
+                logger.info("No OCI exports configured; skipping artifact persistence")
 
             # Return results (will be reported by entrypoint)
             return job_results
