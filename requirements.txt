@@ -10,9 +10,9 @@ absl-py==2.2.2 \
     # via
     #   rouge-score
     #   unitxt
-accelerate==1.0.1 \
-    --hash=sha256:c6aa0c7b8a797cb150471e90e3ca36ac41f5d4b40512cdd6f058b8bf25589467 \
-    --hash=sha256:e8f95fc2db14915dc0a9182edfcf3068e5ddb2fa310b583717ad44e5c442399c
+accelerate==1.13.0 \
+    --hash=sha256:cf1a3efb96c18f7b152eb0fa7490f3710b19c3f395699358f08decca2b8b62e0 \
+    --hash=sha256:d631b4e0f5b3de4aff2d7e9e6857d164810dfc3237d54d017f075122d057b236
     # via
     #   lm_eval (pyproject.toml)
     #   peft
