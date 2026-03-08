@@ -431,6 +431,7 @@ def main() -> int:
         callbacks = DefaultCallbacks(
             job_id=adapter.job_spec.id,
             benchmark_id=adapter.job_spec.benchmark_id,
+            benchmark_index=adapter.job_spec.benchmark_index,
             provider_id=adapter.job_spec.provider_id,
             sidecar_url=adapter.job_spec.callback_url,
             insecure=bool(adapter.settings.evalhub_insecure),
