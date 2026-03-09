@@ -172,10 +172,6 @@ class LMEvalAdapter(FrameworkAdapter):
                 if auth_value.startswith("Bearer "):
                     token = auth_value.replace("Bearer ", "").strip()
                     os.environ["OPENAI_API_KEY"] = token
-            if creds.ca_cert_path:
-                # Note: this sets a global CA bundle for requests.
-                os.environ["REQUESTS_CA_BUNDLE"] = creds.ca_cert_path
-                os.environ["SSL_CERT_FILE"] = creds.ca_cert_path
             job_id = config.id
             benchmark_id = config.benchmark_id
             model_name = config.model.name
@@ -190,6 +186,9 @@ class LMEvalAdapter(FrameworkAdapter):
             random_seed = int(benchmark_cfg.get("random_seed", 42))
 
             model_backend, model_args, gen_kwargs = build_lmeval_config(config)
+            if creds.ca_cert_path:
+                # Pass model-specific CA path without overriding global trust store.
+                model_args["verify_certificate"] = creds.ca_cert_path
 
             # Phase 1: Initialization
             callbacks.report_status(
