@@ -70,21 +70,21 @@ def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
     """Derive lm-evaluation-harness model backend + args from job spec.
 
     Always uses OpenAI-compatible endpoint configuration.
-    Adapter-specific params (batch_size, tokenizer, parameters) come from benchmark_config.
+    Adapter-specific params (batch_size, tokenizer, parameters) come from job_spec.parameters.
 
     Returns:
         (model_backend, model_args, gen_kwargs)
     """
     model_spec = job_spec.model
     model_name = model_spec.name
-    benchmark_config = job_spec.benchmark_config
+    benchmark_params = job_spec.parameters
 
-    # Adapter-specific settings from benchmark_config
-    batch_size = int(benchmark_config.get("batch_size", 1))
-    timeout_seconds = int(benchmark_config.get("timeout_seconds", 300))
+    # Adapter-specific settings from parameters
+    batch_size = int(benchmark_params.get("batch_size", 1))
+    timeout_seconds = int(benchmark_params.get("timeout_seconds", 300))
 
     # Optional generation parameters for generate_until tasks.
-    parameters = benchmark_config.get("parameters", {})
+    parameters = benchmark_params.get("parameters", {})
     gen_kwargs = ",".join(f"{k}={v}" for k, v in parameters.items()) or None
 
     # Build completions URL from model.url
@@ -103,14 +103,14 @@ def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
         completions_url = f"{base}/v1/completions"
 
     # For OpenAI-compatible endpoints, we need a HuggingFace tokenizer.
-    # The tokenizer can be specified in benchmark_config, otherwise use model.name
-    tokenizer = str(benchmark_config.get("tokenizer", model_name))
+    # The tokenizer can be specified in parameters, otherwise use model.name
+    tokenizer = str(benchmark_params.get("tokenizer", model_name))
 
     # Helpful error message if tokenizer is not a valid HF model
     if tokenizer == model_name and "/" not in tokenizer:
         logger.warning(
             f"Model name '{model_name}' may not be a valid HuggingFace tokenizer. "
-            f"Specify the actual model in benchmark_config.tokenizer "
+            f"Specify the actual model in parameters.tokenizer "
             f"(e.g., 'google/flan-t5-small' or 'meta-llama/Llama-3.1-8B-Instruct')"
         )
 
@@ -177,13 +177,13 @@ class LMEvalAdapter(FrameworkAdapter):
             model_name = config.model.name
 
             # Number of examples from top-level JobSpec field
-            # (extracted from benchmark_config by the service)
+            # (extracted from parameters by the service)
             num_examples = config.num_examples
 
-            # Adapter-specific params from benchmark_config
-            benchmark_cfg = config.benchmark_config
-            num_fewshot = int(benchmark_cfg.get("num_few_shot", 0))
-            random_seed = int(benchmark_cfg.get("random_seed", 42))
+            # Adapter-specific params from parameters
+            benchmark_params = config.parameters
+            num_fewshot = int(benchmark_params.get("num_few_shot", 0))
+            random_seed = int(benchmark_params.get("random_seed", 42))
 
             model_backend, model_args, gen_kwargs = build_lmeval_config(config)
             if creds.ca_cert_path:
@@ -413,7 +413,7 @@ def main() -> int:
         logger.info(f"  Benchmark: {adapter.job_spec.benchmark_id}")
         logger.info(f"  Model: {adapter.job_spec.model.name}")
         logger.info(f"  Examples: {adapter.job_spec.num_examples}")
-        few_shot = adapter.job_spec.benchmark_config.get("num_few_shot")
+        few_shot = adapter.job_spec.parameters.get("num_few_shot")
         logger.info(f"  Few-shot: {few_shot}")
         logger.info("=" * 80)
         logger.info(f"Callback URL: {adapter.job_spec.callback_url}")
@@ -450,11 +450,11 @@ def main() -> int:
         logger.info(f"Duration: {results.duration_seconds:.2f}s")
         logger.info("=" * 80)
 
-        # Report final results
+        # Report final results to EvalHub (status/results API)
         callbacks.report_results(results)
 
-        # Log metrics to MLflow if experiment is configured
-        callbacks.report_metrics_to_mlflow(results, adapter.job_spec)
+        # Log metrics/params (and optional artifacts) to MLflow when experiment_name is set
+        callbacks.mlflow.save(results, adapter.job_spec)
 
         return 0
 
