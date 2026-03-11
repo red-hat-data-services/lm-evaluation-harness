@@ -4,6 +4,8 @@ import copy
 import itertools
 import json
 import logging
+import ssl
+from pathlib import Path
 from functools import cached_property
 from typing import (
     Any,
@@ -79,7 +81,7 @@ class TemplateAPI(TemplateLM):
         trust_remote_code: bool = False,
         revision: Optional[str] = "main",
         use_fast_tokenizer: bool = True,
-        verify_certificate: bool = True,
+        verify_certificate: Union[bool, str, Path] = True,
         eos_string: str = None,
         # timeout in seconds
         timeout: int = 300,
@@ -127,6 +129,30 @@ class TemplateAPI(TemplateLM):
         self.tokenized_requests = tokenized_requests
         self.max_retries = int(max_retries)
         self.verify_certificate = verify_certificate
+        self._ssl_context = None
+        if isinstance(verify_certificate, (str, Path)):
+            raw_path = Path(verify_certificate)
+            if raw_path.is_symlink():
+                raise ValueError(
+                    f"verify_certificate path must not be a symlink: {raw_path}"
+                )
+            try:
+                resolved_path = raw_path.resolve(strict=True)
+            except FileNotFoundError as exc:
+                raise ValueError(
+                    f"verify_certificate path does not exist: {raw_path}"
+                ) from exc
+            if not resolved_path.is_file():
+                raise ValueError(
+                    f"verify_certificate path must be a regular file: {resolved_path}"
+                )
+            ca_path = str(resolved_path)
+            self.verify_certificate = ca_path
+            self._ssl_context = ssl.create_default_context(cafile=ca_path)
+        elif not isinstance(verify_certificate, bool):
+            raise TypeError(
+                "verify_certificate must be a bool or a path to a CA bundle"
+            )
         self._eos_string = eos_string
         self.timeout = int(timeout)
 
@@ -475,7 +501,10 @@ class TemplateAPI(TemplateLM):
         **kwargs,
     ) -> Union[List[List[str]], List[List[Tuple[float, bool]]]]:
         ctxlens = ctxlens if ctxlens else [None] * len(requests)
-        conn = TCPConnector(limit=self._concurrent, ssl=self.verify_certificate)
+        conn = TCPConnector(
+            limit=self._concurrent,
+            ssl=self._ssl_context if self._ssl_context is not None else self.verify_certificate,
+        )
         async with ClientSession(
             connector=conn, timeout=ClientTimeout(total=self.timeout)
         ) as session:

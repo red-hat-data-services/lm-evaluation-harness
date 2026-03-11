@@ -15,6 +15,7 @@ Optional environment variables:
 
 import json
 import logging
+import os
 import sys
 import time
 from datetime import UTC, datetime
@@ -35,6 +36,7 @@ from evalhub.adapter import (
     MessageInfo,
     OCIArtifactSpec,
 )
+from evalhub.adapter.auth import resolve_model_credentials
 
 from lm_eval import simple_evaluate
 from lm_eval.tasks import TaskManager
@@ -68,21 +70,21 @@ def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
     """Derive lm-evaluation-harness model backend + args from job spec.
 
     Always uses OpenAI-compatible endpoint configuration.
-    Adapter-specific params (batch_size, tokenizer, parameters) come from benchmark_config.
+    Adapter-specific params (batch_size, tokenizer, parameters) come from job_spec.parameters.
 
     Returns:
         (model_backend, model_args, gen_kwargs)
     """
     model_spec = job_spec.model
     model_name = model_spec.name
-    benchmark_config = job_spec.benchmark_config
+    benchmark_params = job_spec.parameters
 
-    # Adapter-specific settings from benchmark_config
-    batch_size = int(benchmark_config.get("batch_size", 1))
-    timeout_seconds = int(job_spec.timeout_seconds or 300)
+    # Adapter-specific settings from parameters
+    batch_size = int(benchmark_params.get("batch_size", 1))
+    timeout_seconds = int(benchmark_params.get("timeout_seconds", 300))
 
     # Optional generation parameters for generate_until tasks.
-    parameters = benchmark_config.get("parameters", {})
+    parameters = benchmark_params.get("parameters", {})
     gen_kwargs = ",".join(f"{k}={v}" for k, v in parameters.items()) or None
 
     # Build completions URL from model.url
@@ -101,14 +103,14 @@ def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
         completions_url = f"{base}/v1/completions"
 
     # For OpenAI-compatible endpoints, we need a HuggingFace tokenizer.
-    # The tokenizer can be specified in benchmark_config, otherwise use model.name
-    tokenizer = str(benchmark_config.get("tokenizer", model_name))
+    # The tokenizer can be specified in parameters, otherwise use model.name
+    tokenizer = str(benchmark_params.get("tokenizer", model_name))
 
     # Helpful error message if tokenizer is not a valid HF model
     if tokenizer == model_name and "/" not in tokenizer:
         logger.warning(
             f"Model name '{model_name}' may not be a valid HuggingFace tokenizer. "
-            f"Specify the actual model in benchmark_config.tokenizer "
+            f"Specify the actual model in parameters.tokenizer "
             f"(e.g., 'google/flan-t5-small' or 'meta-llama/Llama-3.1-8B-Instruct')"
         )
 
@@ -162,20 +164,31 @@ class LMEvalAdapter(FrameworkAdapter):
         start_time = time.time()
 
         try:
+            creds = resolve_model_credentials()
+            if creds.api_key:
+                os.environ["OPENAI_API_KEY"] = creds.api_key
+            else:
+                auth_value = creds.auth_headers.get("Authorization", "")
+                if auth_value.startswith("Bearer "):
+                    token = auth_value.replace("Bearer ", "").strip()
+                    os.environ["OPENAI_API_KEY"] = token
             job_id = config.id
             benchmark_id = config.benchmark_id
             model_name = config.model.name
 
             # Number of examples from top-level JobSpec field
-            # (extracted from benchmark_config by the service)
+            # (extracted from parameters by the service)
             num_examples = config.num_examples
 
-            # Adapter-specific params from benchmark_config
-            benchmark_cfg = config.benchmark_config
-            num_fewshot = int(benchmark_cfg.get("num_few_shot", 0))
-            random_seed = int(benchmark_cfg.get("random_seed", 42))
+            # Adapter-specific params from parameters
+            benchmark_params = config.parameters
+            num_fewshot = int(benchmark_params.get("num_few_shot", 0))
+            random_seed = int(benchmark_params.get("random_seed", 42))
 
             model_backend, model_args, gen_kwargs = build_lmeval_config(config)
+            if creds.ca_cert_path:
+                # Pass model-specific CA path without overriding global trust store.
+                model_args["verify_certificate"] = creds.ca_cert_path
 
             # Phase 1: Initialization
             callbacks.report_status(
@@ -286,6 +299,7 @@ class LMEvalAdapter(FrameworkAdapter):
             job_results = JobResults(
                 id=job_id,
                 benchmark_id=benchmark_id,
+                benchmark_index=config.benchmark_index,
                 model_name=model_name,
                 results=evaluation_results,
                 overall_score=overall_score,
@@ -325,26 +339,27 @@ class LMEvalAdapter(FrameworkAdapter):
                     default=str,
                 )
 
-            # Create OCI artifact
-            oci_spec = OCIArtifactSpec(
-                files=[results_file],
-                base_path=output_dir,
-                title=f"LMEval Results - {benchmark_id}",
-                description=f"Evaluation results for {model_name} on {benchmark_id}",
-                annotations={
-                    "org.opencontainers.image.created": datetime.now(UTC).isoformat(),
-                    "org.evalhub.benchmark": benchmark_id,
-                    "org.evalhub.model": model_name,
-                    "org.evalhub.job_id": job_id,
-                },
-                id=job_id,
-                benchmark_id=benchmark_id,
-                model_name=model_name,
-            )
-
-            oci_result = callbacks.create_oci_artifact(oci_spec)
-            job_results.oci_artifact = oci_result
-            logger.info(f"OCI artifact created: {oci_result.reference}")
+            # Create OCI artifact (only when exports are configured)
+            oci_exports = config.exports.oci if config.exports else None
+            if oci_exports is not None:
+                coords = oci_exports.coordinates.model_copy(deep=True)
+                coords.annotations.update(
+                    {
+                        "org.opencontainers.image.created": datetime.now(UTC).isoformat(),
+                        "org.evalhub.benchmark": benchmark_id,
+                        "org.evalhub.model": model_name,
+                        "org.evalhub.job_id": job_id,
+                    }
+                )
+                oci_spec = OCIArtifactSpec(
+                    files_path=output_dir,
+                    coordinates=coords,
+                )
+                oci_result = callbacks.create_oci_artifact(oci_spec)
+                job_results.oci_artifact = oci_result
+                logger.info(f"OCI artifact created: {oci_result.reference}")
+            else:
+                logger.info("No OCI exports configured; skipping artifact persistence")
 
             # Return results (will be reported by entrypoint)
             return job_results
@@ -398,23 +413,31 @@ def main() -> int:
         logger.info(f"  Benchmark: {adapter.job_spec.benchmark_id}")
         logger.info(f"  Model: {adapter.job_spec.model.name}")
         logger.info(f"  Examples: {adapter.job_spec.num_examples}")
-        few_shot = adapter.job_spec.benchmark_config.get("num_few_shot")
+        few_shot = adapter.job_spec.parameters.get("num_few_shot")
         logger.info(f"  Few-shot: {few_shot}")
         logger.info("=" * 80)
         logger.info(f"Callback URL: {adapter.job_spec.callback_url}")
-        logger.info(f"Provider ID: lm_evaluation_harness")
-        logger.info(f"OCI registry configured: {adapter.settings.registry_url}")
+        logger.info(f"Provider ID: {adapter.job_spec.provider_id}")
+        logger.info(
+            "OCI registry auth config present: %s",
+            bool(adapter.settings.oci_auth_config_path),
+        )
+        logger.info("OCI insecure: %s", adapter.settings.oci_insecure)
+        logger.info("EvalHub insecure: %s", adapter.settings.evalhub_insecure)
         logger.info("=" * 80)
 
         # Initialize callbacks using job spec callback_url and adapter settings
         callbacks = DefaultCallbacks(
             job_id=adapter.job_spec.id,
             benchmark_id=adapter.job_spec.benchmark_id,
+            benchmark_index=adapter.job_spec.benchmark_index,
+            provider_id=adapter.job_spec.provider_id,
             sidecar_url=adapter.job_spec.callback_url,
-            registry_url=adapter.settings.registry_url,
-            registry_username=adapter.settings.registry_username,
-            registry_password=adapter.settings.registry_password,
-            insecure=bool(adapter.settings.registry_insecure),
+            insecure=bool(adapter.settings.evalhub_insecure),
+            auth_token_path=adapter.settings.resolved_auth_token_path,
+            ca_bundle_path=adapter.settings.resolved_ca_bundle_path,
+            oci_auth_config_path=adapter.settings.oci_auth_config_path,
+            oci_insecure=bool(adapter.settings.oci_insecure),
         )
 
         # Run evaluation
@@ -427,8 +450,11 @@ def main() -> int:
         logger.info(f"Duration: {results.duration_seconds:.2f}s")
         logger.info("=" * 80)
 
-        # Report final results
+        # Report final results to EvalHub (status/results API)
         callbacks.report_results(results)
+
+        # Log metrics/params (and optional artifacts) to MLflow when experiment_name is set
+        callbacks.mlflow.save(results, adapter.job_spec)
 
         return 0
 
