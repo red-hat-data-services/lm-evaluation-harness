@@ -187,8 +187,8 @@ class LMEvalAdapter(FrameworkAdapter):
 
             model_backend, model_args, gen_kwargs = build_lmeval_config(config)
             if creds.ca_cert_path:
-                # Pass model-specific CA path without overriding global trust store.
-                model_args["verify_certificate"] = creds.ca_cert_path
+                # Resolve to a real path so lm_eval accepts it (K8s secret volume mounts expose keys as symlinks).
+                model_args["verify_certificate"] = os.path.realpath(creds.ca_cert_path)
 
             # Phase 1: Initialization
             callbacks.report_status(
