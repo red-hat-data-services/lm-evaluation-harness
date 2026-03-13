@@ -265,6 +265,33 @@ class LMEvalAdapter(FrameworkAdapter):
             # Extract results
             task_results = results.get("results", {}).get(benchmark_id, {})
 
+            # For group tasks (e.g. leaderboard_bbh), lm-eval stores metrics under
+            # subtask names, not the group name. Fall back to averaging subtask results.
+            if not any(k.endswith(",none") for k in task_results):
+                group_subtasks = results.get("group_subtasks", {}).get(benchmark_id, [])
+                if group_subtasks:
+                    logger.info(
+                        "Benchmark %s is a group task, aggregating %d subtask results",
+                        benchmark_id,
+                        len(group_subtasks),
+                    )
+                    all_results = results.get("results", {})
+                    subtask_metrics: dict[str, float] = {}
+                    subtask_count: dict[str, int] = {}
+                    for subtask in group_subtasks:
+                        for metric_name, metric_value in all_results.get(subtask, {}).items():
+                            if not metric_name.endswith(",none"):
+                                continue
+                            if metric_value == "N/A" or metric_value is None:
+                                continue
+                            clean = metric_name.replace(",none", "")
+                            subtask_metrics[clean] = subtask_metrics.get(clean, 0) + float(metric_value)
+                            subtask_count[clean] = subtask_count.get(clean, 0) + 1
+                    task_results = {
+                        f"{k},none": subtask_metrics[k] / subtask_count[k]
+                        for k in subtask_metrics
+                    }
+
             # Build evaluation results
             evaluation_results = []
             overall_score = None
@@ -273,6 +300,14 @@ class LMEvalAdapter(FrameworkAdapter):
                 if metric_name.endswith(",none"):
                     # Primary metric (usually accuracy or similar)
                     clean_metric = metric_name.replace(",none", "")
+                    # lm-eval returns 'N/A' for metrics it cannot compute
+                    # (e.g. when the model produces unparseable outputs).
+                    if metric_value == "N/A" or metric_value is None:
+                        logger.warning(
+                            "Metric %s has value N/A, skipping",
+                            clean_metric,
+                        )
+                        continue
                     evaluation_results.append(
                         EvaluationResult(
                             metric_name=clean_metric,
