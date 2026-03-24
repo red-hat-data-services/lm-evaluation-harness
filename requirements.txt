@@ -912,10 +912,8 @@ numpy==1.26.4 \
     #   scikit-learn
     #   scipy
     #   transformers
-nvidia-cublas-cu12==12.4.5.8 \
-    --hash=sha256:0f8aa1706812e00b9f19dfe0cdb3999b092ccb8ca168c0db5b8ea712456fd9b3 \
-    --hash=sha256:2fc8da60df463fdefa81e323eef2e36489e1c94335b5358bcb38360adf75ac9b \
-    --hash=sha256:5a796786da89203a0657eda402bcdcec6180254a8ac22d72213abc42069522dc
+nvidia-cublas-cu12==12.9.2.10 \
+    --hash=sha256:7caf6512c921f956e5e609378e8332be502d7e5108deaade5c7ecf6b8042e842
     # via
     #   nvidia-cudnn-cu12
     #   nvidia-cusolver-cu12
