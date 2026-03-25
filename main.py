@@ -381,9 +381,9 @@ class LMEvalAdapter(FrameworkAdapter):
                 coords.annotations.update(
                     {
                         "org.opencontainers.image.created": datetime.now(UTC).isoformat(),
-                        "org.evalhub.benchmark": benchmark_id,
-                        "org.evalhub.model": model_name,
-                        "org.evalhub.job_id": job_id,
+                        "io.github.eval-hub.benchmark": benchmark_id,
+                        "io.github.eval-hub.model": model_name,
+                        "io.github.eval-hub.job_id": job_id,
                     }
                 )
                 oci_spec = OCIArtifactSpec(
