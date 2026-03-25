@@ -485,11 +485,13 @@ def main() -> int:
         logger.info(f"Duration: {results.duration_seconds:.2f}s")
         logger.info("=" * 80)
 
+        # MLflow first; run id from save() is sent on report_results when SDK returns it.
+        mlflow_run_id = callbacks.mlflow.save(results, adapter.job_spec)
+        if mlflow_run_id:
+            results.mlflow_run_id = mlflow_run_id
+
         # Report final results to EvalHub (status/results API)
         callbacks.report_results(results)
-
-        # Log metrics/params (and optional artifacts) to MLflow when experiment_name is set
-        callbacks.mlflow.save(results, adapter.job_spec)
 
         return 0
 
