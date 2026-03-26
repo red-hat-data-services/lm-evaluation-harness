@@ -22,7 +22,7 @@ dependencies = [
     "urllib3==2.6.3",
     "accelerate==1.0.1",
     "evaluate==0.4.3",
-    "eval-hub-sdk[adapter]==0.1.2",
+    "eval-hub-sdk[adapter]==0.1.4",
     "datasets==3.1.0",
     "jsonlines==4.0.0",
     "numexpr==2.10.1",
@@ -69,7 +69,7 @@ api = [
     "tqdm==4.66.6",
     "tiktoken==0.8.0",
 ]
-ifeval = ["langdetect==1.0.9", "immutabledict==4.2.1", "nltk==3.9.1"]
+ifeval = ["langdetect==1.0.9", "immutabledict==4.2.1", "nltk==3.9.3"]
 math = ["sympy>=1.12", "antlr4-python3-runtime==4.11", "math_verify[antlr4_11_0]"]
 dev = [
     "pytest==8.3.3",

@@ -28,8 +28,9 @@ from packaging.version import parse as parse_version
 # Downloading 'punkt' with nltk<3.9 has a remote code vuln.
 # see  https://github.com/EleutherAI/lm-evaluation-harness/issues/2210
 # and https://github.com/nltk/nltk/issues/3266
+# and https://github.com/nltk/nltk/issues/3489
 # for more information.
-NLTK_MIN_VERSION = "3.9.1"
+NLTK_MIN_VERSION = "3.9.3"
 RANK = os.environ.get("LOCAL_RANK", "0")
 
 
