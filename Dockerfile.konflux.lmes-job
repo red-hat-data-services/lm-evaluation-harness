@@ -221,7 +221,12 @@ COPY . .
 COPY requirements.txt .
 
 # Install the pinned dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN if [ "$TARGETARCH" = "s390x" ]; then \
+        grep -v -E "^(pyarrow|torch)[>=<! ]" requirements.txt > /tmp/requirements_filtered.txt && \
+        pip install --no-cache-dir -r /tmp/requirements_filtered.txt ; \
+    else \
+        pip install --no-cache-dir -r requirements.txt ; \
+    fi
 
 # Install the package
 RUN pip install --no-cache-dir --no-deps -e .
