@@ -176,7 +176,9 @@ class LMEvalAdapter(FrameworkAdapter):
                         "populates the directory before the adapter starts."
                     )
                 os.environ["HF_HOME"] = test_data_dir
+                os.environ["HF_HUB_OFFLINE"] = "1"
                 os.environ["HF_DATASETS_OFFLINE"] = "1"
+                os.environ["HF_EVALUATE_OFFLINE"] = "1"
                 os.environ["TRANSFORMERS_OFFLINE"] = "1"
                 logger.info(
                     "Offline mode enabled: HF_HOME=%s, downloads disabled",
