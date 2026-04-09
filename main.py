@@ -164,6 +164,19 @@ class LMEvalAdapter(FrameworkAdapter):
         start_time = time.time()
 
         try:
+            # When offline mode is enabled, configure HuggingFace libraries to
+            # use only local data from /test_data (populated by the init container
+            # from S3 via test_data_ref).  This covers both datasets and tokenizers.
+            if config.parameters.get("offline"):
+                test_data_dir = "/test_data"
+                os.environ["HF_HOME"] = test_data_dir
+                os.environ["HF_DATASETS_OFFLINE"] = "1"
+                os.environ["TRANSFORMERS_OFFLINE"] = "1"
+                logger.info(
+                    "Offline mode enabled: HF_HOME=%s, downloads disabled",
+                    test_data_dir,
+                )
+
             creds = resolve_model_credentials()
             if creds.api_key:
                 os.environ["OPENAI_API_KEY"] = creds.api_key
