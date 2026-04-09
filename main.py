@@ -169,6 +169,12 @@ class LMEvalAdapter(FrameworkAdapter):
             # from S3 via test_data_ref).  This covers both datasets and tokenizers.
             if config.parameters.get("offline"):
                 test_data_dir = "/test_data"
+                if not os.path.isdir(test_data_dir):
+                    raise RuntimeError(
+                        f"Offline mode requested but {test_data_dir} does not exist. "
+                        "Ensure test_data_ref is configured so the init container "
+                        "populates the directory before the adapter starts."
+                    )
                 os.environ["HF_HOME"] = test_data_dir
                 os.environ["HF_DATASETS_OFFLINE"] = "1"
                 os.environ["TRANSFORMERS_OFFLINE"] = "1"
