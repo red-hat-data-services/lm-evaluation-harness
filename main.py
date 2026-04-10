@@ -433,7 +433,12 @@ class LMEvalAdapter(FrameworkAdapter):
             logger.error(f"Evaluation failed: {e}", exc_info=True)
 
             error_str = str(e)
-            is_gated = "gated" in error_str.lower()
+            error_lower = error_str.lower()
+            is_gated = (
+                "gated repo" in error_lower
+                or "gated dataset" in error_lower
+                or ("403" in error_lower and "huggingface" in error_lower)
+            )
 
             if is_gated:
                 error_message = (
