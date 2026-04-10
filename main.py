@@ -430,7 +430,7 @@ class LMEvalAdapter(FrameworkAdapter):
             return job_results
 
         except Exception as e:
-            logger.error(f"Evaluation failed: {e}", exc_info=True)
+            logger.error("Evaluation failed", exc_info=True)
 
             error_str = str(e)
             error_lower = error_str.lower()
@@ -442,13 +442,13 @@ class LMEvalAdapter(FrameworkAdapter):
 
             if is_gated:
                 error_message = (
-                    f"Gated HuggingFace dataset error: {error_str}. "
+                    "Gated HuggingFace dataset error; authentication required. "
                     "Set HF_TOKEN by adding an 'hf-token' key to your "
                     "model auth secret (model.auth.secret_ref)."
                 )
                 error_code = "gated_dataset_auth_required"
             else:
-                error_message = error_str
+                error_message = f"Evaluation failed: {type(e).__name__}"
                 error_code = "evaluation_failed"
 
             # Report failure
