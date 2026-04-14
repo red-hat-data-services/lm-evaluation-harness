@@ -16,11 +16,13 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-requires-python = "<3.13,>=3.10"
+requires-python = ">=3.11,<3.13"
 license = { "text" = "MIT" }
 dependencies = [
+    "urllib3==2.6.3",
     "accelerate==1.0.1",
     "evaluate==0.4.3",
+    "eval-hub-sdk[adapter]==0.1.5",
     "datasets==3.1.0",
     "jsonlines==4.0.0",
     "numexpr==2.10.1",
@@ -33,14 +35,15 @@ dependencies = [
     "sqlitedict==2.1.0",
     "torch==2.6.0",
     "tqdm-multiprocess==0.0.11",
-    "transformers==4.45.2",
+    "transformers==4.48.0",
     "zstandard==0.23.0",
     "dill==0.3.8",
     "word2number==1.1",
     "more_itertools==10.5.0",
     "unitxt==1.17.2",
     "jiwer==3.0.5",
-    "boto3==1.36.11",
+    "boto3==1.42.12",
+    "olot==0.1.15",
 ]
 
 [tool.setuptools.packages.find]
@@ -60,13 +63,13 @@ Repository = "https://github.com/EleutherAI/lm-evaluation-harness"
 
 [project.optional-dependencies]
 api = [
-    "requests==2.32.3",
-    "aiohttp==3.10.10",
+    "requests==2.32.5",
+    "aiohttp==3.13.3",
     "tenacity==9.0.0",
     "tqdm==4.66.6",
     "tiktoken==0.8.0",
 ]
-ifeval = ["langdetect==1.0.9", "immutabledict==4.2.1", "nltk==3.9.1"]
+ifeval = ["langdetect==1.0.9", "immutabledict==4.2.1", "nltk==3.9.3"]
 math = ["sympy>=1.12", "antlr4-python3-runtime==4.11", "math_verify[antlr4_11_0]"]
 dev = [
     "pytest==8.3.3",
@@ -77,7 +80,7 @@ dev = [
 ]
 hf_transfer = ["hf-transfer==0.1.9"]
 testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
-ibm_watsonx_ai = ["ibm-watsonx-ai==1.1.23"]
+ibm_watsonx_ai = ["ibm-watsonx-ai==1.4.11"]
 
 [tool.ruff.lint]
 extend-select = ["I"]
