@@ -81,6 +81,7 @@ def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
 
     # Adapter-specific settings from parameters
     batch_size = int(benchmark_params.get("batch_size", 1))
+    num_concurrent = int(benchmark_params.get("num_concurrent", 1))
     timeout_seconds = int(benchmark_params.get("timeout_seconds", 300))
 
     # Optional generation parameters for generate_until tasks.
@@ -114,6 +115,14 @@ def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
             f"(e.g., 'google/flan-t5-small' or 'meta-llama/Llama-3.1-8B-Instruct')"
         )
 
+    if num_concurrent <= 1:
+        logger.info(
+            "Concurrent requests are disabled (num_concurrent=1). "
+            "Add num_concurrent to benchmark parameters to enable."
+        )
+    else:
+        logger.info("Concurrent requests enabled: num_concurrent=%d", num_concurrent)
+
     # Use local-completions backend for OpenAI-compatible endpoints.
     # tokenized_requests=False ensures we send string prompts, not token IDs.
     return (
@@ -124,6 +133,7 @@ def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
             "tokenizer_backend": "huggingface",
             "tokenizer": tokenizer,
             "tokenized_requests": False,
+            "num_concurrent": num_concurrent,
             "batch_size": batch_size,
             "timeout": timeout_seconds,
         },
