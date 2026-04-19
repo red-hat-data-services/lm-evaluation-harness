@@ -1194,9 +1194,9 @@ pyarrow==19.0.1 \
     --hash=sha256:fca15aabbe9b8355800d923cc2e82c8ef514af321e18b437c3d782aa884eaeec \
     --hash=sha256:fd44d66093a239358d07c42a91eebf5015aa54fccba959db899f932218ac9cc8
     # via datasets
-pybind11==2.13.6 \
-    --hash=sha256:237c41e29157b962835d356b370ededd57594a26d5894a795960f0047cb5caf5 \
-    --hash=sha256:ba6af10348c12b24e92fa086b39cfba0eff619b61ac77c406167d813b096d39a
+pybind11==3.0.4 \
+    --hash=sha256:3286b59c8a774b9ee650169302dd5a4eedc30a8617905a0560dd8ee44775130c \
+    --hash=sha256:961720ee652da51d531b7b2451a6bd2bc042b0106e6d9baa48ecb7d58034ce63
     # via lm_eval (pyproject.toml)
 pytablewriter==1.2.0 \
     --hash=sha256:0204a4bb684a22140d640f2599f09e137bcdc18b3dd49426f4a555016e246b46 \
