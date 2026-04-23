@@ -442,9 +442,9 @@ ibm-cos-sdk-core==2.13.5 \
 ibm-cos-sdk-s3transfer==2.13.5 \
     --hash=sha256:9649b1f2201c6de96ff5a6b5a3686de3a809e6ef3b8b12c7c4f2f7ce72da7749
     # via ibm-cos-sdk
-ibm-watsonx-ai==1.1.23 \
-    --hash=sha256:71b13e593e02735c332919459f4f930bc3a8de7c4b3efc00d97eafae8cd336f8 \
-    --hash=sha256:f97ce8ba88c5e4e220b7a723ea1423a83c56265664b6088c686e8e135b395b18
+ibm-watsonx-ai==1.5.10 \
+    --hash=sha256:91eb5808044a9a443574a789a8482bbcc52b44a5c6cdf8e0999b5d05c9c9d36d \
+    --hash=sha256:cb0fc306a0beac1ccd4a787a0233da0a558bd088ac9b254f71fc283eb12b69c7
     # via lm_eval (pyproject.toml)
 idna==3.10 \
     --hash=sha256:12f65c9b470abda6dc35cf8e63cc574b1c52b11df2c86030af0ac09b01b13ea9 \
