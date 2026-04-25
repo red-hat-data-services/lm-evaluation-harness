@@ -87,7 +87,7 @@ opentelemetry-proto==1.39.1 ; python_version >= "3.11" and python_version < "3.1
 opentelemetry-sdk==1.39.1 ; python_version >= "3.11" and python_version < "3.13"
 opentelemetry-semantic-conventions==0.60b1 ; python_version >= "3.11" and python_version < "3.13"
 oras==0.2.41 ; python_version >= "3.11" and python_version < "3.13"
-packaging==26.0 ; python_version >= "3.11" and python_version < "3.13"
+packaging==26.2 ; python_version >= "3.11" and python_version < "3.13"
 pandas==2.2.3 ; python_version >= "3.11" and python_version < "3.13"
 pathvalidate==3.3.1 ; python_version >= "3.11" and python_version < "3.13"
 peft==0.13.2 ; python_version >= "3.11" and python_version < "3.13"
