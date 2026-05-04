@@ -470,7 +470,7 @@ class LMEvalAdapter(FrameworkAdapter):
                 )
                 error_code = "gated_dataset_auth_required"
             else:
-                error_message = f"Evaluation failed: {type(e).__name__}"
+                error_message = f"Evaluation failed: {e}"
                 error_code = "evaluation_failed"
 
             # Report failure
@@ -490,7 +490,7 @@ class LMEvalAdapter(FrameworkAdapter):
                 )
             )
 
-            raise RuntimeError(f"Evaluation failed: {e}") from e
+            raise RuntimeError(error_message) from e
 
 
 def main() -> int:
