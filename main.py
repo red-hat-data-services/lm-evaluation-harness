@@ -16,6 +16,7 @@ Optional environment variables:
 import json
 import logging
 import os
+import re
 import sys
 import time
 from datetime import UTC, datetime
@@ -64,6 +65,15 @@ def _jsonable(value: Any) -> Any:
 
 def _status_message(text: str, code: str = "status_update") -> MessageInfo:
     return MessageInfo(message=text, message_code=code)
+
+
+# Strip ?query from http(s) URLs so tokens in query params are not sent to Eval Hub.
+_URL_WITH_QUERY = re.compile(r"(https?://[^\s?]+)(\?[^\s]*)")
+
+
+def _sanitize_error_message(msg: str) -> str:
+    """Remove URL query strings from error text before external callbacks."""
+    return _URL_WITH_QUERY.sub(r"\1", msg)
 
 
 def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
@@ -470,7 +480,8 @@ class LMEvalAdapter(FrameworkAdapter):
                 )
                 error_code = "gated_dataset_auth_required"
             else:
-                error_message = f"Evaluation failed: {e}"
+                safe_detail = _sanitize_error_message(error_str)
+                error_message = f"Evaluation failed: {safe_detail}"
                 error_code = "evaluation_failed"
 
             # Report failure
