@@ -25,8 +25,8 @@ from typing import Any
 
 from evalhub.adapter import (
     DefaultCallbacks,
-    EvaluationResult,
     ErrorInfo,
+    EvaluationResult,
     FrameworkAdapter,
     JobCallbacks,
     JobPhase,
@@ -67,13 +67,51 @@ def _status_message(text: str, code: str = "status_update") -> MessageInfo:
     return MessageInfo(message=text, message_code=code)
 
 
-# Strip ?query from http(s) URLs so tokens in query params are not sent to Eval Hub.
-_URL_WITH_QUERY = re.compile(r"(https?://[^\s?]+)(\?[^\s]*)")
-
-
 def _sanitize_error_message(msg: str) -> str:
-    """Remove URL query strings from error text before external callbacks."""
-    return _URL_WITH_QUERY.sub(r"\1", msg)
+    """Redact secrets from error text before Eval Hub callbacks (ErrorInfo.message)."""
+    s = msg
+
+    # Authorization header / Bearer fragments (case-insensitive)
+    s = re.sub(
+        r"(?i)(Authorization\s*:\s*)(?:Bearer\s+)?\S+",
+        r"\1[redacted]",
+        s,
+    )
+    s = re.sub(r"(?i)\bBearer\s+[A-Za-z0-9._\-~+/]+=*", "Bearer [redacted]", s)
+
+    # key=value secrets outside URLs (lookbehind avoids bypass via ":key=" or ",key=")
+    # Longer names before "token" so access_token matches as a whole.
+    s = re.sub(
+        r"(?i)(?<![A-Za-z0-9_])"
+        r"(access_token|auth_token|refresh_token|client_secret|private_key|secret_key|"
+        r"authorization|api[_-]?key|password|token)"
+        r'\s*=\s*[^\s&"\']+',
+        r"\1=[redacted]",
+        s,
+    )
+
+    # JSON-style "key":"value" / 'key':'value' (OAuth/error bodies)
+    _json_keys = (
+        r"(access_token|auth_token|refresh_token|client_secret|private_key|secret_key|"
+        r"authorization|api[_-]?key|password|token)"
+    )
+    s = re.sub(
+        rf'(?i)"{_json_keys}"\s*:\s*"((?:[^"\\]|\\.)*)"',
+        r'"\1":"[redacted]"',
+        s,
+    )
+    s = re.sub(
+        rf"(?i)'{_json_keys}'\s*:\s*'((?:[^'\\]|\\.)*)'",
+        r"'\1':'[redacted]'",
+        s,
+    )
+
+    # URLs: strip userinfo (scheme://user:pass@host → scheme://host), fragment, query
+    s = re.sub(r"(https?://)[^\s@]+@", r"\1", s)
+    s = re.sub(r"(https?://[^\s#]+)#[^\s]*", r"\1", s)
+    s = re.sub(r"(https?://[^\s?]+)(\?[^\s]*)", r"\1", s)
+
+    return s
 
 
 def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
@@ -480,11 +518,13 @@ class LMEvalAdapter(FrameworkAdapter):
                 )
                 error_code = "gated_dataset_auth_required"
             else:
-                safe_detail = _sanitize_error_message(error_str)
-                error_message = f"Evaluation failed: {safe_detail}"
+                # str(e) carries full text for requests.HTTPError etc.; sanitize before Hub.
+                error_message = _sanitize_error_message(
+                    f"Evaluation failed: {error_str}"
+                )
                 error_code = "evaluation_failed"
 
-            # Report failure
+            # Report failure (error_message is sanitized for external callbacks)
             callbacks.report_status(
                 JobStatusUpdate(
                     status=JobStatus.FAILED,
@@ -497,6 +537,7 @@ class LMEvalAdapter(FrameworkAdapter):
                         message=error_message,
                         message_code=error_code,
                     ),
+                    # Non-sensitive metadata only; revisit if exposed verbatim to end users.
                     error_details={"exception_type": type(e).__name__},
                 )
             )
@@ -567,7 +608,11 @@ def main() -> int:
         return 0
 
     except Exception as e:
-        logger.error(f"Fatal error: {e}", exc_info=True)
+        logger.error(
+            "Fatal error: %s",
+            _sanitize_error_message(str(e)),
+            exc_info=True,
+        )
         return 1
 
 
