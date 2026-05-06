@@ -36,7 +36,12 @@ def _job_spec_file_requests_offline() -> bool:
     try:
         with open(path, encoding="utf-8") as f:
             spec = json.load(f)
-        return bool(spec.get("parameters", {}).get("offline"))
+        if not isinstance(spec, dict):
+            return False
+        parameters = spec.get("parameters")
+        if not isinstance(parameters, dict):
+            parameters = {}
+        return bool(parameters.get("offline"))
     except FileNotFoundError:
         return False
     except (OSError, json.JSONDecodeError, TypeError) as exc:

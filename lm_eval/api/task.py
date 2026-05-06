@@ -55,9 +55,11 @@ eval_logger = logging.getLogger(__name__)
 
 
 def _offline_datasetdict_bundle_dir(
-    hf_home: str, dataset_path: str, dataset_name: Optional[str]
+    hf_home: Optional[str], dataset_path: str, dataset_name: Optional[str]
 ) -> Optional[Path]:
     """Resolve ``HF_HOME/<slug>/`` when it contains ``dataset_dict.json`` (DatasetDict export layout).
+
+    ``hf_home`` must come from the environment (e.g. ``HF_HOME``); if unset, returns ``None``.
 
     Slug is ``dataset_path`` with ``/`` replaced by ``--``. If ``dataset_name`` is set (subset),
     append ``--`` + ``dataset_name``. When there is no subset (e.g. ``hellaswag``, ``blimp``),
@@ -98,7 +100,7 @@ def _load_datasetdict_from_offline_bundle(bundle: Path) -> Any:
                 "with this `datasets` build (usually the bundle was saved with another "
                 "`datasets`/PyArrow version). Re-run DatasetDict.save_to_disk using the same "
                 f"`datasets` and `pyarrow` versions as the eval image (here: datasets {datasets.__version__}), "
-                "then re-upload to MinIO."
+                "then re-upload."
             ) from exc
         raise
 
@@ -324,7 +326,7 @@ class Task(abc.ABC):
 
         if offline:
             bundle = _offline_datasetdict_bundle_dir(
-                os.environ.get("HF_HOME", "/test_data"),
+                os.environ.get("HF_HOME"),
                 self.DATASET_PATH,
                 self.DATASET_NAME,
             )
@@ -341,7 +343,7 @@ class Task(abc.ABC):
             "cache_dir": cache_dir,
             "download_mode": download_mode,
         }
-        # Offline: standard datasets.load_dataset — rely on HF_HOME (hub + datasets caches synced from MinIO).
+        # Offline: standard datasets.load_dataset — rely on HF_HOME (hub + datasets caches from offline mirror).
         if offline:
             kwargs["download_config"] = DownloadConfig(local_files_only=True)
 
@@ -1016,7 +1018,7 @@ class ConfigurableTask(Task):
         )
         if offline:
             bundle = _offline_datasetdict_bundle_dir(
-                os.environ.get("HF_HOME", "/test_data"),
+                os.environ.get("HF_HOME"),
                 self.DATASET_PATH,
                 self.DATASET_NAME,
             )
