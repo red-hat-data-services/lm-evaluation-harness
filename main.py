@@ -11,6 +11,10 @@ Optional environment variables:
 - EVALHUB_JOB_SPEC_PATH: path to the job spec JSON (defaults to `meta/job.json`)
 - REGISTRY_USERNAME: Registry username (optional)
 - REGISTRY_PASSWORD: Registry password/token (optional)
+
+Disconnected clusters: set `"offline": true` under `parameters` in the job spec so HF libraries use
+local caches under HF_HOME (default `/test_data`). The offline flag is read once from JSON before
+importing lm_eval so Hugging Face env vars apply in time.
 """
 
 import json
@@ -22,6 +26,48 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+_TEST_DATA_DIR = "/test_data"
+
+
+def _job_spec_file_requests_offline() -> bool:
+    """Read parameters.offline from job JSON only (no JobSpec yet). Used to set HF env before lm_eval import."""
+    path = os.environ.get("EVALHUB_JOB_SPEC_PATH", "/meta/job.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            spec = json.load(f)
+        return bool(spec.get("parameters", {}).get("offline"))
+    except FileNotFoundError:
+        return False
+    except (OSError, json.JSONDecodeError, TypeError) as exc:
+        print(
+            f"WARNING: failed to read job spec for offline mode from {path!r}: {exc}",
+            file=sys.stderr,
+        )
+        return False
+
+
+def configure_hf_offline_environment(hf_home: str) -> None:
+    """Use local Hugging Face caches only (disconnected / no huggingface.co).
+
+    Pin Hub/datasets cache dirs under hf_home so lookups match /test_data layout after init sync.
+    HF_HOME, HF_HUB_CACHE and HF_DATASETS_CACHE are set consistently so they stay aligned.
+    """
+    root = Path(hf_home)
+    os.environ["HF_HOME"] = str(root)
+    os.environ["HF_HUB_CACHE"] = str(root / "hub")
+    os.environ["HF_DATASETS_CACHE"] = str(root / "datasets")
+    os.environ["HF_HUB_OFFLINE"] = "1"
+    os.environ["HF_DATASETS_OFFLINE"] = "1"
+    os.environ["HF_EVALUATE_OFFLINE"] = "1"
+    os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
+
+def _seed_hf_offline_before_lm_eval_import() -> None:
+    if not _job_spec_file_requests_offline():
+        return
+    configure_hf_offline_environment(os.environ.get("HF_HOME", _TEST_DATA_DIR))
+
 
 from evalhub.adapter import (
     DefaultCallbacks,
@@ -39,8 +85,13 @@ from evalhub.adapter import (
 )
 from evalhub.adapter.auth import read_model_auth_key, resolve_model_credentials
 
-from lm_eval import simple_evaluate
-from lm_eval.tasks import TaskManager
+
+_seed_hf_offline_before_lm_eval_import()
+
+# NOTE: keep these imports after _seed_hf_offline_before_lm_eval_import() so HF offline env vars
+# are set before lm_eval (and Hugging Face libraries) are imported.
+from lm_eval import simple_evaluate  # noqa: E402
+from lm_eval.tasks import TaskManager  # noqa: E402
 
 
 # Configure logging
@@ -238,18 +289,15 @@ class LMEvalAdapter(FrameworkAdapter):
             # use only local data from /test_data (populated by the init container
             # from S3 via test_data_ref).  This covers both datasets and tokenizers.
             if config.parameters.get("offline"):
-                test_data_dir = "/test_data"
+                test_data_dir = _TEST_DATA_DIR
                 if not os.path.isdir(test_data_dir):
                     raise RuntimeError(
                         f"Offline mode requested but {test_data_dir} does not exist. "
                         "Ensure test_data_ref is configured so the init container "
                         "populates the directory before the adapter starts."
                     )
-                os.environ["HF_HOME"] = test_data_dir
-                os.environ["HF_HUB_OFFLINE"] = "1"
-                os.environ["HF_DATASETS_OFFLINE"] = "1"
-                os.environ["HF_EVALUATE_OFFLINE"] = "1"
-                os.environ["TRANSFORMERS_OFFLINE"] = "1"
+                # Idempotent re-apply: import-time seed may have set HF_* from the same job JSON.
+                configure_hf_offline_environment(test_data_dir)
                 logger.info(
                     "Offline mode enabled: HF_HOME=%s, downloads disabled",
                     test_data_dir,
