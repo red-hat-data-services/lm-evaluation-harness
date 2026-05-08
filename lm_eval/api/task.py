@@ -1,10 +1,12 @@
 import abc
 import ast
 import logging
+import os
 import random
 import re
 from collections.abc import Callable
-from copy import deepcopy
+from pathlib import Path
+from copy import copy, deepcopy
 from dataclasses import asdict, dataclass
 from inspect import getsource
 from typing import (
@@ -21,6 +23,7 @@ from typing import (
 )
 
 import datasets
+from datasets import DownloadConfig
 import numpy as np
 from tqdm import tqdm
 
@@ -49,6 +52,57 @@ ALL_OUTPUT_TYPES = [
 ]
 
 eval_logger = logging.getLogger(__name__)
+
+
+def _offline_datasetdict_bundle_dir(
+    hf_home: Optional[str], dataset_path: str, dataset_name: Optional[str]
+) -> Optional[Path]:
+    """Resolve ``HF_HOME/<slug>/`` when it contains ``dataset_dict.json`` (DatasetDict export layout).
+
+    ``hf_home`` must come from the environment (e.g. ``HF_HOME``); if unset, returns ``None``.
+
+    Slug is ``dataset_path`` with ``/`` replaced by ``--``. If ``dataset_name`` is set (subset),
+    append ``--`` + ``dataset_name``. When there is no subset (e.g. ``hellaswag``, ``blimp``),
+    only the path segment is used.
+    Example: ``allenai/ai2_arc`` + ``ARC-Easy`` -> ``allenai--ai2_arc--ARC-Easy`` under HF_HOME.
+    Example: ``hellaswag`` + ``None`` -> ``hellaswag`` under HF_HOME.
+    """
+    if not hf_home or not dataset_path:
+        return None
+    if dataset_name and ("/" in dataset_name or "\\" in dataset_name):
+        return None
+    root = Path(hf_home).resolve()
+    slug = dataset_path.replace("/", "--")
+    if dataset_name:
+        slug += "--" + dataset_name
+    if not slug or ".." in slug:
+        return None
+    bundle = (root / slug).resolve()
+    try:
+        bundle.relative_to(root)
+    except ValueError:
+        return None
+    if not (bundle / "dataset_dict.json").is_file():
+        return None
+    return bundle
+
+
+def _load_datasetdict_from_offline_bundle(bundle: Path) -> Any:
+    """Load a DatasetDict export from disk; clarify failures caused by datasets/PyArrow version skew."""
+    try:
+        return datasets.load_from_disk(str(bundle))
+    except TypeError as exc:
+        # e.g. Features.from_dict -> "must be called with a dataclass type or instance" when
+        # dataset_info.json was produced by a different `datasets` major than this runtime.
+        if "dataclass" in str(exc).lower():
+            raise RuntimeError(
+                f"Offline load_from_disk failed for {bundle}: on-disk metadata is incompatible "
+                "with this `datasets` build (usually the bundle was saved with another "
+                "`datasets`/PyArrow version). Re-run DatasetDict.save_to_disk using the same "
+                f"`datasets` and `pyarrow` versions as the eval image (here: datasets {datasets.__version__}), "
+                "then re-upload."
+            ) from exc
+        raise
 
 
 @dataclass
@@ -265,12 +319,38 @@ class Task(abc.ABC):
             - `datasets.DownloadMode.FORCE_REDOWNLOAD`
                 Fresh download and fresh dataset.
         """
+        offline = (
+            os.environ.get("HF_DATASETS_OFFLINE") == "1"
+            or os.environ.get("HF_HUB_OFFLINE") == "1"
+        )
+
+        if offline:
+            bundle = _offline_datasetdict_bundle_dir(
+                os.environ.get("HF_HOME"),
+                self.DATASET_PATH,
+                self.DATASET_NAME,
+            )
+            if bundle is not None:
+                eval_logger.info(
+                    "Offline: loading DatasetDict bundle at %s",
+                    bundle,
+                )
+                self.dataset = _load_datasetdict_from_offline_bundle(bundle)
+                return
+
+        kwargs: Dict[str, Any] = {
+            "data_dir": data_dir,
+            "cache_dir": cache_dir,
+            "download_mode": download_mode,
+        }
+        # Offline: standard datasets.load_dataset — rely on HF_HOME (hub + datasets caches from offline mirror).
+        if offline:
+            kwargs["download_config"] = DownloadConfig(local_files_only=True)
+
         self.dataset = datasets.load_dataset(
             path=self.DATASET_PATH,
             name=self.DATASET_NAME,
-            data_dir=data_dir,
-            cache_dir=cache_dir,
-            download_mode=download_mode,
+            **kwargs,
         )
 
     @property
@@ -931,10 +1011,45 @@ class ConfigurableTask(Task):
                     )
 
     def download(self, dataset_kwargs: Optional[Dict[str, Any]] = None) -> None:
+        kwargs = dict(dataset_kwargs if dataset_kwargs is not None else {})
+        offline = (
+            os.environ.get("HF_DATASETS_OFFLINE") == "1"
+            or os.environ.get("HF_HUB_OFFLINE") == "1"
+        )
+        if offline:
+            bundle = _offline_datasetdict_bundle_dir(
+                os.environ.get("HF_HOME"),
+                self.DATASET_PATH,
+                self.DATASET_NAME,
+            )
+            if bundle is not None:
+                eval_logger.info(
+                    "Offline: loading DatasetDict bundle at %s",
+                    bundle,
+                )
+                self.dataset = _load_datasetdict_from_offline_bundle(bundle)
+                return
+        # Offline: standard datasets.load_dataset — rely on HF_HOME caches; merge local_files_only into download_config.
+        if offline:
+            existing = kwargs.get("download_config")
+            if existing is None:
+                dc = DownloadConfig(local_files_only=True)
+            else:
+                try:
+                    dc = copy(existing)
+                    dc.local_files_only = True
+                except (TypeError, AttributeError) as exc:
+                    eval_logger.warning(
+                        "Offline: failed to copy existing download_config (%s); falling back to local_files_only DownloadConfig",
+                        exc,
+                    )
+                    dc = DownloadConfig(local_files_only=True)
+            kwargs["download_config"] = dc
+
         self.dataset = datasets.load_dataset(
             path=self.DATASET_PATH,
             name=self.DATASET_NAME,
-            **dataset_kwargs if dataset_kwargs is not None else {},
+            **kwargs,
         )
 
     def has_training_docs(self) -> bool:
