@@ -258,9 +258,9 @@ colorama==0.4.6 \
     # via
     #   sacrebleu
     #   tqdm-multiprocess
-dataproperty==1.1.0 \
-    --hash=sha256:b038437a4097d1a1c497695c3586ea34bea67fdd35372b9a50f30bf044d77d04 \
-    --hash=sha256:c61fcb2e2deca35e6d1eb1f251a7f22f0dcde63e80e61f0cc18c19f42abfd25b
+DataProperty==1.1.1 \
+    --hash=sha256:a83af82a234edda5378a36fb092bc90dd554646c5e58202a310acf468ae81bc8 \
+    --hash=sha256:cf026aa002dbd6c57c619ec6741ffd61ae7bf2f20481951d8af2dff44480340e
     # via
     #   pytablewriter
     #   tabledata
