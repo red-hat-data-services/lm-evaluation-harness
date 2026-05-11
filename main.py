@@ -8,13 +8,18 @@ Required environment variables:
 - REGISTRY_URL: OCI registry URL
 
 Optional environment variables:
-- EVALHUB_JOB_SPEC_PATH: path to the job spec JSON (defaults to `meta/job.json`)
+- EVALHUB_JOB_SPEC_PATH: path to the job spec JSON (defaults to ``/meta/job.json``); must resolve under ``/meta``
 - REGISTRY_USERNAME: Registry username (optional)
 - REGISTRY_PASSWORD: Registry password/token (optional)
 
-Disconnected clusters: set `"offline": true` under `parameters` in the job spec so HF libraries use
-local caches under HF_HOME (default `/test_data`). The offline flag is read once from JSON before
-importing lm_eval so Hugging Face env vars apply in time.
+Offline / air-gapped clusters: The job file is read before ``lm_eval`` loads (see
+``_seed_hf_offline_before_lm_eval_import``). The adapter only checks top-level
+``parameters.tokenizer``—the same tokenizer path used everywhere else, not anything under nested
+``parameters.parameters``. If that path exists on disk, sits under ``/test_data`` but is not the
+``/test_data`` mount path by itself, and another folder next to it under ``/test_data`` contains
+``dataset_dict.json`` (offline dataset files, e.g. next to ``tokenizer/``), the adapter turns on
+Hugging Face offline mode: it sets ``HF_HOME`` and related env vars so those libraries use local
+files and do not call the Hub. You do not need ``parameters.offline``.
 """
 
 import json
@@ -28,28 +33,150 @@ from pathlib import Path
 from typing import Any
 
 _TEST_DATA_DIR = "/test_data"
+# EvalHub mounts the job spec JSON under this directory only; reject other paths (CWE-22).
+_JOB_SPEC_ALLOWED_ROOT = Path("/meta")
 
 
-def _job_spec_file_requests_offline() -> bool:
-    """Read parameters.offline from job JSON only (no JobSpec yet). Used to set HF env before lm_eval import."""
-    path = os.environ.get("EVALHUB_JOB_SPEC_PATH", "/meta/job.json")
+def _resolve_job_spec_path_for_read(path: str) -> Path | None:
+    """Return a resolved path to open, or None if ``path`` is invalid or escapes ``/meta``."""
+    if not isinstance(path, str) or not path.strip():
+        print("WARNING: job spec path is empty; refusing to open", file=sys.stderr)
+        return None
     try:
-        with open(path, encoding="utf-8") as f:
-            spec = json.load(f)
-        if not isinstance(spec, dict):
-            return False
-        parameters = spec.get("parameters")
-        if not isinstance(parameters, dict):
-            parameters = {}
-        return bool(parameters.get("offline"))
-    except FileNotFoundError:
-        return False
-    except (OSError, json.JSONDecodeError, TypeError) as exc:
+        resolved = Path(path.strip()).resolve()
+    except (OSError, ValueError) as exc:
+        print(f"WARNING: invalid job spec path {path!r}: {exc}", file=sys.stderr)
+        return None
+    try:
+        allowed = _JOB_SPEC_ALLOWED_ROOT.resolve()
+    except OSError:
+        allowed = _JOB_SPEC_ALLOWED_ROOT
+    if not resolved.is_relative_to(allowed):
         print(
-            f"WARNING: failed to read job spec for offline mode from {path!r}: {exc}",
+            f"WARNING: job spec path {path!r} resolves to {resolved} "
+            f"which is not under {allowed}; refusing to open",
             file=sys.stderr,
         )
+        return None
+    return resolved
+
+
+def _read_job_spec_parameters_from_path(path: str) -> dict[str, Any]:
+    """Load top-level ``parameters`` object from the job spec JSON file.
+
+    Only files whose resolved path stays under ``/meta`` are opened (see ``EVALHUB_JOB_SPEC_PATH``).
+    """
+    resolved = _resolve_job_spec_path_for_read(path)
+    if resolved is None:
+        return {}
+    try:
+        with open(resolved, encoding="utf-8") as f:
+            spec = json.load(f)
+    except FileNotFoundError:
+        return {}
+    except PermissionError as exc:
+        print(
+            f"WARNING: permission denied reading job spec {resolved!r}: {exc}",
+            file=sys.stderr,
+        )
+        return {}
+    except OSError as exc:
+        print(f"WARNING: I/O error reading job spec {resolved!r}: {exc}", file=sys.stderr)
+        return {}
+    except json.JSONDecodeError as exc:
+        print(f"WARNING: invalid JSON in job spec {resolved!r}: {exc}", file=sys.stderr)
+        return {}
+    except TypeError as exc:
+        print(
+            f"WARNING: unexpected type while parsing job spec {resolved!r}: {exc}",
+            file=sys.stderr,
+        )
+        return {}
+    if not isinstance(spec, dict):
+        return {}
+    parameters = spec.get("parameters")
+    if not isinstance(parameters, dict):
+        return {}
+    return parameters
+
+
+def _extract_tokenizer_parameter(parameters: dict[str, Any]) -> str | None:
+    """Tokenizer path or id from benchmark ``parameters.tokenizer`` (must match ``build_lmeval_config``).
+
+    Only the top-level key is used—the same source as ``model_args["tokenizer"]``—so HF offline
+    auto-detection never diverges from the tokenizer the adapter actually loads.
+    """
+    raw = parameters.get("tokenizer")
+    if isinstance(raw, str) and raw.strip():
+        return raw.strip()
+    return None
+
+
+def _dataset_material_present_under_test_data(
+    root_resolved: Path, tokenizer_resolved: Path
+) -> bool:
+    """True when a DatasetDict bundle (``dataset_dict.json``) exists beside the tokenizer path.
+
+    Both paths must already be ``Path.resolve()`` results. Matches EvalHub ``/test_data`` sync:
+    e.g. ``tokenizer/`` and ``allenai--ai2_arc--ARC-Easy/`` as direct children of the mount.
+    """
+    try:
+        for child in root_resolved.iterdir():
+            if not child.is_dir():
+                continue
+            try:
+                cres = child.resolve()
+            except OSError:
+                continue
+            if cres == tokenizer_resolved:
+                continue
+            if tokenizer_resolved.is_relative_to(cres):
+                continue
+            if (child / "dataset_dict.json").is_file():
+                return True
+    except OSError:
         return False
+
+    return False
+
+
+def _infer_auto_offline_from_local_test_data(
+    parameters: dict[str, Any],
+    *,
+    test_data_root: str | Path = _TEST_DATA_DIR,
+) -> bool:
+    """True when ``parameters.tokenizer`` points into ``test_data_root`` and datasets are co-located.
+
+    Tokenizer: absolute path under ``test_data_root``, not the mount root alone, path exists.
+    Datasets: see ``_dataset_material_present_under_test_data`` (same ``/test_data`` directory).
+    """
+    tokenizer_str = _extract_tokenizer_parameter(parameters)
+    if not tokenizer_str or not tokenizer_str.startswith("/"):
+        return False
+
+    root = Path(test_data_root)
+    try:
+        root_res = root.resolve()
+    except OSError:
+        return False
+    if not root_res.is_dir():
+        return False
+
+    tokenizer_path = Path(tokenizer_str)
+    try:
+        tok_res = tokenizer_path.resolve()
+    except OSError:
+        return False
+
+    if tok_res == root_res or not tok_res.is_relative_to(root_res):
+        return False
+    try:
+        if not tok_res.exists():
+            return False
+    except OSError:
+        return False
+
+    return _dataset_material_present_under_test_data(root_res, tok_res)
 
 
 def configure_hf_offline_environment(hf_home: str) -> None:
@@ -69,9 +196,10 @@ def configure_hf_offline_environment(hf_home: str) -> None:
 
 
 def _seed_hf_offline_before_lm_eval_import() -> None:
-    if not _job_spec_file_requests_offline():
+    path = os.environ.get("EVALHUB_JOB_SPEC_PATH", "/meta/job.json")
+    if not _infer_auto_offline_from_local_test_data(_read_job_spec_parameters_from_path(path)):
         return
-    configure_hf_offline_environment(os.environ.get("HF_HOME", _TEST_DATA_DIR))
+    configure_hf_offline_environment(_TEST_DATA_DIR)
 
 
 from evalhub.adapter import (
@@ -290,21 +418,24 @@ class LMEvalAdapter(FrameworkAdapter):
         start_time = time.time()
 
         try:
-            # When offline mode is enabled, configure HuggingFace libraries to
-            # use only local data from /test_data (populated by the init container
-            # from S3 via test_data_ref).  This covers both datasets and tokenizers.
-            if config.parameters.get("offline"):
+            # Auto-detect disconnected layout (see module docstring); re-apply HF env in case
+            # the import-time seed skipped (e.g. job file unreadable at process start).
+            benchmark_params = (
+                config.parameters if isinstance(config.parameters, dict) else {}
+            )
+            hf_offline = _infer_auto_offline_from_local_test_data(benchmark_params)
+            if hf_offline:
                 test_data_dir = _TEST_DATA_DIR
                 if not os.path.isdir(test_data_dir):
                     raise RuntimeError(
-                        f"Offline mode requested but {test_data_dir} does not exist. "
-                        "Ensure test_data_ref is configured so the init container "
-                        "populates the directory before the adapter starts."
+                        f"Local /test_data layout detected from parameters.tokenizer but "
+                        f"{test_data_dir} does not exist. Ensure test_data_ref is configured so "
+                        "the init container populates the directory before the adapter starts."
                     )
-                # Idempotent re-apply: import-time seed may have set HF_* from the same job JSON.
                 configure_hf_offline_environment(test_data_dir)
                 logger.info(
-                    "Offline mode enabled: HF_HOME=%s, downloads disabled",
+                    "HF offline mode (auto-detected from parameters.tokenizer + /test_data): "
+                    "HF_HOME=%s, downloads disabled",
                     test_data_dir,
                 )
 
@@ -334,7 +465,6 @@ class LMEvalAdapter(FrameworkAdapter):
             num_examples = config.num_examples
 
             # Adapter-specific params from parameters
-            benchmark_params = config.parameters
             num_fewshot = int(benchmark_params.get("num_few_shot", 0))
             random_seed = int(benchmark_params.get("random_seed", 42))
 
