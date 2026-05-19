@@ -52,3 +52,12 @@ repos:
 #    - id: mypy
 #      additional_dependencies: [".[sentencepiece,multilingual,promptsource,gptq]", "types-PyYAML", "types-requests"]
 #      exclude: ^tests/.*$
+  - repo: local
+    hooks:
+      - id: generate-dataset-mapping
+        name: Generate benchmark dataset mapping table
+        entry: python .github/scripts/generate_dataset_table.py
+        language: python
+        additional_dependencies: ["pyyaml==6.0.3"]
+        files: ^lm_eval/tasks/.*\.yaml$
+        pass_filenames: false

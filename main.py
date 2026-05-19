@@ -26,6 +26,7 @@ import json
 import logging
 import os
 import re
+import requests
 import sys
 import time
 from datetime import UTC, datetime
@@ -296,6 +297,50 @@ def _sanitize_error_message(msg: str) -> str:
     s = re.sub(r"(https?://[^\s?]+)(\?[^\s]*)", r"\1", s)
 
     return s
+
+
+def _evaluation_failure_for_evalhub(exc: BaseException) -> tuple[str, str]:
+    """Return ``(sanitized_message, message_code)`` for a failed lm_eval / adapter run."""
+    error_str = str(exc)
+    error_lower = error_str.lower()
+
+    is_gated = "gated repo" in error_lower or "gated dataset" in error_lower
+
+    if not is_gated:
+        is_gated = (
+            isinstance(exc, requests.HTTPError)
+            and exc.response is not None
+            and exc.response.status_code == 403
+            and "huggingface" in error_lower
+        )
+    if is_gated:
+        return (
+            "Gated HuggingFace dataset error; authentication required. "
+            "Set HF_TOKEN by adding an 'hf-token' key to your "
+            "model auth secret (model.auth.secret_ref).",
+            "gated_dataset_auth_required",
+        )
+
+    if isinstance(exc, requests.HTTPError) and exc.response is not None:
+        sc = exc.response.status_code
+        msg = _sanitize_error_message(f"Model endpoint returned HTTP {sc}: {error_str}")
+        if sc == 401:
+            return msg, "model_authentication_failed"
+        if sc == 403:
+            return msg, "model_access_forbidden"
+        if sc == 404:
+            return msg, "model_endpoint_not_found"
+        if sc == 408:
+            return msg, "model_request_timeout"
+        if sc == 429:
+            return msg, "model_rate_limited"
+        if 500 <= sc < 600:
+            return msg, "model_server_error"
+
+    return (
+        _sanitize_error_message(f"Evaluation failed: {error_str}"),
+        "evaluation_failed",
+    )
 
 
 def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
@@ -685,27 +730,7 @@ class LMEvalAdapter(FrameworkAdapter):
         except Exception as e:
             logger.error("Evaluation failed", exc_info=True)
 
-            error_str = str(e)
-            error_lower = error_str.lower()
-            is_gated = (
-                "gated repo" in error_lower
-                or "gated dataset" in error_lower
-                or ("403" in error_lower and "huggingface" in error_lower)
-            )
-
-            if is_gated:
-                error_message = (
-                    "Gated HuggingFace dataset error; authentication required. "
-                    "Set HF_TOKEN by adding an 'hf-token' key to your "
-                    "model auth secret (model.auth.secret_ref)."
-                )
-                error_code = "gated_dataset_auth_required"
-            else:
-                # str(e) carries full text for requests.HTTPError etc.; sanitize before Hub.
-                error_message = _sanitize_error_message(
-                    f"Evaluation failed: {error_str}"
-                )
-                error_code = "evaluation_failed"
+            error_message, error_code = _evaluation_failure_for_evalhub(e)
 
             # Report failure (error_message is sanitized for external callbacks)
             callbacks.report_status(
@@ -713,9 +738,7 @@ class LMEvalAdapter(FrameworkAdapter):
                     status=JobStatus.FAILED,
                     phase=JobPhase.COMPLETED,
                     progress=0.0,
-                    message=_status_message(
-                        "Evaluation failed", code=error_code
-                    ),
+                    message=_status_message("Evaluation failed", code=error_code),
                     error=ErrorInfo(
                         message=error_message,
                         message_code=error_code,
