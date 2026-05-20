@@ -75,7 +75,7 @@ nvidia-nvtx-cu12==12.4.127 ; python_version >= "3.11" and python_version < "3.13
 olot==0.1.15 ; python_version >= "3.11" and python_version < "3.13"
 oras==0.2.41 ; python_version >= "3.11" and python_version < "3.13"
 packaging==26.0 ; python_version >= "3.11" and python_version < "3.13"
-pandas==2.2.3 ; python_version >= "3.11" and python_version < "3.13"
+pandas==2.3.3 ; python_version >= "3.11" and python_version < "3.13"
 pathvalidate==3.3.1 ; python_version >= "3.11" and python_version < "3.13"
 peft==0.13.2 ; python_version >= "3.11" and python_version < "3.13"
 portalocker==3.2.0 ; python_version >= "3.11" and python_version < "3.13"
