@@ -19,7 +19,8 @@ classifiers = [
 requires-python = ">=3.11,<3.13"
 license = { "text" = "MIT" }
 dependencies = [
-    "urllib3==2.6.3",
+    "urllib3==2.7.0",
+    "lxml==6.1.1",
     "accelerate==1.0.1",
     "evaluate==0.4.3",
     "eval-hub-sdk[adapter]==0.1.5",
@@ -69,7 +70,7 @@ api = [
     "tqdm==4.66.6",
     "tiktoken==0.8.0",
 ]
-ifeval = ["langdetect==1.0.9", "immutabledict==4.2.1", "nltk==3.9.3"]
+ifeval = ["langdetect==1.0.9", "immutabledict==4.2.1", "nltk==3.9.4"]
 math = ["sympy>=1.12", "antlr4-python3-runtime==4.11", "math_verify[antlr4_11_0]"]
 dev = [
     "pytest==8.3.3",
