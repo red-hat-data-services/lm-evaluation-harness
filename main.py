@@ -37,6 +37,16 @@ _TEST_DATA_DIR = "/test_data"
 # EvalHub mounts the job spec JSON under this directory only; reject other paths (CWE-22).
 _JOB_SPEC_ALLOWED_ROOT = Path("/meta")
 
+# Benchmarks whose HuggingFace datasets use custom loading scripts and require trust_remote_code.
+# Remove an entry here once the dataset is converted to parquet on the Hub.
+_BENCHMARKS_REQUIRING_REMOTE_CODE: frozenset[str] = frozenset({
+    "ethics_cm",
+})
+
+
+def _needs_trust_remote_code(benchmark_id: str) -> bool:
+    return benchmark_id in _BENCHMARKS_REQUIRING_REMOTE_CODE
+
 
 def _resolve_job_spec_path_for_read(path: str) -> Path | None:
     """Return a resolved path to open, or None if ``path`` is invalid or escapes ``/meta``."""
@@ -563,22 +573,32 @@ class LMEvalAdapter(FrameworkAdapter):
                 )
             )
 
+            # Some datasets use custom HF loading scripts and require trust_remote_code.
+            import datasets as _datasets
+            _prev_trust_remote_code = _datasets.config.HF_DATASETS_TRUST_REMOTE_CODE
+            if _needs_trust_remote_code(benchmark_id):
+                _datasets.config.HF_DATASETS_TRUST_REMOTE_CODE = True
+                logger.info("trust_remote_code enabled for benchmark %s", benchmark_id)
+
             # Run evaluation based on job spec
             # Note: batch_size is passed in model_args for local-completions backend
-            results = simple_evaluate(
-                model=model_backend,
-                model_args=model_args,
-                tasks=[benchmark_id],
-                num_fewshot=int(num_fewshot),
-                device="cpu",
-                limit=num_examples,
-                random_seed=random_seed,
-                numpy_random_seed=random_seed,
-                torch_random_seed=random_seed,
-                task_manager=task_manager,
-                log_samples=True,
-                gen_kwargs=gen_kwargs,
-            )
+            try:
+                results = simple_evaluate(
+                    model=model_backend,
+                    model_args=model_args,
+                    tasks=[benchmark_id],
+                    num_fewshot=int(num_fewshot),
+                    device="cpu",
+                    limit=num_examples,
+                    random_seed=random_seed,
+                    numpy_random_seed=random_seed,
+                    torch_random_seed=random_seed,
+                    task_manager=task_manager,
+                    log_samples=True,
+                    gen_kwargs=gen_kwargs,
+                )
+            finally:
+                _datasets.config.HF_DATASETS_TRUST_REMOTE_CODE = _prev_trust_remote_code
 
             # Phase 4: Post-processing
             callbacks.report_status(

@@ -3,6 +3,10 @@ tag:
 task: ethics_cm
 dataset_path: EleutherAI/hendrycks_ethics
 dataset_name: commonsense
+dataset_kwargs:
+  # Siblings inherit this entire dict via shallow dict.update() (lm_eval/utils.py).
+  # If a sibling needs to add any dataset_kwargs key, it must also repeat this revision pin.
+  revision: a710dd862056df1a92346e7afee93a34d57a5f42
 output_type: multiple_choice
 training_split: train
 test_split: test
