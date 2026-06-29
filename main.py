@@ -497,11 +497,6 @@ class LMEvalAdapter(FrameworkAdapter):
             creds = resolve_model_credentials()
             if creds.api_key:
                 os.environ["OPENAI_API_KEY"] = creds.api_key
-            else:
-                auth_value = creds.auth_headers.get("Authorization", "")
-                if auth_value.startswith("Bearer "):
-                    token = auth_value.replace("Bearer ", "").strip()
-                    os.environ["OPENAI_API_KEY"] = token
 
             # Set HF_TOKEN for gated dataset access (e.g. leaderboard_gpqa).
             # Priority: HF_TOKEN env var > hf-token in model auth secret.
@@ -524,9 +519,6 @@ class LMEvalAdapter(FrameworkAdapter):
             random_seed = int(benchmark_params.get("random_seed", 42))
 
             model_backend, model_args, gen_kwargs = build_lmeval_config(config)
-            if creds.ca_cert_path:
-                # Resolve to a real path so lm_eval accepts it (K8s secret volume mounts expose keys as symlinks).
-                model_args["verify_certificate"] = os.path.realpath(creds.ca_cert_path)
 
             # Phase 1: Initialization
             callbacks.report_status(
