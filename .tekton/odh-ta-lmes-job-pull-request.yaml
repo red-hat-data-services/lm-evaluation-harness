@@ -38,7 +38,13 @@ spec:
   - name: path-context
     value: .
   - name: hermetic
-    value: false
+    value: "true"
+  - name: prefetch-input
+    value: |
+      [
+        {"type": "pip", "path": ".", "requirements_files": ["requirements/requirements-build.txt", "requirements/requirements-cuda.txt", "requirements/requirements-cpu.txt"], "binary": {"arch": ":all:"}},
+        {"type": "rpm", "path": "requirements"}
+      ]
   - name: build-image-index
     value: true
   - name: build-platforms
@@ -49,6 +55,8 @@ spec:
     - linux/s390x
   - name: image-expires-after
     value: 5d
+  - name: allow-cross-platform-images
+    value: "true"
   - name: enable-slack-failure-notification
     value: "false"
   taskRunSpecs:
