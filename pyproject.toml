@@ -77,7 +77,7 @@ dev = [
     "mypy==1.13.0",
 ]
 hf_transfer = ["hf-transfer==0.1.9"]
-testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
+testing = ["pytest==8.4.2", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
 ibm_watsonx_ai = ["ibm-watsonx-ai==1.4.11; python_version >= \"3.11\""]
 
 [tool.ruff.lint]
