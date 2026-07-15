@@ -215,7 +215,6 @@ def _seed_hf_offline_before_lm_eval_import() -> None:
 
 from evalhub.adapter import (
     DefaultCallbacks,
-    ErrorInfo,
     EvaluationResult,
     FrameworkAdapter,
     JobCallbacks,
@@ -258,12 +257,8 @@ def _jsonable(value: Any) -> Any:
     return str(value)
 
 
-def _status_message(text: str, code: str = "status_update") -> MessageInfo:
-    return MessageInfo(message=text, message_code=code)
-
-
 def _sanitize_error_message(msg: str) -> str:
-    """Redact secrets from error text before Eval Hub callbacks (ErrorInfo.message)."""
+    """Redact secrets from error text before Eval Hub callbacks."""
     s = msg
 
     # Authorization header / Bearer fragments (case-insensitive)
@@ -525,10 +520,6 @@ class LMEvalAdapter(FrameworkAdapter):
                 JobStatusUpdate(
                     status=JobStatus.RUNNING,
                     phase=JobPhase.INITIALIZING,
-                    progress=0.0,
-                    message=_status_message(
-                        f"Initializing evaluation for {benchmark_id}"
-                    ),
                 )
             )
 
@@ -545,10 +536,6 @@ class LMEvalAdapter(FrameworkAdapter):
                 JobStatusUpdate(
                     status=JobStatus.RUNNING,
                     phase=JobPhase.LOADING_DATA,
-                    progress=0.1,
-                    message=_status_message(
-                        f"Loading benchmark data for {benchmark_id}"
-                    ),
                 )
             )
 
@@ -560,8 +547,6 @@ class LMEvalAdapter(FrameworkAdapter):
                 JobStatusUpdate(
                     status=JobStatus.RUNNING,
                     phase=JobPhase.RUNNING_EVALUATION,
-                    progress=0.2,
-                    message=_status_message(f"Running evaluation on {model_name}"),
                 )
             )
 
@@ -597,8 +582,6 @@ class LMEvalAdapter(FrameworkAdapter):
                 JobStatusUpdate(
                     status=JobStatus.RUNNING,
                     phase=JobPhase.POST_PROCESSING,
-                    progress=0.8,
-                    message=_status_message("Processing evaluation results"),
                 )
             )
 
@@ -696,8 +679,6 @@ class LMEvalAdapter(FrameworkAdapter):
                 JobStatusUpdate(
                     status=JobStatus.RUNNING,
                     phase=JobPhase.PERSISTING_ARTIFACTS,
-                    progress=0.9,
-                    message=_status_message("Persisting evaluation artifacts"),
                 )
             )
 
@@ -748,10 +729,7 @@ class LMEvalAdapter(FrameworkAdapter):
             callbacks.report_status(
                 JobStatusUpdate(
                     status=JobStatus.FAILED,
-                    phase=JobPhase.COMPLETED,
-                    progress=0.0,
-                    message=_status_message("Evaluation failed", code=error_code),
-                    error=ErrorInfo(
+                    error_message=MessageInfo(
                         message=error_message,
                         message_code=error_code,
                     ),
