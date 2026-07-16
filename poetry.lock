@@ -808,14 +808,14 @@ files = [
 
 [[package]]
 name = "eval-hub-sdk"
-version = "0.4.2"
+version = "0.4.4"
 description = "Python SDK for EvalHub: common models, REST API client, and framework adapter SDK"
 optional = false
 python-versions = ">=3.11"
 groups = ["main"]
 files = [
-    {file = "eval_hub_sdk-0.4.2-py3-none-any.whl", hash = "sha256:e7f967fbc221e2c89a7ab109970187c0de40e9dc6f8fec05a0497519ae37aff3"},
-    {file = "eval_hub_sdk-0.4.2.tar.gz", hash = "sha256:2319f7b56bb3d7ebc933bcb2c7ebc88cec2e2f3c48a324de51ffd985105846d6"},
+    {file = "eval_hub_sdk-0.4.4-py3-none-any.whl", hash = "sha256:d2a793f76a5ba24c171f81c176a31dc87a141df5679796b383dfcc1a6973a179"},
+    {file = "eval_hub_sdk-0.4.4.tar.gz", hash = "sha256:3d95d86cb9a2aa86c4d81134b295c6c60d7b9ebc74f3dbecd18ecae0d1b62afc"},
 ]
 
 [package.dependencies]
@@ -829,13 +829,13 @@ pydantic-settings = ">=2.0.0"
 [package.extras]
 adapter = ["eval-hub-sdk[core]", "olot (>=0.1.15)", "oras (>=0.2.39)"]
 all = ["eval-hub-sdk[adapter,cli,client,core,dev,mcp]"]
-cli = ["click (>=8.1.0)", "eval-hub-sdk[mcp]", "pyyaml (>=6.0)", "rich (>=13.0.0)"]
+cli = ["click (>=8.1.0)", "eval-hub-sdk[core]", "pyyaml (>=6.0)", "rich (>=13.0.0)"]
 client = ["eval-hub-sdk[core]"]
 core = ["httpx (>=0.25.0)"]
 dev = ["eval-hub-sdk[cli]", "mypy (==1.19.1)", "pre-commit (>=3.4.0)", "pytest (>=7.4.0)", "pytest-asyncio (>=0.23.0)", "pytest-cov (>=4.1.0)", "ruff (==0.1.6)"]
 examples = ["lm-eval (>=0.4.0)", "ragas (>=0.1.0)"]
-mcp = ["eval-hub-sdk[core]"]
-server = ["eval-hub-server (>=0.4.2)"]
+mcp = ["eval-hub-mcp (>=0.4.4)", "eval-hub-sdk[cli]"]
+server = ["eval-hub-sdk[cli]", "eval-hub-server (>=0.4.4)"]
 
 [[package]]
 name = "evaluate"
@@ -5136,4 +5136,4 @@ testing = ["pytest", "pytest-cov", "pytest-xdist"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.13"
-content-hash = "f095e5ca2b562a990502da96a355102a2963d3f01b76a8e86a43c755b5ebb2ff"
+content-hash = "8d336f4bc4144c70be5cd50cb76493faec057f5e6afb1157935cd76e593d890b"
