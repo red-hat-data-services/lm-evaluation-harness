@@ -2,6 +2,12 @@ __pycache__
 caching
 *.egg-info
 .git
+.github
 .idea
+.konflux
 .tekton
 .venv
+requirements
+tests
+*.repo
+Dockerfile*

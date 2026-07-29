@@ -1,0 +1,43 @@
+[rhel-9-for-$basearch-baseos-rpms]
+name=Red Hat Enterprise Linux 9 for $basearch - BaseOS (RPMs)
+baseurl=https://cdn.redhat.com/content/dist/rhel9/9/$basearch/baseos/os
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify=1
+sslcacert=/etc/rhsm/ca/redhat-uep.pem
+sslclientkey=/etc/pki/entitlement/341307322155648560-key.pem
+sslclientcert=/etc/pki/entitlement/341307322155648560.pem
+
+[rhel-9-for-$basearch-appstream-rpms]
+name=Red Hat Enterprise Linux 9 for $basearch - AppStream (RPMs)
+baseurl=https://cdn.redhat.com/content/dist/rhel9/9/$basearch/appstream/os
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify=1
+sslcacert=/etc/rhsm/ca/redhat-uep.pem
+sslclientkey=/etc/pki/entitlement/341307322155648560-key.pem
+sslclientcert=/etc/pki/entitlement/341307322155648560.pem
+
+[rhel-9-for-$basearch-baseos-source-rpms]
+name=Red Hat Enterprise Linux 9 for $basearch - BaseOS (Source RPMs)
+baseurl=https://cdn.redhat.com/content/dist/rhel9/9/$basearch/baseos/source/SRPMS
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify=1
+sslcacert=/etc/rhsm/ca/redhat-uep.pem
+sslclientkey=/etc/pki/entitlement/341307322155648560-key.pem
+sslclientcert=/etc/pki/entitlement/341307322155648560.pem
+
+[rhel-9-for-$basearch-appstream-source-rpms]
+name=Red Hat Enterprise Linux 9 for $basearch - AppStream (Source RPMs)
+baseurl=https://cdn.redhat.com/content/dist/rhel9/9/$basearch/appstream/source/SRPMS
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify=1
+sslcacert=/etc/rhsm/ca/redhat-uep.pem
+sslclientkey=/etc/pki/entitlement/341307322155648560-key.pem
+sslclientcert=/etc/pki/entitlement/341307322155648560.pem
