@@ -279,7 +279,7 @@ def _to_finite_float(metric_value: Any) -> float | None:
         return None
     try:
         value = float(metric_value)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return None
     if not math.isfinite(value):
         return None

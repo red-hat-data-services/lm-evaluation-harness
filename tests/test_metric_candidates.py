@@ -1,5 +1,7 @@
 """Unit tests for skipping non-finite lm-eval metric values (BBQ NaN/Inf)."""
 
+from decimal import Decimal
+
 import pytest
 
 from main import _to_finite_float
@@ -17,6 +19,7 @@ from main import _to_finite_float
         (float("inf"), None),
         (float("-inf"), None),
         ("not-a-number", None),
+        (Decimal("1e10000"), None),  # float() raises OverflowError
     ],
 )
 def test_to_finite_float(raw: object, expected: float | None) -> None:
