@@ -19,6 +19,8 @@ metadata:
   name: odh-ta-lmes-job-on-pull-request-57892
   namespace: rhoai-tenant
 spec:
+  timeouts:
+    pipeline: "4h0m0s"
   params:
   - name: git-url
     value: '{{source_url}}'
