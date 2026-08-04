@@ -24,6 +24,7 @@ files and do not call the Hub. You do not need ``parameters.offline``.
 
 import json
 import logging
+import math
 import os
 import re
 import requests
@@ -266,6 +267,23 @@ def _jsonable(value: Any) -> Any:
     if isinstance(value, (list, tuple)):
         return [_jsonable(v) for v in value]
     return str(value)
+
+
+def _to_finite_float(metric_value: Any) -> float | None:
+    """Return a finite float, or None for N/A / non-numeric / NaN / Inf.
+
+    BBQ category bias aggregators return NaN when a category has no examples
+    (common with num_examples/limit); those must not become EvaluationResults.
+    """
+    if metric_value == "N/A" or metric_value is None:
+        return None
+    try:
+        value = float(metric_value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if not math.isfinite(value):
+        return None
+    return value
 
 
 def _sanitize_error_message(msg: str) -> str:
@@ -776,8 +794,11 @@ class LMEvalAdapter(FrameworkAdapter):
                                 continue
                             if metric_value == "N/A" or metric_value is None:
                                 continue
+                            value = _to_finite_float(metric_value)
+                            if value is None:
+                                continue
                             clean = metric_name.replace(",none", "")
-                            subtask_metrics[clean] = subtask_metrics.get(clean, 0) + float(metric_value)
+                            subtask_metrics[clean] = subtask_metrics.get(clean, 0) + value
                             subtask_count[clean] = subtask_count.get(clean, 0) + 1
                     task_results = {
                         f"{k},none": subtask_metrics[k] / subtask_count[k]
@@ -792,23 +813,22 @@ class LMEvalAdapter(FrameworkAdapter):
                 if metric_name.endswith(",none"):
                     # Primary metric (usually accuracy or similar)
                     clean_metric = metric_name.replace(",none", "")
-                    # lm-eval returns 'N/A' for metrics it cannot compute
-                    # (e.g. when the model produces unparseable outputs).
-                    if metric_value == "N/A" or metric_value is None:
+                    value = _to_finite_float(metric_value)
+                    if value is None:
                         logger.warning(
-                            "Metric %s has value N/A, skipping",
+                            "Metric %s has value N/A or non-finite, skipping",
                             clean_metric,
                         )
                         continue
                     evaluation_results.append(
                         EvaluationResult(
                             metric_name=clean_metric,
-                            metric_value=float(metric_value),
+                            metric_value=value,
                         )
                     )
                     # Use first primary metric as overall score
                     if overall_score is None:
-                        overall_score = float(metric_value)
+                        overall_score = value
 
             # Capture run metadata for generate_additional_info() — needs overall_score
             self._run_info = _build_additional_info(
