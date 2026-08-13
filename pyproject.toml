@@ -83,7 +83,7 @@ testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
 ibm_watsonx_ai = ["ibm-watsonx-ai==1.4.11"]
 
 [tool.ruff.lint]
-extend-select = ["I"]
+extend-select = ["I", "S307"]
 
 [tool.ruff.lint.isort]
 lines-after-imports = 2
