@@ -20,7 +20,7 @@ requires-python = ">=3.11,<3.13"
 license = { "text" = "MIT" }
 dependencies = [
     "urllib3==2.7.0",
-    "lxml==6.1.1",
+    "lxml==6.1.2",
     "accelerate==1.0.1",
     "evaluate==0.4.3",
     "eval-hub-sdk[adapter]==0.1.5",
