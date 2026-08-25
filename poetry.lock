@@ -228,15 +228,15 @@ files = [
 
 [[package]]
 name = "antlr4-python3-runtime"
-version = "4.11.0"
-description = "ANTLR 4.11.0 runtime for Python 3"
+version = "4.13.2"
+description = "ANTLR 4.13.2 runtime for Python 3"
 optional = true
 python-versions = "*"
 groups = ["main"]
 markers = "extra == \"math\""
 files = [
-    {file = "antlr4-python3-runtime-4.11.0.tar.gz", hash = "sha256:6a46d4f6033c8d7e53c8975cee5d83b3ba1b48157f6beb09a4965062dacfe2e0"},
-    {file = "antlr4_python3_runtime-4.11.0-py3-none-any.whl", hash = "sha256:f523f91387283045f129c343b363a8dda3a07eea62721b8eda95f2d8b817b656"},
+    {file = "antlr4_python3_runtime-4.13.2-py3-none-any.whl", hash = "sha256:fe3835eb8d33daece0e799090eda89719dbccee7aa39ef94eed3818cafa5a7e8"},
+    {file = "antlr4_python3_runtime-4.13.2.tar.gz", hash = "sha256:909b647e1d2fc2b70180ac586df3933e38919c85f98ccc656a96cd3f25ef3916"},
 ]
 
 [[package]]
@@ -1349,28 +1349,22 @@ six = "*"
 
 [[package]]
 name = "latex2sympy2-extended"
-version = "1.10.2"
+version = "1.0.6"
 description = "Convert LaTeX math to SymPy expressions"
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
 markers = "extra == \"math\""
 files = [
-    {file = "latex2sympy2_extended-1.10.2-py3-none-any.whl", hash = "sha256:f910442c5b02a466c1046f47d05cc5285181068b882399281f30102715337fb7"},
-    {file = "latex2sympy2_extended-1.10.2.tar.gz", hash = "sha256:41a517ffcc5a140e910a7d1646ce6ff440817e5f9d48fc8279d88bd0925bc389"},
+    {file = "latex2sympy2_extended-1.0.6-py3-none-any.whl", hash = "sha256:036da4b24c73c4b13566ef4e347be08232c6539ddd75b38f083cc5821e738bba"},
+    {file = "latex2sympy2_extended-1.0.6.tar.gz", hash = "sha256:1f994f3cb49c613387437980610326ae7392d41da151523ab16faa521d406083"},
 ]
 
 [package.dependencies]
-antlr4-python3-runtime = [
-    {version = ">=4.9.3,<=4.13.2"},
-    {version = "4.11.0", optional = true, markers = "extra == \"antlr4-11-0\""},
-]
+antlr4-python3-runtime = "4.13.2"
 sympy = "*"
 
 [package.extras]
-antlr4-11-0 = ["antlr4-python3-runtime (==4.11.0)"]
-antlr4-13-2 = ["antlr4-python3-runtime (==4.13.2)"]
-antlr4-9-3 = ["antlr4-python3-runtime (==4.9.3)"]
 dev = ["pytest"]
 
 [[package]]
@@ -1611,31 +1605,22 @@ files = [
 
 [[package]]
 name = "math-verify"
-version = "0.8.0"
-description = "HuggingFace library for verifying mathematical answers"
+version = "0.5.2"
+description = "A library for verifying mathematical answers"
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
 markers = "extra == \"math\""
 files = [
-    {file = "math_verify-0.8.0-py3-none-any.whl", hash = "sha256:31ca651296d817a9bb3fd58ca1fd0d192dcea709b1e5ecf2d0a4514c16f89087"},
-    {file = "math_verify-0.8.0.tar.gz", hash = "sha256:3295e0adb94bfe553ff6e3189c44f1916a85aa24ab5d1900f2086a706e28f7c4"},
+    {file = "math_verify-0.5.2-py3-none-any.whl", hash = "sha256:86eeb93a6a004c74e22ebc6980c6f8b8aed8f30eca46c712d43cbcd09f83aff2"},
+    {file = "math_verify-0.5.2.tar.gz", hash = "sha256:19b68829bc44fa8ee2ee72b9cf308e05037e5668c4e33a7f13d2ffe22d22b234"},
 ]
 
 [package.dependencies]
-latex2sympy2_extended = [
-    {version = "1.10.2"},
-    {version = "*", extras = ["antlr4-11-0"], optional = true, markers = "extra == \"antlr4-11-0\""},
-]
+latex2sympy2_extended = "1.0.6"
 
 [package.extras]
-antlr4-11-0 = ["latex2sympy2_extended[antlr4-11-0]"]
-antlr4-13-2 = ["latex2sympy2_extended[antlr4-13-2]"]
-antlr4-9-3 = ["latex2sympy2_extended[antlr4-9-3]"]
-dev = ["math-verify[format]", "math-verify[test]"]
-format = ["ruff"]
-inference = ["lighteval[math]"]
-test = ["pytest"]
+inference = ["lighteval[accelerate]"]
 
 [[package]]
 name = "mbstrdecoder"
@@ -4422,4 +4407,4 @@ testing = ["pytest", "pytest-cov", "pytest-xdist"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.13"
-content-hash = "d223e84d1828be3833ff03ea589f8860a061fa023236b9ee5bc2a6e76bcffb3b"
+content-hash = "ecb94b16949817ef9cc7fec5da29fe3ae8e993e2525ecf431257f6492c662df5"
