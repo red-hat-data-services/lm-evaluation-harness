@@ -37,6 +37,8 @@ spec:
     value: Dockerfile.konflux.lmes-job
   - name: path-context
     value: .
+  - name: build-args-file
+    value: .konflux/base-images.conf
   - name: hermetic
     value: false
   - name: build-image-index
