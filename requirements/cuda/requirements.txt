@@ -236,8 +236,9 @@ jiwer==4.0.0 \
     --hash=sha256:2e1dcf7e70b61a801585359badfc7ae4305458848b9742ea5e901130918fe098
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
-jmespath==1.0.1 \
-    --hash=sha256:f37ba61c0d5b02130f2402e9b60fa1267631edecc6eab10488225b8e88748bf8
+jmespath==1.1.0 \
+    --hash=sha256:472c87d80f36026ae83c6ddd0f1d05d4e510134ed462851fd5f754c8c3cbb88d \
+    --hash=sha256:a5663118de4908c91729bea0acadca56526eb2698e83de10cd116ae0f4e97c64
     # via
     #   boto3
     #   botocore
