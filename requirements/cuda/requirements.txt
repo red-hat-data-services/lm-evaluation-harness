@@ -147,8 +147,9 @@ frozenlist==1.8.0 \
     #   aiohttp
     #   aiosignal
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
-fsspec==2025.3.0 \
-    --hash=sha256:69218d89ef5d55db28b76797076964080ab8ce7004f3556171a8b7ad9f1210d1
+fsspec==2026.7.0 \
+    --hash=sha256:b57ddbafedfaef7018c1ecab32aa200a9d7ca26b77965f64e48b70061249d279 \
+    --hash=sha256:c803c40f4cf860b49dea58ee3e1c33cb9c790520e233537e1340049f89b82a88
     # via
     #   datasets
     #   evaluate
