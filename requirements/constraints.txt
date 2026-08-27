@@ -1,0 +1,5 @@
+# Version constraints for dependencies
+# Used with: uv pip compile --constraint requirements/constraints.txt
+
+# datasets 4.x+ / 5.x introduces breaking changes
+datasets<4
