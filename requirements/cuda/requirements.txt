@@ -687,8 +687,9 @@ triton==3.6.0 \
     --hash=sha256:b139cb99c49efdb25efe6985e40760c9a5146ac9a839229b28245392b7ce2504
     # via torch
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
-typepy==1.3.5 \
-    --hash=sha256:48bae18ef979fcac542c851d87829ca1a9fdd9e61911e29cec4e68dcbcb8de8d
+typepy==2.0.0 \
+    --hash=sha256:413fec52a54a010e2e20d6e18eef68840ebf13b95b719e17b5e2e81c6e85e4a6 \
+    --hash=sha256:f97d3d26d5643a0aeccefb5f5ebadf64610e53eb2d0fa14133e5929a63314cfc
     # via
     #   dataproperty
     #   pytablewriter
