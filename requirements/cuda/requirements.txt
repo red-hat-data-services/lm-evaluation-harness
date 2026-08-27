@@ -307,8 +307,9 @@ more-itertools==10.5.0 \
     --hash=sha256:831687b44ad30aeee3ecc111141f268b532a2389f9f78cf3bb99a00beba48baf
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
-mpmath==1.3.0 \
-    --hash=sha256:0640c516c8164e1eec9da3e51b308efa47317e74a481a4f9562d9ace2552300b
+mpmath==1.4.1 \
+    --hash=sha256:dc4f0ea2304480d4a9a48a94c1020571558ade522b44a6912efac63a586e140f \
+    --hash=sha256:efd6d1b75f09d69524a67609949812668b28e81ecbfe0ab449ced8c13e92642e
     # via sympy
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
 multidict==6.7.1 \
