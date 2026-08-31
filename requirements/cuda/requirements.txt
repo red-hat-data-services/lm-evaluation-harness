@@ -463,8 +463,9 @@ pybind11==2.13.6 \
     --hash=sha256:8eab25a148c7fd913012e65436f093d1ac16366e915afd805f141ec85e298d32
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
-pydantic==2.13.4 \
-    --hash=sha256:de3ea73c405d75f86fe30c431f118446e5306d4048c4c197e1927adf2fc1ba46
+pydantic==2.13.5 \
+    --hash=sha256:346a034f080da3755d8e9cb5e00e8b07de1d39e4f6e2c87d8ab7cafa0b269a73 \
+    --hash=sha256:51a9c5f7b2f8e636f04c6cada605d9b6a3bf1348fdf945a3d8869b19bba0ee08
     # via
     #   eval-hub-sdk
     #   olot
