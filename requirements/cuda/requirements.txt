@@ -429,8 +429,9 @@ peft==0.20.0 \
     --hash=sha256:332891bd42ea6d2506e27d8b7ff862a6456e98ea9edb929b54f2d721c3947656
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
-portalocker==4.2.0 \
-    --hash=sha256:ed35cfc2b7213815317a75a35827253d7b64a1163cc20d4a8e48f87b2d9d14c6
+portalocker==4.3.0 \
+    --hash=sha256:69bf8e46769d66eb0a23219b9550253d2c3b5f03400202a2333784c1e6395e32 \
+    --hash=sha256:aa91709ccfc322b8225171392d64a2f9fc833f15f5ab741cfba6d3fba285ce31
     # via sacrebleu
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
 propcache==0.5.2 \
