@@ -249,6 +249,25 @@ _seed_hf_offline_before_lm_eval_import()
 from lm_eval import simple_evaluate  # noqa: E402
 from lm_eval.tasks import TaskManager  # noqa: E402
 
+# Eval-hub catalog IDs that differ from lm-eval task names. Tags (e.g. winogender) expand
+# to multiple subtasks without a group_subtasks entry, so results are not keyed by the
+# catalog id unless mapped to a single task (winogender_all = full Winogender set).
+_BENCHMARK_TO_LMEVAL_TASK: dict[str, str] = {
+    "winogender": "winogender_all",
+}
+
+
+def _resolve_lmeval_task(benchmark_id: str, task_manager: TaskManager) -> str:
+    """Map eval-hub benchmark_id to the lm-eval task name used for evaluate + results."""
+    if benchmark_id in _BENCHMARK_TO_LMEVAL_TASK:
+        return _BENCHMARK_TO_LMEVAL_TASK[benchmark_id]
+    if task_manager._name_is_tag(benchmark_id):
+        raise ValueError(
+            f"Benchmark {benchmark_id!r} is an lm-eval tag, not a task; "
+            f"add a mapping in _BENCHMARK_TO_LMEVAL_TASK"
+        )
+    return benchmark_id
+
 
 # Configure logging
 logging.basicConfig(
@@ -730,6 +749,13 @@ class LMEvalAdapter(FrameworkAdapter):
 
             # Initialize task manager
             task_manager = TaskManager()
+            lmeval_task = _resolve_lmeval_task(benchmark_id, task_manager)
+            if lmeval_task != benchmark_id:
+                logger.info(
+                    "Resolved benchmark %s to lm-eval task %s",
+                    benchmark_id,
+                    lmeval_task,
+                )
 
             # Phase 3: Running evaluation
             callbacks.report_status(
@@ -752,7 +778,7 @@ class LMEvalAdapter(FrameworkAdapter):
                 results = simple_evaluate(
                     model=model_backend,
                     model_args=model_args,
-                    tasks=[benchmark_id],
+                    tasks=[lmeval_task],
                     num_fewshot=int(num_fewshot),
                     device="cpu",
                     limit=num_examples,
@@ -774,16 +800,16 @@ class LMEvalAdapter(FrameworkAdapter):
             )
 
             # Extract results
-            task_results = results.get("results", {}).get(benchmark_id, {})
+            task_results = results.get("results", {}).get(lmeval_task, {})
 
             # For group tasks (e.g. leaderboard_bbh), lm-eval stores metrics under
             # subtask names, not the group name. Fall back to averaging subtask results.
             if not any(k.endswith(",none") for k in task_results):
-                group_subtasks = results.get("group_subtasks", {}).get(benchmark_id, [])
+                group_subtasks = results.get("group_subtasks", {}).get(lmeval_task, [])
                 if group_subtasks:
                     logger.info(
                         "Benchmark %s is a group task, aggregating %d subtask results",
-                        benchmark_id,
+                        lmeval_task,
                         len(group_subtasks),
                     )
                     all_results = results.get("results", {})
@@ -834,7 +860,7 @@ class LMEvalAdapter(FrameworkAdapter):
             # Capture run metadata for generate_additional_info() — needs overall_score
             self._run_info = _build_additional_info(
                 lmeval_results=results,
-                benchmark_id=benchmark_id,
+                benchmark_id=lmeval_task,
                 benchmark_params=benchmark_params,
                 model_args=model_args,
                 num_fewshot=num_fewshot,
@@ -844,7 +870,7 @@ class LMEvalAdapter(FrameworkAdapter):
             )
 
             # Get number of examples evaluated
-            samples = results.get("samples", {}).get(benchmark_id, [])
+            samples = results.get("samples", {}).get(lmeval_task, [])
             num_examples_evaluated = (
                 len(samples) if isinstance(samples, list) else num_examples
             )
