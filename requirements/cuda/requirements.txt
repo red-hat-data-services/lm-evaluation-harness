@@ -459,8 +459,9 @@ pyarrow==25.0.1 \
     --hash=sha256:f6618c7f300130a92704a5bbc9543f97c3f846d39518d6df71797d3b9560a5bd
     # via datasets
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
-pybind11==2.13.6 \
-    --hash=sha256:8eab25a148c7fd913012e65436f093d1ac16366e915afd805f141ec85e298d32
+pybind11==3.1.0 \
+    --hash=sha256:a1cc06b524ab3edca51f8ad3895f9c4fa20b8b19283173dff4ae781449dc9639 \
+    --hash=sha256:b8488090f8acffbcb6b5d6a85571a6827a0a2981ffb75e5a0b27b87c4a6b7dd0
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
 pydantic==2.13.4 \
