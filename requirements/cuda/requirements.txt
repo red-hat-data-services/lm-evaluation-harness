@@ -483,8 +483,9 @@ pygments==2.21.0 \
     --hash=sha256:7ce53c8476ed7bf54d207d6ad4a422cc7da20947f967645b8d76d72948e466e9
     # via rich
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
-pytablewriter==1.2.0 \
-    --hash=sha256:d5596519f23b0f80a69c727b7872d50cebc377089f536b9c11c52121cb3c8401
+pytablewriter==1.2.1 \
+    --hash=sha256:7bd0f4f397e070e3b8a34edcf1b9257ccbb18305493d8350a5dbc9957fced959 \
+    --hash=sha256:e906ff7ff5151d70a5f66e0f7b75642a7f2dce8d893c265b79cc9cf6bc04ddb4
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
 python-dateutil==2.9.0.post0 \
