@@ -91,6 +91,7 @@ RUN if [ "$TARGETARCH" = "s390x" ] ; then \
     cd arrow && git checkout 7c3d4867e40dd0100542247a61cb83520369b2d4      && \
     git apply /tmp/s390x-parquet.patch                                     && \
     rm -rf .git && mkdir dist                                              && \
+    pip3 install "cython<3"                                                && \
     pip3 install -r python/requirements-build.txt                          && \
     export ARROW_HOME=$(pwd)/dist                                          && \
     export LD_LIBRARY_PATH=$(pwd)/dist/lib:$LD_LIBRARY_PATH                && \
