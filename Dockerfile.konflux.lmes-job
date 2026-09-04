@@ -45,6 +45,7 @@ RUN if [ "$TARGETARCH" = "ppc64le" ] ; then \
     export PYARROW_VERSION ; \
     git clone -b apache-arrow-${PYARROW_VERSION} https://github.com/apache/arrow.git --recursive && \
     cd arrow && rm -rf .git && mkdir dist                                  && \
+    pip3 install "cython<3"                                                && \
     pip3 install -r python/requirements-build.txt                          && \
     export ARROW_HOME=$(pwd)/dist                                          && \
     export LD_LIBRARY_PATH=$(pwd)/dist/lib:$LD_LIBRARY_PATH                && \
