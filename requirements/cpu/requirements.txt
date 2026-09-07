@@ -205,11 +205,24 @@ tiktoken==0.14.0 \
     --hash=sha256:fdc3b0a2705692c68aaf6b8b9943a83a2e6579e14e3c168c8378196ab9c41809
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cpu-ubi9-test/simple/
-tokenizers==0.22.2 \
-    --hash=sha256:69c81fae0de1a3ad838698c5d437b497ba6877d807c4cf6899aa6903f49adcc0 \
-    --hash=sha256:7009080aca0c366f7d9a2f6314e89e338588512ecbd8d7342cb4993da9d96548 \
-    --hash=sha256:8dbf10df6e435614d66bb8640e3f77f12daf140ea3c9a5dea204650d1ea28e8a \
-    --hash=sha256:956557ecd34184cafe730b637a6bac29433b887e75ef08803c396be6d5ebe7ab
+tokenizers==0.23.1 \
+    --hash=sha256:120468fb4c24faf0543c835a4fabafa4deb3f20a035c9b6e83d0b553a97615d4 \
+    --hash=sha256:1974288a609c343774f1b897c8b482c791ab17b75ab5c8c2b1737565c1d82288 \
+    --hash=sha256:1bf13402aff9bc533c89cb849ec3b412dc3fbeacc9744840e423d7bf3f7dc0e3 \
+    --hash=sha256:1feeeadf865a7915adc25445dea30e9933e593c31bb96c277cee36de227c8bfa \
+    --hash=sha256:5075b405006415ea148a992d093699c66eb01952bf59f4d5727089a98bda45a4 \
+    --hash=sha256:53b09e85775d5187941e7bab30e941b4134ab4a7dd8c68e783d231fb7ca27c51 \
+    --hash=sha256:56f3a77de629917652f876294dc9fe6bad4a0c43bc229dc72e59bb23a0f4729a \
+    --hash=sha256:93120a930b919416da7cd10a2f606ac9919cc69cacae7980fa2140e277660948 \
+    --hash=sha256:9d10a6d957ef01896dc274e890eee27d41bd0e74ef31e60616f0fc311345184e \
+    --hash=sha256:a26197957d8e4425dfba746315f3c425ea00cfa8367c5fbc4ec73447893dcea9 \
+    --hash=sha256:ae848657742035523fdf261773630cb819a26995fcd3d9ecae0c1daf6e5a4959 \
+    --hash=sha256:e03d6ffcbe0d56ee9c1ccd070e70a13fa750727c0277e138152acbc0252c2224 \
+    --hash=sha256:e0948bbb1ac1d7cdfc9fb6d62c596e3b7550036ad60ecd654a66ad273326324e \
+    --hash=sha256:e3d8f40ea6268047de7046906326abed5134f27d4e8447b23763afe5808c8a96 \
+    --hash=sha256:e7bfaf995c1bdbbd21d13539decb6650967013759318627d85daeb7881af16b7 \
+    --hash=sha256:ea5a0ce170074329faaa8ea3f6400ecde604b6678192688533af80980daae71a \
+    --hash=sha256:f836ca703b89ae07919a309f9651f7a88fd5a33d5f718ba5ad0870ec0256bad6
     # via transformers
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cpu-ubi9-test/simple/
 torch==2.11.0 \
