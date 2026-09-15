@@ -142,7 +142,9 @@ pydantic-core==2.46.5 \
     --hash=sha256:f31dd54cbdc3f69af57b086e48b6207e4af1b15b30ac71e5b987bbc8bc3b9763 \
     --hash=sha256:f6390b37659528c23375b1689d4770d0bdc33718db880ab569c583df96c7a0e8 \
     --hash=sha256:fc73c430251f1e0b6a875b7acbe605f1e9842b85feaf18d3aa1d4bf4581ef3f3
-    # via pydantic
+    # via
+    #   -c requirements/constraints.txt
+    #   pydantic
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA2/cpu-ubi9-test/simple/
 pyyaml==6.0.3 \
     --hash=sha256:301a160656813f221026e4fd2c85d4111d0b5192c1a80f8db79e1dffbabc6529 \

@@ -3,3 +3,5 @@
 
 # datasets 4.x+ / 5.x introduces breaking changes
 datasets<4
+# Align Pydantic Core across CPU and CUDA requirements.
+pydantic-core>2.46.4
