@@ -660,8 +660,9 @@ torch==2.11.0 \
     #   accelerate
     #   peft
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
-tqdm==4.66.6 \
-    --hash=sha256:754e640b9a524ce5bdc994256671596dd1aa7ce578e074301d35ae225bb980b2
+tqdm==4.70.0 \
+    --hash=sha256:55b0b0dbd97462d06ebee91e4dac24ed4d4702be82b24f07e6c1d27e08cea220 \
+    --hash=sha256:7f585706bfddbdebf89daac705b2dfcc16890130727d3197ca62c732b4310953
     # via
     #   lm-eval (pyproject.toml)
     #   datasets
