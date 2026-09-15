@@ -184,8 +184,8 @@ httpx==0.28.1 \
     #   huggingface-hub
     #   ibm-watsonx-ai
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA2/cuda13.0-ubi9-test/simple/
-huggingface-hub==1.28.0 \
-    --hash=sha256:b9ce66a58c6d6473700fd5abbaf3d28757e61fb08aa094af9a204994696c865a
+huggingface-hub==1.31.0 \
+    --hash=sha256:c04704c8bf88c924ac1ff2f1ddd15c55d12039ab5d1515172cb2072a95d319dd
     # via
     #   accelerate
     #   datasets
@@ -232,8 +232,8 @@ jinja2==3.1.6 \
     --hash=sha256:598efca823921a564b9226ffff6a05fcbbfc3a7a52d22947755c04cb372419d6
     # via torch
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA2/cuda13.0-ubi9-test/simple/
-jiwer==4.0.0 \
-    --hash=sha256:2e1dcf7e70b61a801585359badfc7ae4305458848b9742ea5e901130918fe098
+jiwer==3.0.5 \
+    --hash=sha256:3508463947ebcdf09a53c4cc7ad3b6cade148c391e2ccdc4ee1cdd7b9d7c3408
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA2/cuda13.0-ubi9-test/simple/
 jmespath==1.0.1 \
@@ -645,9 +645,9 @@ tiktoken==0.14.0 \
     --hash=sha256:fd6127e28f6e023f34fa95d482c5f8b88cdc52aab24e9c1c7b5098e802e15671
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA2/cuda13.0-ubi9-test/simple/
-tokenizers==0.22.2 \
-    --hash=sha256:81d111bcfaf0a1a54105db154b5a34d1cc44146b8028c25f2dbb20d362885a09 \
-    --hash=sha256:cd3497be602f054161922de621b2fa42e3e7748f51df1d19781b986cec760743
+tokenizers==0.23.2 \
+    --hash=sha256:6612c34995005a480ec9598c140402a771f7e7ac478ac6c458e0224d61ea14e6 \
+    --hash=sha256:c73837f2052f40191b58bbead911e2e1c28b5326a10784d0ac3b0a06d00eee5e
     # via transformers
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA2/cuda13.0-ubi9-test/simple/
 torch==2.13.0 \
@@ -674,8 +674,8 @@ tqdm-multiprocess==0.0.11 \
     --hash=sha256:d465e221c616c3e9806d48c7da61b008cba1e97c713a47b9fc0a7a7473a8fdfc
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA2/cuda13.0-ubi9-test/simple/
-transformers==5.15.1 \
-    --hash=sha256:1da99e1e202bda65308106c1f8618e328bf3c1c0289524859dc869204c032b59
+transformers==5.17.0 \
+    --hash=sha256:b0591b9fb061d5ab2b467db0b9961ab30f66e86830a3e2e1c4db82b631667ccc
     # via
     #   lm-eval (pyproject.toml)
     #   peft
@@ -694,8 +694,8 @@ typepy==1.3.5 \
     #   pytablewriter
     #   tabledata
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA2/cuda13.0-ubi9-test/simple/
-typer==0.27.1 \
-    --hash=sha256:2978aebf8858aee7b29f6d58de67ef94b1248e2111969bad654ce2e0c179c7be
+typer==0.27.2 \
+    --hash=sha256:51893c188c4ece1639781938011706c315ece23168ff12b2d4777dded16a3ea5
     # via transformers
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA2/cuda13.0-ubi9-test/simple/
 typing-extensions==4.16.0 \
