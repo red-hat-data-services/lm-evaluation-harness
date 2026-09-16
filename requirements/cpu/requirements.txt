@@ -112,11 +112,15 @@ propcache==0.5.2 \
     #   aiohttp
     #   yarl
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA2/cpu-ubi9-test/simple/
-protobuf==7.36.0 \
-    --hash=sha256:03ffe71691281e19f507d0ab8d00ae99d992e583f4eeb6ff243ceb15f044d8bd \
-    --hash=sha256:a6acb7a00120c884bb4badc113e28e1d016efa0c6bbca4c6b83e462e34884801 \
-    --hash=sha256:bbd8e615ffe5adac389dc1014be3544674d3e7c8bfcaba23cb777c1640f4228e \
-    --hash=sha256:cf3481f57df45f40f620741816fc958bf9f28d82e127c0b1fcc050979404c8c0
+protobuf==7.36.1 \
+    --hash=sha256:0b53ce95272aad50ad25d7ff03373743209822e8ba42ea7fad27d2bee1547d00 \
+    --hash=sha256:39c518c05586c016d7874ff6079ee115bcec1ea5fbb1d177fbf7867ef4c67e44 \
+    --hash=sha256:3cf2ee25d006cee57294a1196ea43b37feb78e0dcd1e8af5c1aeddb777655aca \
+    --hash=sha256:43d3d37b1eb24c113b9b7d02008cac44e423f00b611b7781ae998d7623972969 \
+    --hash=sha256:51139351435d9b43d88a55eaa49fb6f737fbb478fb0cbf2cf694d1a04a9d3363 \
+    --hash=sha256:7d951e46b3f963d6c264c367c437921de9d5aedd9c3f9612b9077736b4e3ad5c \
+    --hash=sha256:97198b77e369a0abd8e262b8f6c7266c55ddb796a3a12c76d7b8881188ed83aa \
+    --hash=sha256:d0f6470f0ce2b84e3feaea2d4b816378b37ba4d4aa08a274305373de93e2d524
     # via
     #   googleapis-common-protos
     #   opentelemetry-proto
