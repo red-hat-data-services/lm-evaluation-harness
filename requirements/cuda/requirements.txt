@@ -155,8 +155,9 @@ fsspec==2025.3.0 \
     #   huggingface-hub
     #   torch
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA2/cuda13.0-ubi9-test/simple/
-googleapis-common-protos==1.75.1 \
-    --hash=sha256:bb8b588c499dc8e35dc76e85883f2424951748489e907b4c38025f92b8ec8c29
+googleapis-common-protos==1.75.3 \
+    --hash=sha256:57c435ac2c68b108999b6db075d9053e4d7a936ba57b4a3d45667b1346f1738a \
+    --hash=sha256:a018d2bf098ca9fb6faa08d5bb780e2a2c2f73c566f069761331386c9596d3f2
     # via opentelemetry-exporter-otlp-proto-grpc
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA2/cuda13.0-ubi9-test/simple/
 grpcio==1.83.0 ; python_full_version < '3.13' \
