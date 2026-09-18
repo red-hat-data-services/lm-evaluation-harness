@@ -63,8 +63,9 @@ botocore==1.43.78 \
     #   boto3
     #   s3transfer
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA2/cuda13.0-ubi9-test/simple/
-cachetools==7.1.7 \
-    --hash=sha256:554665284dadda49c88b902cceafd9e3ae40c0e6148c86ddbd7b567915973abb
+cachetools==7.1.8 \
+    --hash=sha256:1221d547a0b24b7f26fa891d40d488b5258beab9aebd8ed68c729be3af849c43 \
+    --hash=sha256:a81e3844acaa7355b6567f97bd67a94a14ec3a9bc2cbbdae45b9592cc036775b
     # via ibm-watsonx-ai
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA2/cuda13.0-ubi9-test/simple/
 certifi==2026.7.22 \
