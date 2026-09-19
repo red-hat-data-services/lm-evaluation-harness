@@ -729,8 +729,9 @@ unitxt==1.26.10 \
     --hash=sha256:6bc4bdfdf883a78f9a5a94cad9074cb93c1ae5856776384ac8212fd7bdf7c319
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
-urllib3==2.6.3 \
-    --hash=sha256:ddbea73c47298bed4a284700acdc332c4999597665377d5f7d8b7edf49028c81
+urllib3==2.7.0 \
+    --hash=sha256:231e0ec3b63ceb14667c67be60f2f2c40a518cb38b03af60abc813da26505f4c \
+    --hash=sha256:9fb4c81ebbb1ce9531cce37674bbc6f1360472bc18ca9a553ede278ef7276897
     # via
     #   lm-eval (pyproject.toml)
     #   botocore
