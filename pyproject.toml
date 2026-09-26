@@ -42,7 +42,7 @@ dependencies = [
     "unitxt==1.17.2",
     "jiwer==3.0.5",
     "lxml==6.1.1",
-    "boto3==1.42.12",
+    "boto3==1.43.100",
     "olot==0.1.13",
 ]
 
