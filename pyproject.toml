@@ -43,7 +43,7 @@ dependencies = [
     "jiwer==3.0.5",
     "lxml==6.1.1",
     "boto3==1.42.12",
-    "olot==0.1.13",
+    "olot==1.2.1",
 ]
 
 [tool.setuptools.packages.find]
