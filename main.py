@@ -30,9 +30,10 @@ import re
 import requests
 import sys
 import time
+from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 
 _TEST_DATA_DIR = "/test_data"
@@ -58,6 +59,36 @@ _BENCHMARKS_REQUIRING_REMOTE_CODE: frozenset[str] = frozenset({
 
 def _needs_trust_remote_code(benchmark_id: str) -> bool:
     return benchmark_id in _BENCHMARKS_REQUIRING_REMOTE_CODE
+
+
+# Benchmarks that intentionally execute model-generated Python through the
+# Hugging Face code_eval metric. Keep this allow list narrow: image-level or
+# user-provided HF_ALLOW_CODE_EVAL values must not enable execution for other
+# EvalHub benchmarks.
+_BENCHMARKS_REQUIRING_CODE_EXECUTION: frozenset[str] = frozenset({
+    "humaneval",
+    "humaneval_instruct",
+    "mbpp",
+})
+
+
+def _needs_code_execution(benchmark_id: str) -> bool:
+    return benchmark_id in _BENCHMARKS_REQUIRING_CODE_EXECUTION
+
+
+@contextmanager
+def _code_eval_environment(benchmark_id: str) -> Iterator[None]:
+    """Enable Hugging Face code_eval only for explicitly allowed benchmarks."""
+    env_name = "HF_ALLOW_CODE_EVAL"
+    previous = os.environ.get(env_name)
+    os.environ[env_name] = "1" if _needs_code_execution(benchmark_id) else "0"
+    try:
+        yield
+    finally:
+        if previous is None:
+            os.environ.pop(env_name, None)
+        else:
+            os.environ[env_name] = previous
 
 
 def _resolve_job_spec_path_for_read(path: str) -> Path | None:
@@ -775,20 +806,26 @@ class LMEvalAdapter(FrameworkAdapter):
             # Run evaluation based on job spec
             # Note: batch_size is passed in model_args for local-completions backend
             try:
-                results = simple_evaluate(
-                    model=model_backend,
-                    model_args=model_args,
-                    tasks=[lmeval_task],
-                    num_fewshot=int(num_fewshot),
-                    device="cpu",
-                    limit=num_examples,
-                    random_seed=random_seed,
-                    numpy_random_seed=random_seed,
-                    torch_random_seed=random_seed,
-                    task_manager=task_manager,
-                    log_samples=True,
-                    gen_kwargs=gen_kwargs,
-                )
+                with _code_eval_environment(benchmark_id):
+                    if _needs_code_execution(benchmark_id):
+                        logger.warning(
+                            "code execution enabled for allow-listed benchmark %s",
+                            benchmark_id,
+                        )
+                    results = simple_evaluate(
+                        model=model_backend,
+                        model_args=model_args,
+                        tasks=[lmeval_task],
+                        num_fewshot=int(num_fewshot),
+                        device="cpu",
+                        limit=num_examples,
+                        random_seed=random_seed,
+                        numpy_random_seed=random_seed,
+                        torch_random_seed=random_seed,
+                        task_manager=task_manager,
+                        log_samples=True,
+                        gen_kwargs=gen_kwargs,
+                    )
             finally:
                 _datasets.config.HF_DATASETS_TRUST_REMOTE_CODE = _prev_trust_remote_code
             # Phase 4: Post-processing
