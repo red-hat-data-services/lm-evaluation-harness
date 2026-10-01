@@ -2,7 +2,7 @@
 # Stage 1 Base builder image with common tooling
 ###############################################################
 
-FROM registry.access.redhat.com/ubi9/python-311:latest AS builder
+FROM registry.redhat.io/ubi9/python-312@sha256:e6a10c3150624fbfd33dbd7721ef99ce7a1001b417d64427ad58515ab8044121 AS builder
 USER root
 
 ENV TORCH_VERSION=2.6.0
@@ -177,7 +177,7 @@ ENV PATH="/opt/app-root/bin:/opt/app-root/src/.local/bin/:/opt/app-root/src/bin:
 
 RUN python -c 'from lm_eval.tasks.unitxt import task; import os.path; print("class: !function " + task.__file__.replace("task.py", "task.Unitxt"))' > ./my_tasks/unitxt
 
-ENV PYTHONPATH=/opt/app-root/src/.local/lib/python3.11/site-packages:/opt/app-root/src/lm-evaluation-harness:/opt/app-root/src:/opt/app-root/src/server
+ENV PYTHONPATH=/opt/app-root/src/.local/lib/python3.12/site-packages:/opt/app-root/src/lm-evaluation-harness:/opt/app-root/src:/opt/app-root/src/server
 ENV HF_HOME=/opt/app-root/src/hf_home
 ENV UNITXT_CATALOGS=/opt/app-root/src/my_catalogs
 
