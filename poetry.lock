@@ -230,15 +230,15 @@ files = [
 
 [[package]]
 name = "anyio"
-version = "4.12.1"
+version = "4.14.2"
 description = "High-level concurrency and networking framework on top of asyncio or Trio"
 optional = true
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["main"]
 markers = "python_version >= \"3.11\" and extra == \"ibm-watsonx-ai\""
 files = [
-    {file = "anyio-4.12.1-py3-none-any.whl", hash = "sha256:d405828884fc140aa80a3c667b8beed277f1dfedec42ba031bd6ac3db606ab6c"},
-    {file = "anyio-4.12.1.tar.gz", hash = "sha256:41cfcc3a4c85d3f05c932da7c26d0201ac36f72abd4435ba90d0464a3ffed703"},
+    {file = "anyio-4.14.2-py3-none-any.whl", hash = "sha256:9f505dda5ac9f0c8309b5e8bd445a8c2bf7246f3ce950121e45ea15bc41d1494"},
+    {file = "anyio-4.14.2.tar.gz", hash = "sha256:cfa139f3ed1a23ee8f88a145ddb5ac7605b8bbfd8592baacd7ce3d8bb4313c7f"},
 ]
 
 [package.dependencies]
@@ -246,7 +246,7 @@ idna = ">=2.8"
 typing_extensions = {version = ">=4.5", markers = "python_version < \"3.13\""}
 
 [package.extras]
-trio = ["trio (>=0.31.0) ; python_version < \"3.10\"", "trio (>=0.32.0) ; python_version >= \"3.10\""]
+trio = ["trio (>=0.32.0)"]
 
 [[package]]
 name = "async-timeout"
@@ -4323,7 +4323,7 @@ cffi = ["cffi (>=1.11)"]
 api = ["aiohttp", "requests", "tenacity", "tiktoken", "tqdm"]
 dev = ["mypy", "pre-commit", "pytest", "pytest-cov", "pytest-xdist", "virtualenv"]
 hf-transfer = ["hf-transfer"]
-ibm-watsonx-ai = ["ibm-watsonx-ai"]
+ibm-watsonx-ai = ["anyio", "ibm-watsonx-ai"]
 ifeval = ["immutabledict", "langdetect", "nltk"]
 math = ["antlr4-python3-runtime", "math_verify", "sympy"]
 testing = ["pytest", "pytest-cov", "pytest-xdist"]
@@ -4331,4 +4331,4 @@ testing = ["pytest", "pytest-cov", "pytest-xdist"]
 [metadata]
 lock-version = "2.1"
 python-versions = "<3.13,>=3.10"
-content-hash = "c8038f3d655d6b0629506809491d2122489c614923f6fe5482813df0fb92724e"
+content-hash = "116a09fb737aae902a1933ad0aedea86480a816f4a0b6652dff47d9eba4dcde5"
