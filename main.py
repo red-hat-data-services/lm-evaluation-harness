@@ -34,6 +34,7 @@ from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Iterator
+from urllib.parse import urlparse
 
 
 _TEST_DATA_DIR = "/test_data"
@@ -402,6 +403,12 @@ def _chained_exception_text(exc: BaseException) -> str:
     return "\n".join(parts)
 
 
+def _is_huggingface_hub_host(hostname: str) -> bool:
+    """True for huggingface.co / hf.co (and subdomains), not Inference Endpoints."""
+    host = (hostname or "").lower()
+    return host in {"huggingface.co", "hf.co"} or host.endswith((".huggingface.co", ".hf.co"))
+
+
 def _is_gated_huggingface_error(exc: BaseException, error_lower: str) -> bool:
     if (
         "gated repo" in error_lower
@@ -414,11 +421,14 @@ def _is_gated_huggingface_error(exc: BaseException, error_lower: str) -> bool:
     while current is not None and id(current) not in seen:
         seen.add(id(current))
         response = getattr(current, "response", None)
+        response_host = (
+            urlparse(getattr(response, "url", "") or "").hostname or ""
+        ).lower()
         if (
             isinstance(current, requests.HTTPError)
             and response is not None
             and response.status_code == 403
-            and "huggingface" in str(current).lower()
+            and _is_huggingface_hub_host(response_host)
         ):
             return True
         current = current.__cause__ or current.__context__
@@ -451,8 +461,8 @@ def _gated_hf_resource_kind(error_lower: str) -> str:
 
 def _evaluation_failure_for_evalhub(exc: BaseException) -> tuple[str, str]:
     """Return ``(sanitized_message, message_code)`` for a failed lm_eval / adapter run."""
-    error_str = _chained_exception_text(exc)
-    error_lower = error_str.lower()
+    error_str = str(exc)
+    error_lower = _chained_exception_text(exc).lower()
 
     if _is_gated_huggingface_error(exc, error_lower):
         kind = _gated_hf_resource_kind(error_lower)

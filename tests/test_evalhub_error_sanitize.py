@@ -1,6 +1,7 @@
 """Unit tests for Eval Hub adapter error sanitization (main._sanitize_error_message)."""
 
 import pytest
+import requests
 
 from main import _evaluation_failure_for_evalhub, _sanitize_error_message
 
@@ -97,6 +98,8 @@ def test_no_false_positive_inside_identifier() -> None:
         assert _sanitize_error_message(msg) == msg, msg
 
 
+# Sample Hub tracebacks (any gated *model* repo, not Llama-specific). EvalHub's
+# user-facing message is generic; Hub itself names whichever tokenizer/dataset failed.
 _TOKENIZER_GATE_MSG = """\
 OSError: You are trying to access a gated repo.
 Make sure to have access to it at https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct.
@@ -104,6 +107,11 @@ Make sure to have access to it at https://huggingface.co/meta-llama/Llama-3.1-8B
 
 Cannot access gated repo for url https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct/resolve/main/config.json.
 Access to model meta-llama/Llama-3.1-8B-Instruct is restricted. You must have access to it and be authenticated to access it. Please log in.
+"""
+
+_TOKENIZER_GATE_MSG_OTHER_MODEL = """\
+Cannot access gated repo for url https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2/resolve/main/config.json.
+Access to model mistralai/Mistral-7B-Instruct-v0.2 is restricted.
 """
 
 _DATASET_GATE_MSG = """\
@@ -121,6 +129,12 @@ def test_gated_tokenizer_error_is_not_labeled_dataset() -> None:
     assert "accessible tokenizer" in msg
     assert "hf-token" in msg
     assert code == "gated_tokenizer_auth_required"
+
+
+def test_gated_tokenizer_error_not_tied_to_one_model_id() -> None:
+    msg, code = _evaluation_failure_for_evalhub(OSError(_TOKENIZER_GATE_MSG_OTHER_MODEL))
+    assert code == "gated_tokenizer_auth_required"
+    assert "tokenizer" in msg.lower()
 
 
 def test_gated_dataset_error_keeps_dataset_wording() -> None:
@@ -144,5 +158,27 @@ def test_unspecified_gated_repo_does_not_claim_dataset() -> None:
     assert "tokenizer" not in msg.lower()
     assert "resource" in msg.lower()
     assert code == "gated_hf_auth_required"
+
+
+class _FakeResponse:
+    def __init__(self, url: str, status_code: int = 403) -> None:
+        self.url = url
+        self.status_code = status_code
+
+
+def test_hub_403_is_gated_hf() -> None:
+    err = requests.HTTPError("403 Client Error")
+    err.response = _FakeResponse("https://huggingface.co/api/models/org/gated")
+    _, code = _evaluation_failure_for_evalhub(err)
+    assert code == "gated_hf_auth_required"
+
+
+def test_inference_endpoint_403_is_model_access_forbidden() -> None:
+    url = "https://xyz.us-east-1.aws.endpoints.huggingface.cloud/v1/completions"
+    err = requests.HTTPError(f"403 Client Error: Forbidden for url: {url}")
+    err.response = _FakeResponse(url)
+    msg, code = _evaluation_failure_for_evalhub(err)
+    assert code == "model_access_forbidden"
+    assert msg.startswith("Model endpoint returned HTTP 403")
 
 
