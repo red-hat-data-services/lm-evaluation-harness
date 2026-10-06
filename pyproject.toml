@@ -22,9 +22,11 @@ dependencies = [
     "urllib3==2.7.0",
     "lxml==6.1.1",
     "accelerate==1.0.1",
+    "anyio==4.14.2",
     "evaluate==0.4.3",
     "eval-hub-sdk[adapter]==0.1.5",
-    "datasets==3.1.0",
+    "datasets==5.0.1",
+    "fsspec==2026.6.0",
     "jsonlines==4.0.0",
     "numexpr==2.10.1",
     "peft==0.13.2",
@@ -70,7 +72,7 @@ api = [
     "tqdm==4.66.6",
     "tiktoken==0.8.0",
 ]
-ifeval = ["langdetect==1.0.9", "immutabledict==4.2.1", "nltk==3.10.0"]
+ifeval = ["langdetect==1.0.9", "immutabledict==4.2.1", "nltk==3.10.3"]
 math = ["sympy>=1.12", "antlr4-python3-runtime==4.11", "math_verify[antlr4_11_0]"]
 dev = [
     "pytest==8.3.3",
@@ -78,6 +80,7 @@ dev = [
     "pytest-xdist==3.6.1",
     "pre-commit==4.0.1",
     "mypy==1.13.0",
+    "virtualenv==21.7.13",
 ]
 hf_transfer = ["hf-transfer==0.1.9"]
 testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
