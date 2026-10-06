@@ -30,9 +30,11 @@ import re
 import requests
 import sys
 import time
+from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
+from urllib.parse import urlparse
 
 
 _TEST_DATA_DIR = "/test_data"
@@ -58,6 +60,36 @@ _BENCHMARKS_REQUIRING_REMOTE_CODE: frozenset[str] = frozenset({
 
 def _needs_trust_remote_code(benchmark_id: str) -> bool:
     return benchmark_id in _BENCHMARKS_REQUIRING_REMOTE_CODE
+
+
+# Benchmarks that intentionally execute model-generated Python through the
+# Hugging Face code_eval metric. Keep this allow list narrow: image-level or
+# user-provided HF_ALLOW_CODE_EVAL values must not enable execution for other
+# EvalHub benchmarks.
+_BENCHMARKS_REQUIRING_CODE_EXECUTION: frozenset[str] = frozenset({
+    "humaneval",
+    "humaneval_instruct",
+    "mbpp",
+})
+
+
+def _needs_code_execution(benchmark_id: str) -> bool:
+    return benchmark_id in _BENCHMARKS_REQUIRING_CODE_EXECUTION
+
+
+@contextmanager
+def _code_eval_environment(benchmark_id: str) -> Iterator[None]:
+    """Enable Hugging Face code_eval only for explicitly allowed benchmarks."""
+    env_name = "HF_ALLOW_CODE_EVAL"
+    previous = os.environ.get(env_name)
+    os.environ[env_name] = "1" if _needs_code_execution(benchmark_id) else "0"
+    try:
+        yield
+    finally:
+        if previous is None:
+            os.environ.pop(env_name, None)
+        else:
+            os.environ[env_name] = previous
 
 
 def _resolve_job_spec_path_for_read(path: str) -> Path | None:
@@ -353,26 +385,104 @@ def _sanitize_error_message(msg: str) -> str:
     return s
 
 
+_HF_TOKEN_SECRET_HINT = (
+    "Set HF_TOKEN by adding an 'hf-token' key to your "
+    "model auth secret (model.auth.secret_ref)."
+)
+
+
+def _chained_exception_text(exc: BaseException) -> str:
+    """Join ``str(exc)`` with cause/context so wrapped Hub errors stay classifiable."""
+    parts: list[str] = []
+    seen: set[int] = set()
+    current: BaseException | None = exc
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        parts.append(str(current))
+        current = current.__cause__ or current.__context__
+    return "\n".join(parts)
+
+
+def _is_huggingface_hub_host(hostname: str) -> bool:
+    """True for huggingface.co / hf.co (and subdomains), not Inference Endpoints."""
+    host = (hostname or "").lower()
+    return host in {"huggingface.co", "hf.co"} or host.endswith((".huggingface.co", ".hf.co"))
+
+
+def _is_gated_huggingface_error(exc: BaseException, error_lower: str) -> bool:
+    if (
+        "gated repo" in error_lower
+        or "gated dataset" in error_lower
+        or "cannot access gated" in error_lower
+    ):
+        return True
+    seen: set[int] = set()
+    current: BaseException | None = exc
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        response = getattr(current, "response", None)
+        response_host = (
+            urlparse(getattr(response, "url", "") or "").hostname or ""
+        ).lower()
+        if (
+            isinstance(current, requests.HTTPError)
+            and response is not None
+            and response.status_code == 403
+            and _is_huggingface_hub_host(response_host)
+        ):
+            return True
+        current = current.__cause__ or current.__context__
+    return False
+
+
+def _gated_hf_resource_kind(error_lower: str) -> str:
+    """Return ``tokenizer``, ``dataset``, or ``resource`` for a gated Hub failure."""
+    is_dataset = (
+        "/datasets/" in error_lower
+        or "access to dataset " in error_lower
+        or "is a gated dataset" in error_lower
+    )
+    is_tokenizer = (
+        "access to model " in error_lower
+        or "/resolve/main/tokenizer" in error_lower
+        or "autotokenizer" in error_lower
+        or (
+            "huggingface.co/" in error_lower
+            and "/datasets/" not in error_lower
+            and "/resolve/" in error_lower
+        )
+    )
+    if is_tokenizer:
+        return "tokenizer"
+    if is_dataset:
+        return "dataset"
+    return "resource"
+
+
 def _evaluation_failure_for_evalhub(exc: BaseException) -> tuple[str, str]:
     """Return ``(sanitized_message, message_code)`` for a failed lm_eval / adapter run."""
     error_str = str(exc)
-    error_lower = error_str.lower()
+    error_lower = _chained_exception_text(exc).lower()
 
-    is_gated = "gated repo" in error_lower or "gated dataset" in error_lower
-
-    if not is_gated:
-        is_gated = (
-            isinstance(exc, requests.HTTPError)
-            and exc.response is not None
-            and exc.response.status_code == 403
-            and "huggingface" in error_lower
-        )
-    if is_gated:
+    if _is_gated_huggingface_error(exc, error_lower):
+        kind = _gated_hf_resource_kind(error_lower)
+        if kind == "tokenizer":
+            return (
+                "Gated HuggingFace tokenizer error; authentication required. "
+                "Specify an accessible tokenizer, or "
+                + _HF_TOKEN_SECRET_HINT,
+                "gated_tokenizer_auth_required",
+            )
+        if kind == "dataset":
+            return (
+                "Gated HuggingFace dataset error; authentication required. "
+                + _HF_TOKEN_SECRET_HINT,
+                "gated_dataset_auth_required",
+            )
         return (
-            "Gated HuggingFace dataset error; authentication required. "
-            "Set HF_TOKEN by adding an 'hf-token' key to your "
-            "model auth secret (model.auth.secret_ref).",
-            "gated_dataset_auth_required",
+            "Gated HuggingFace resource error; authentication required. "
+            + _HF_TOKEN_SECRET_HINT,
+            "gated_hf_auth_required",
         )
 
     if isinstance(exc, requests.HTTPError) and exc.response is not None:
@@ -775,20 +885,26 @@ class LMEvalAdapter(FrameworkAdapter):
             # Run evaluation based on job spec
             # Note: batch_size is passed in model_args for local-completions backend
             try:
-                results = simple_evaluate(
-                    model=model_backend,
-                    model_args=model_args,
-                    tasks=[lmeval_task],
-                    num_fewshot=int(num_fewshot),
-                    device="cpu",
-                    limit=num_examples,
-                    random_seed=random_seed,
-                    numpy_random_seed=random_seed,
-                    torch_random_seed=random_seed,
-                    task_manager=task_manager,
-                    log_samples=True,
-                    gen_kwargs=gen_kwargs,
-                )
+                with _code_eval_environment(benchmark_id):
+                    if _needs_code_execution(benchmark_id):
+                        logger.warning(
+                            "code execution enabled for allow-listed benchmark %s",
+                            benchmark_id,
+                        )
+                    results = simple_evaluate(
+                        model=model_backend,
+                        model_args=model_args,
+                        tasks=[lmeval_task],
+                        num_fewshot=int(num_fewshot),
+                        device="cpu",
+                        limit=num_examples,
+                        random_seed=random_seed,
+                        numpy_random_seed=random_seed,
+                        torch_random_seed=random_seed,
+                        task_manager=task_manager,
+                        log_samples=True,
+                        gen_kwargs=gen_kwargs,
+                    )
             finally:
                 _datasets.config.HF_DATASETS_TRUST_REMOTE_CODE = _prev_trust_remote_code
             # Phase 4: Post-processing
