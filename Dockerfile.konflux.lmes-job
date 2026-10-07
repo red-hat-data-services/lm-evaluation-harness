@@ -20,6 +20,12 @@ COPY . .
 
 RUN pip install --no-cache-dir ".[api,ifeval,math,ibm_watsonx_ai]"
 
+# uv is build tooling inherited from the base image, not a runtime dependency.
+# Remove its bundled crypto and the uvx companion (RHOAIENG-99284).
+RUN /opt/app-root/bin/python -m pip uninstall -y uv && \
+    test ! -e /opt/app-root/bin/uv && \
+    test ! -e /opt/app-root/bin/uvx
+
 RUN chmod -R og+rX /opt/app-root/src/
 
 USER default
