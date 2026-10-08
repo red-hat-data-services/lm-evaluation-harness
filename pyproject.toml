@@ -21,7 +21,8 @@ license = { "text" = "MIT" }
 dependencies = [
     "accelerate==1.0.1",
     "evaluate==0.4.3",
-    "datasets==3.1.0",
+    "datasets==5.0.1",
+    "fsspec==2026.6.0",
     "jsonlines==4.0.0",
     "numexpr==2.10.1",
     "peft==0.13.2",
@@ -75,11 +76,15 @@ dev = [
     "pytest-cov==6.0.0",
     "pytest-xdist==3.6.1",
     "pre-commit==4.0.1",
+    "virtualenv==21.7.13",
     "mypy==1.13.0",
 ]
 hf_transfer = ["hf-transfer==0.1.9"]
 testing = ["pytest==8.3.3", "pytest-cov==6.0.0", "pytest-xdist==3.6.1"]
-ibm_watsonx_ai = ["ibm-watsonx-ai==1.4.11; python_version >= \"3.11\""]
+ibm_watsonx_ai = [
+    "anyio==4.14.2; python_version >= \"3.11\"",
+    "ibm-watsonx-ai==1.4.11; python_version >= \"3.11\"",
+]
 
 [tool.ruff.lint]
 extend-select = ["I"]
