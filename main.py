@@ -338,6 +338,37 @@ def _to_finite_float(metric_value: Any) -> float | None:
     return value
 
 
+
+def _normalize_lmeval_metrics(task_results: dict[str, Any]) -> dict[str, float]:
+    """Strip any filter suffix, prefer valid unfiltered values, skip invalid numbers."""
+    candidates: dict[str, tuple[float, str]] = {}
+    for name, raw_value in task_results.items():
+        if "," not in name:
+            continue
+        metric, _, filter_name = name.rpartition(",")
+        value = _to_finite_float(raw_value)
+        if value is None:
+            continue
+        if metric not in candidates or filter_name == "none":
+            candidates[metric] = (value, filter_name)
+    return {name: value for name, (value, _) in candidates.items()}
+
+
+def _extract_lmeval_metrics(results: dict[str, Any], task: str) -> dict[str, float]:
+    """Preserve named-filter metrics in direct results and existing group fallback."""
+    all_results = results.get("results", {})
+    metrics = _normalize_lmeval_metrics(all_results.get(task, {}))
+    if metrics:
+        return metrics
+    # Preserve the adapter's existing arithmetic-mean fallback for groups.
+    totals: dict[str, float] = {}
+    counts: dict[str, int] = {}
+    for subtask in results.get("group_subtasks", {}).get(task, []):
+        for name, value in _normalize_lmeval_metrics(all_results.get(subtask, {})).items():
+            totals[name] = totals.get(name, 0.0) + value
+            counts[name] = counts.get(name, 0) + 1
+    return {name: total / counts[name] for name, total in totals.items()}
+
 def _sanitize_error_message(msg: str) -> str:
     """Redact secrets from error text before Eval Hub callbacks."""
     s = msg
@@ -915,63 +946,13 @@ class LMEvalAdapter(FrameworkAdapter):
                 )
             )
 
-            # Extract results
-            task_results = results.get("results", {}).get(lmeval_task, {})
-
-            # For group tasks (e.g. leaderboard_bbh), lm-eval stores metrics under
-            # subtask names, not the group name. Fall back to averaging subtask results.
-            if not any(k.endswith(",none") for k in task_results):
-                group_subtasks = results.get("group_subtasks", {}).get(lmeval_task, [])
-                if group_subtasks:
-                    logger.info(
-                        "Benchmark %s is a group task, aggregating %d subtask results",
-                        lmeval_task,
-                        len(group_subtasks),
-                    )
-                    all_results = results.get("results", {})
-                    subtask_metrics: dict[str, float] = {}
-                    subtask_count: dict[str, int] = {}
-                    for subtask in group_subtasks:
-                        for metric_name, metric_value in all_results.get(subtask, {}).items():
-                            if not metric_name.endswith(",none"):
-                                continue
-                            if metric_value == "N/A" or metric_value is None:
-                                continue
-                            value = _to_finite_float(metric_value)
-                            if value is None:
-                                continue
-                            clean = metric_name.replace(",none", "")
-                            subtask_metrics[clean] = subtask_metrics.get(clean, 0) + value
-                            subtask_count[clean] = subtask_count.get(clean, 0) + 1
-                    task_results = {
-                        f"{k},none": subtask_metrics[k] / subtask_count[k]
-                        for k in subtask_metrics
-                    }
-
-            # Build evaluation results
-            evaluation_results = []
-            overall_score = None
-
-            for metric_name, metric_value in task_results.items():
-                if metric_name.endswith(",none"):
-                    # Primary metric (usually accuracy or similar)
-                    clean_metric = metric_name.replace(",none", "")
-                    value = _to_finite_float(metric_value)
-                    if value is None:
-                        logger.warning(
-                            "Metric %s has value N/A or non-finite, skipping",
-                            clean_metric,
-                        )
-                        continue
-                    evaluation_results.append(
-                        EvaluationResult(
-                            metric_name=clean_metric,
-                            metric_value=value,
-                        )
-                    )
-                    # Use first primary metric as overall score
-                    if overall_score is None:
-                        overall_score = value
+            # Accept named lm-eval filters as well as unfiltered metrics.
+            metrics = _extract_lmeval_metrics(results, lmeval_task)
+            evaluation_results = [
+                EvaluationResult(metric_name=name, metric_value=value)
+                for name, value in metrics.items()
+            ]
+            overall_score = next(iter(metrics.values()), None)
 
             # Capture run metadata for generate_additional_info() — needs overall_score
             self._run_info = _build_additional_info(
