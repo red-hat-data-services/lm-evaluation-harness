@@ -5,7 +5,7 @@ from operator import itemgetter
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from lm_eval.api.registry import register_model
-from lm_eval.models.api_models import TemplateAPI
+from lm_eval.models.api_models import JsonChatStr, TemplateAPI
 from lm_eval.models.utils import handle_stop_sequences
 
 
@@ -23,6 +23,19 @@ class LocalCompletionsAPI(TemplateAPI):
         super().__init__(
             base_url=base_url, tokenizer_backend=tokenizer_backend, **kwargs
         )
+
+    def apply_chat_template(
+        self, chat_history: List[Dict[str, str]], add_generation_prompt: bool = True
+    ) -> Union[str, JsonChatStr]:
+        """Render HF templates for both text and token-ID completions requests."""
+        if self.tokenizer_backend == "huggingface":
+            return self.tokenizer.apply_chat_template(
+                chat_history,
+                tokenize=False,
+                add_generation_prompt=add_generation_prompt,
+                continue_final_message=not add_generation_prompt,
+            )
+        return super().apply_chat_template(chat_history, add_generation_prompt)
 
     def _create_payload(
         self,
@@ -106,6 +119,14 @@ class LocalCompletionsAPI(TemplateAPI):
 
 @register_model("local-chat-completions")
 class LocalChatCompletion(LocalCompletionsAPI):
+    def apply_chat_template(
+        self, chat_history: List[Dict[str, str]], add_generation_prompt: bool = True
+    ) -> Union[str, JsonChatStr]:
+        # Chat endpoints expect role/content messages, not a rendered text prompt.
+        return TemplateAPI.apply_chat_template(
+            self, chat_history, add_generation_prompt
+        )
+
     def __init__(
         self,
         base_url=None,
