@@ -24,7 +24,7 @@ dependencies = [
     "accelerate==1.0.1",
     "anyio==4.14.2",
     "evaluate==0.4.3",
-    "eval-hub-sdk[adapter]==0.1.5",
+    "eval-hub-sdk[adapter]==1.0.5",
     "datasets==5.0.1",
     "fsspec==2026.6.0",
     "jsonlines==4.0.0",
