@@ -632,8 +632,9 @@ tcolorpy==0.1.7 \
     --hash=sha256:4e0818fa80d347a060c152fb7e6e4e97199ae4310aac5292a1deacbc728cecde
     # via pytablewriter
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
-tenacity==9.0.0 \
-    --hash=sha256:755a9a70292eeea570f20d6b83f71cd71b45a2fedc184001a8007db33e24b463
+tenacity==9.1.4 \
+    --hash=sha256:6095a360c919085f28c6527de529e76a06ad89b23659fa881ae0649b867a9d55 \
+    --hash=sha256:adb31d4c263f2bd041081ab33b498309a57c77f9acf2db65aadf0898179cf93a
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
 threadpoolctl==3.6.0 \
