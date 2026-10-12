@@ -29,12 +29,7 @@ class LocalCompletionsAPI(TemplateAPI):
     ) -> Union[str, JsonChatStr]:
         """Render HF templates for both text and token-ID completions requests."""
         if self.tokenizer_backend == "huggingface":
-            return self.tokenizer.apply_chat_template(
-                chat_history,
-                tokenize=False,
-                add_generation_prompt=add_generation_prompt,
-                continue_final_message=not add_generation_prompt,
-            )
+            return self._render_hf_chat_template(chat_history, add_generation_prompt)
         return super().apply_chat_template(chat_history, add_generation_prompt)
 
     def _create_payload(

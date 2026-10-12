@@ -8,7 +8,7 @@ from tokenizers import ByteLevelBPETokenizer
 from transformers import PreTrainedTokenizerFast
 
 import main
-from lm_eval.models.api_models import JsonChatStr
+from lm_eval.models.api_models import JsonChatStr, TemplateAPI
 from lm_eval.models.openai_completions import LocalChatCompletion, LocalCompletionsAPI
 
 
@@ -136,11 +136,23 @@ def test_chat_endpoint_preserves_message_payload(text_api):
     assert api.create_message([prompt]) == history
 
 
-def test_token_id_mode_keeps_same_rendered_template(text_api):
+@pytest.mark.parametrize("add_generation_prompt", [True, False])
+def test_token_id_mode_keeps_same_rendered_template(text_api, add_generation_prompt):
     history = [{"role": "user", "content": "Yes"}]
-    expected = text_api.apply_chat_template(history)
+    if not add_generation_prompt:
+        history.append({"role": "assistant", "content": "Yes"})
+    expected = text_api.apply_chat_template(history, add_generation_prompt)
+    # The base keeps its JSON-message fallback for non-tokenized requests.
+    assert isinstance(
+        TemplateAPI.apply_chat_template(text_api, history, add_generation_prompt),
+        JsonChatStr,
+    )
     text_api.tokenized_requests = True
-    assert text_api.apply_chat_template(history) == expected
+    assert text_api.apply_chat_template(history, add_generation_prompt) == expected
+    assert (
+        TemplateAPI.apply_chat_template(text_api, history, add_generation_prompt)
+        == expected
+    )
 
 
 def test_template_can_continue_final_assistant_message(text_api):
