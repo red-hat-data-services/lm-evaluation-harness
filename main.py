@@ -601,6 +601,7 @@ def _build_additional_info(
         "tags": tags if tags else None,
         "limit": global_cfg.get("limit"),
         "gen_kwargs": global_cfg.get("gen_kwargs"),
+        "apply_chat_template": benchmark_params.get("apply_chat_template", False),
         # prompting strategy — score when applicable, None otherwise
         "zero_shot": overall_score if is_zero_shot else None,
         "alt_prompting": overall_score if not is_zero_shot else None,
@@ -688,6 +689,13 @@ def _build_dataset_info(lmeval_results: dict, benchmark_id: str) -> list[dict[st
         records.append(record)
 
     return records if records else None
+
+
+def _chat_template_enabled(parameters: dict[str, Any]) -> bool:
+    enabled = parameters.get("apply_chat_template", False)
+    if not isinstance(enabled, bool):
+        raise ValueError("parameters.apply_chat_template must be a boolean")
+    return enabled
 
 
 def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
@@ -861,6 +869,7 @@ class LMEvalAdapter(FrameworkAdapter):
             # Adapter-specific params from parameters
             num_fewshot = int(benchmark_params.get("num_few_shot", 0))
             random_seed = int(benchmark_params.get("random_seed", 42))
+            apply_chat_template = _chat_template_enabled(benchmark_params)
 
             model_backend, model_args, gen_kwargs = build_lmeval_config(config)
 
@@ -877,6 +886,7 @@ class LMEvalAdapter(FrameworkAdapter):
             logger.info(f"Benchmark: {benchmark_id}")
             logger.info(f"Examples limit: {num_examples}")
             logger.info(f"Few-shot: {num_fewshot}")
+            logger.info("Apply chat template: %s", apply_chat_template)
             logger.info("Device: cpu (forced)")
             logger.info(f"Model backend: {model_backend}")
 
@@ -927,6 +937,7 @@ class LMEvalAdapter(FrameworkAdapter):
                         model_args=model_args,
                         tasks=[lmeval_task],
                         num_fewshot=int(num_fewshot),
+                        apply_chat_template=apply_chat_template,
                         device="cpu",
                         limit=num_examples,
                         random_seed=random_seed,

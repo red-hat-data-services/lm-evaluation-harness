@@ -323,6 +323,31 @@ We also support using your own local inference server with servers that mirror t
 ```bash
 lm_eval --model local-completions --tasks gsm8k --model_args model=facebook/opt-125m,base_url=http://{yourip}:8000/v1/completions,num_concurrent=1,max_retries=3,tokenized_requests=False,batch_size=16
 ```
+
+#### EvalHub adapter: chat templates
+
+To evaluate an instruction-tuned model with its chat template, set
+`apply_chat_template: true` in the benchmark parameters supplied to the EvalHub
+adapter (`JobSpec.parameters`). This option defaults to `false`.
+
+Set `tokenizer` to the matching Hugging Face model ID or a local tokenizer path;
+if omitted, the adapter uses `model.name`. The tokenizer must include a chat
+template. For example, a Llama 3.3 70B Instruct job can use:
+
+```json
+{
+  "parameters": {
+    "apply_chat_template": true,
+    "tokenizer": "meta-llama/Llama-3.3-70B-Instruct"
+  }
+}
+```
+
+This is an adapter job-spec fragment. The Llama tokenizer is an example; select
+the tokenizer for the model being evaluated. The adapter renders the template
+for `/v1/completions` requests, supporting both generation and multiple-choice
+loglikelihood tasks. See [EvalHub chat-template configuration](docs/evalhub_chat_template.md)
+for generation settings and validation details.
 Note that for externally hosted models, configs such as `--device` which relate to where to place a local model should not be used and do not function. Just like you can use `--model_args` to pass arbitrary arguments to the model constructor for local models, you can use it to pass arbitrary arguments to the model API for hosted models. See the documentation of the hosting service for information on what arguments they support.
 
 | API or Inference Server                                                                                                   | Implemented?                    | `--model <xxx>` name                                | Models supported:                                                                                                                                                                                                                                                                                                                                          | Request Types:                                             |
