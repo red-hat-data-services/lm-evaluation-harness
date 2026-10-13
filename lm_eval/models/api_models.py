@@ -85,6 +85,7 @@ class TemplateAPI(TemplateLM):
         eos_string: str = None,
         # timeout in seconds
         timeout: int = 300,
+        loglikelihood_context_overflow: Literal["error", "truncate"] = "truncate",
         **kwargs,
     ) -> None:
         super().__init__()
@@ -116,6 +117,11 @@ class TemplateAPI(TemplateLM):
         # max_length - 1 as we always have 1 token for generation
         eval_logger.info(f"Using max length {max_length} - 1")
         self.max_length = max_length - 1
+        if loglikelihood_context_overflow not in ("error", "truncate"):
+            raise ValueError(
+                "loglikelihood_context_overflow must be 'error' or 'truncate'"
+            )
+        self.loglikelihood_context_overflow = loglikelihood_context_overflow
         if int(num_concurrent) <= 1:
             eval_logger.info(
                 "Concurrent requests are disabled. To enable concurrent requests, set `num_concurrent` > 1."
@@ -482,6 +488,18 @@ class TemplateAPI(TemplateLM):
         cache_keys = []
         for chunk in chunks:
             for cache_key, context_enc, continuation_enc in chunk:
+                total_length = len(context_enc) + len(continuation_enc)
+                if (
+                    total_length > self.max_length
+                    and self.loglikelihood_context_overflow == "error"
+                ):
+                    raise ValueError(
+                        f"Loglikelihood input has {total_length} tokens, exceeding "
+                        f"the {self.max_length}-token input budget (max_length minus "
+                        "one output token). No truncated request was sent. Use a "
+                        "larger supported context limit or explicitly select "
+                        "loglikelihood_context_overflow='truncate'."
+                    )
                 # max_length - 1 as we always have 1 token for generation
                 inp = (context_enc + continuation_enc)[-self.max_length :]
                 if len(inp) < len(context_enc + continuation_enc):
