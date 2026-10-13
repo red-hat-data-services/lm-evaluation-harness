@@ -17,8 +17,10 @@ def job(parameters, benchmark="longbench2"):
     )
 
 
-def test_longbench_explicit_budget_reaches_backend():
-    _, args, _ = main.build_lmeval_config(job({"max_length": 37568}))
+@pytest.mark.parametrize("benchmark", ["longbenchv2", "longbench2"])
+def test_longbench_explicit_budget_reaches_backend(benchmark):
+    _, args, _ = main.build_lmeval_config(job({"max_length": 37568}, benchmark))
+    assert args["loglikelihood_context_overflow"] == "error"
     api = LocalCompletionsAPI(**{**args, "tokenizer_backend": None, "tokenizer": None})
     assert api.max_length == 37567  # The likelihood API reserves one output token.
     context = list(range(3000))
@@ -30,9 +32,10 @@ def test_longbench_explicit_budget_reaches_backend():
     assert args["tokenized_requests"] is False
 
 
-def test_longbench_requires_explicit_served_budget():
+@pytest.mark.parametrize("benchmark", ["longbenchv2", "longbench2", "longbench2_code"])
+def test_longbench_requires_explicit_served_budget(benchmark):
     with pytest.raises(ValueError, match="LongBench requires parameters.max_length"):
-        main.build_lmeval_config(job({}))
+        main.build_lmeval_config(job({}, benchmark))
 
 
 @pytest.mark.parametrize("value", [True, 0, 1, -1, "37568", 3.5, None])
@@ -130,7 +133,10 @@ def test_other_benchmarks_keep_existing_context_and_generation_defaults(benchmar
     assert lengths == [2046]
 
 
-def test_nested_group_uses_weighted_score_and_actual_coverage(monkeypatch, tmp_path):
+@pytest.mark.parametrize("benchmark", ["longbenchv2", "longbench2"])
+def test_nested_group_uses_weighted_score_and_actual_coverage(
+    monkeypatch, tmp_path, benchmark
+):
     import datasets
 
     monkeypatch.setattr(
@@ -141,14 +147,13 @@ def test_nested_group_uses_weighted_score_and_actual_coverage(monkeypatch, tmp_p
         main, "resolve_model_credentials", lambda: SimpleNamespace(api_key=None)
     )
     monkeypatch.setattr(main, "read_model_auth_key", lambda key: None)
-    monkeypatch.setattr(main, "TaskManager", MagicMock())
-    monkeypatch.setattr(
-        main, "_resolve_lmeval_task", lambda benchmark, manager: benchmark
-    )
+    task_manager = MagicMock()
+    task_manager._name_is_tag.return_value = False
+    monkeypatch.setattr(main, "TaskManager", MagicMock(return_value=task_manager))
     monkeypatch.setattr(main, "_build_dataset_info", lambda *args: None)
     evaluate = MagicMock(return_value=group_results())
     monkeypatch.setattr(main, "simple_evaluate", evaluate)
-    config = job({"max_length": 37568})
+    config = job({"max_length": 37568}, benchmark)
     config.id = "00000000-0000-0000-0000-000000000001"
     config.benchmark_index = 0
     config.num_examples = 3
@@ -156,6 +161,8 @@ def test_nested_group_uses_weighted_score_and_actual_coverage(monkeypatch, tmp_p
     config.model_dump = lambda: {}
     adapter = main.LMEvalAdapter.__new__(main.LMEvalAdapter)
     result = adapter.run_benchmark_job(config, MagicMock())
+    assert evaluate.call_args.kwargs["tasks"] == ["longbench2"]
+    assert result.benchmark_id == benchmark
     assert result.overall_score == 0.25
     assert result.num_examples_evaluated == 4
     assert adapter._run_info["num_samples_original"] == 15

@@ -286,6 +286,7 @@ from lm_eval.tasks import TaskManager  # noqa: E402
 # catalog id unless mapped to a single task (winogender_all = full Winogender set).
 _BENCHMARK_TO_LMEVAL_TASK: dict[str, str] = {
     "winogender": "winogender_all",
+    "longbenchv2": "longbench2",
 }
 
 
@@ -793,10 +794,10 @@ def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
                 "parameters.max_length must be an integer greater than one"
             )
         context_args["max_length"] = max_length
-    is_longbench = (
-        job_spec.benchmark_id == "longbench2"
-        or job_spec.benchmark_id.startswith("longbench2_")
+    task_name = _BENCHMARK_TO_LMEVAL_TASK.get(
+        job_spec.benchmark_id, job_spec.benchmark_id
     )
+    is_longbench = task_name == "longbench2" or task_name.startswith("longbench2_")
     if is_longbench and "max_length" not in context_args:
         raise ValueError(
             "LongBench requires parameters.max_length set to the served model's context limit"

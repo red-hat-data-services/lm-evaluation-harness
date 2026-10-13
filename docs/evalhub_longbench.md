@@ -1,6 +1,8 @@
 # EvalHub LongBench v2 context configuration
 
-The harness task/group ID is `longbench2`, and its primary metric is `acc`.
+The EvalHub catalog ID is `longbenchv2`. The adapter maps it to the harness
+task/group ID `longbench2` and preserves `longbenchv2` in the returned job results.
+No EvalHub catalog ID change is required. Its primary metric is `acc`.
 This implementation uses multiple-choice loglikelihood scoring. It is not the
 official LongBench runner's answer-generation protocol; scores should not be
 assumed comparable to its leaderboard.
@@ -13,12 +15,12 @@ The model's advertised context capacity can exceed the server's configured limit
 
 ```json
 {
-  "id": "longbench2",
+  "id": "longbenchv2",
   "provider_id": "lm_evaluation_harness",
   "parameters": {
     "max_length": 37568,
     "loglikelihood_context_overflow": "error",
-    "num_fewshot": 0,
+    "num_few_shot": 0,
     "apply_chat_template": true,
     "tokenizer": "meta-llama/Llama-3.3-70B-Instruct"
   }
@@ -30,7 +32,8 @@ example server configuration, not a general Llama or LongBench default. Use the
 tokenizer matching the served model. This requires an adapter image containing
 the context and chat-template changes; older images can ignore these settings.
 
-For `longbench2` and its leaf tasks, `max_length` is required and
+For `longbenchv2` (resolved to `longbench2`), the direct harness ID `longbench2`,
+and its leaf tasks, `max_length` is required and
 `loglikelihood_context_overflow` defaults to `error`. An oversized likelihood
 input raises an error before that input is sent to the model. Previously
 processed inputs may already have reached the endpoint; no final successful
@@ -52,7 +55,8 @@ whole.
 
 Tests in `tests/test_adapter_longbench.py` exercise budgets above the old 2K
 default, boundary and overflow handling, synchronous/asynchronous rejection,
-weighted group results, and sample coverage. These are local regression tests;
+catalog-ID resolution, preserved result identity, weighted group results, and
+sample coverage. These are local regression tests;
 they do not establish that a deployed image or a full dataset run is validated.
 
 Sources: [harness task definition](../lm_eval/tasks/longbench2/_longbench_common_yaml),
