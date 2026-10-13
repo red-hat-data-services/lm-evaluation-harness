@@ -8,6 +8,27 @@
 
 Use `jsonschema_bench` tag to run all three tasks.
 
+### Task version 0.2
+
+The Easy task explicitly requests JSON-only output, without explanations or
+Markdown code fences. It also disables blank-line stopping, so formatted JSON
+can contain blank lines. Generation still ends at the model's EOS or the
+configured output-token limit. The default output-token limit is unchanged;
+check for incomplete JSON before choosing a larger limit for a particular model.
+
+This changes the prompting and stopping protocol from version 0.1. Medium and
+Hard inherit these settings from Easy. Dataset and few-shot defaults are unchanged.
+The full model run used to validate this change covered Easy; Medium and Hard
+have not been tested against a live model with these settings.
+
+### Shared format scoring correction (version 0.2)
+
+All three tasks use the library's UUID, IPv4, and IPv6 format checks. Earlier
+custom overrides returned no success value, incorrectly rejecting valid values.
+Invalid formats still fail, and responses must still parse as JSON and satisfy
+the schema. All three tasks report version 0.2 to record the scoring correction;
+report the task version when comparing results.
+
 ## Metrics
 
 The JSONSchema Bench tasks are evaluated using the following two metrics:
