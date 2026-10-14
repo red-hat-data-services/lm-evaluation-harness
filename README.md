@@ -348,6 +348,9 @@ the tokenizer for the model being evaluated. The adapter renders the template
 for `/v1/completions` requests, supporting both generation and multiple-choice
 loglikelihood tasks. See [EvalHub chat-template configuration](docs/evalhub_chat_template.md)
 for generation settings and validation details.
+
+For LongBench v2, also configure the served context limit and overflow policy.
+See [EvalHub LongBench context configuration](docs/evalhub_longbench.md).
 Note that for externally hosted models, configs such as `--device` which relate to where to place a local model should not be used and do not function. Just like you can use `--model_args` to pass arbitrary arguments to the model constructor for local models, you can use it to pass arbitrary arguments to the model API for hosted models. See the documentation of the hosting service for information on what arguments they support.
 
 | API or Inference Server                                                                                                   | Implemented?                    | `--model <xxx>` name                                | Models supported:                                                                                                                                                                                                                                                                                                                                          | Request Types:                                             |
