@@ -286,6 +286,7 @@ from lm_eval.tasks import TaskManager  # noqa: E402
 # catalog id unless mapped to a single task (winogender_all = full Winogender set).
 _BENCHMARK_TO_LMEVAL_TASK: dict[str, str] = {
     "winogender": "winogender_all",
+    "longbenchv2": "longbench2",
 }
 
 
@@ -299,6 +300,55 @@ def _resolve_lmeval_task(benchmark_id: str, task_manager: TaskManager) -> str:
             f"add a mapping in _BENCHMARK_TO_LMEVAL_TASK"
         )
     return benchmark_id
+
+
+def _get_lmeval_task_results(results: dict[str, Any], task: str) -> dict[str, Any]:
+    """Use the harness group aggregate, including its configured weighting."""
+    group_results = results.get("groups", {}).get(task, {})
+    if any("," in name for name in group_results):
+        return group_results
+    return results.get("results", {}).get(task, {})
+
+
+def _get_lmeval_leaf_tasks(results: dict[str, Any], task: str) -> list[str]:
+    """Resolve nested groups without counting a leaf more than once."""
+    groups = results.get("group_subtasks", {})
+    seen: set[str] = set()
+    leaves: list[str] = []
+
+    def visit(name: str) -> None:
+        if name in seen:
+            return
+        seen.add(name)
+        children = groups.get(name, [])
+        if children:
+            for child in children:
+                visit(child)
+        else:
+            leaves.append(name)
+
+    visit(task)
+    return leaves
+
+
+def _get_lmeval_sample_counts(results: dict[str, Any], task: str) -> dict[str, int]:
+    counts = results.get("n-samples", {})
+    if task in counts:
+        return counts[task]
+    leaves = _get_lmeval_leaf_tasks(results, task)
+    return {
+        field: sum(counts[name][field] for name in leaves)
+        for field in ("original", "effective")
+        if all(field in counts.get(name, {}) for name in leaves)
+    }
+
+
+def _get_lmeval_evaluated_count(results: dict[str, Any], task: str) -> int:
+    samples = results.get("samples", {})
+    leaves = _get_lmeval_leaf_tasks(results, task)
+    if all(isinstance(samples.get(name), list) for name in leaves):
+        return sum(len(samples[name]) for name in leaves)
+    return _get_lmeval_sample_counts(results, task).get("effective", 0)
 
 
 # Configure logging
@@ -355,9 +405,10 @@ def _normalize_lmeval_metrics(task_results: dict[str, Any]) -> dict[str, float]:
 
 
 def _extract_lmeval_metrics(results: dict[str, Any], task: str) -> dict[str, float]:
-    """Preserve named-filter metrics in direct results and existing group fallback."""
+    """Preserve named-filter metrics and prefer the harness's weighted group result."""
     all_results = results.get("results", {})
-    metrics = _normalize_lmeval_metrics(all_results.get(task, {}))
+    task_results = _get_lmeval_task_results(results, task)
+    metrics = _normalize_lmeval_metrics(task_results)
     if metrics:
         return metrics
     # Preserve the adapter's existing arithmetic-mean fallback for groups.
@@ -556,7 +607,7 @@ def _build_additional_info(
     """
     global_cfg = lmeval_results.get("config", {})
     task_cfg = lmeval_results.get("configs", {}).get(benchmark_id, {})
-    n_samples = lmeval_results.get("n-samples", {}).get(benchmark_id, {})
+    n_samples = _get_lmeval_sample_counts(lmeval_results, benchmark_id)
     fewshot_cfg = task_cfg.get("fewshot_config") or {}
 
     # Primary metric — first entry in metric_list; falls back to subtask for group tasks
@@ -601,6 +652,7 @@ def _build_additional_info(
         "tags": tags if tags else None,
         "limit": global_cfg.get("limit"),
         "gen_kwargs": global_cfg.get("gen_kwargs"),
+        "apply_chat_template": benchmark_params.get("apply_chat_template", False),
         # prompting strategy — score when applicable, None otherwise
         "zero_shot": overall_score if is_zero_shot else None,
         "alt_prompting": overall_score if not is_zero_shot else None,
@@ -624,6 +676,10 @@ def _build_additional_info(
         "num_concurrent": model_args.get("num_concurrent"),
         "batch_size": model_args.get("batch_size"),
         "tokenizer": model_args.get("tokenizer"),
+        "max_length": model_args.get("max_length"),
+        "loglikelihood_context_overflow": model_args.get(
+            "loglikelihood_context_overflow"
+        ),
         "hf_offline": hf_offline,
         "timeout_seconds": int(benchmark_params.get("timeout_seconds", 300)),
     }
@@ -690,6 +746,13 @@ def _build_dataset_info(lmeval_results: dict, benchmark_id: str) -> list[dict[st
     return records if records else None
 
 
+def _chat_template_enabled(parameters: dict[str, Any]) -> bool:
+    enabled = parameters.get("apply_chat_template", False)
+    if not isinstance(enabled, bool):
+        raise ValueError("parameters.apply_chat_template must be a boolean")
+    return enabled
+
+
 def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
     """Derive lm-evaluation-harness model backend + args from job spec.
 
@@ -719,6 +782,33 @@ def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
             _MAX_CONCURRENT,
         )
     timeout_seconds = int(benchmark_params.get("timeout_seconds", 300))
+    context_args: dict[str, Any] = {}
+    if "max_length" in benchmark_params:
+        max_length = benchmark_params["max_length"]
+        if (
+            isinstance(max_length, bool)
+            or not isinstance(max_length, int)
+            or max_length < 2
+        ):
+            raise ValueError(
+                "parameters.max_length must be an integer greater than one"
+            )
+        context_args["max_length"] = max_length
+    task_name = _BENCHMARK_TO_LMEVAL_TASK.get(
+        job_spec.benchmark_id, job_spec.benchmark_id
+    )
+    is_longbench = task_name == "longbench2" or task_name.startswith("longbench2_")
+    if is_longbench and "max_length" not in context_args:
+        raise ValueError(
+            "LongBench requires parameters.max_length set to the served model's context limit"
+        )
+    if is_longbench or "loglikelihood_context_overflow" in benchmark_params:
+        overflow = benchmark_params.get("loglikelihood_context_overflow", "error")
+        if overflow not in ("error", "truncate"):
+            raise ValueError(
+                "parameters.loglikelihood_context_overflow must be 'error' or 'truncate'"
+            )
+        context_args["loglikelihood_context_overflow"] = overflow
 
     # Optional generation parameters for generate_until tasks.
     parameters = benchmark_params.get("parameters", {})
@@ -772,6 +862,7 @@ def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
             "num_concurrent": num_concurrent,
             "batch_size": batch_size,
             "timeout": timeout_seconds,
+            **context_args,
         },
         gen_kwargs,
     )
@@ -861,6 +952,7 @@ class LMEvalAdapter(FrameworkAdapter):
             # Adapter-specific params from parameters
             num_fewshot = int(benchmark_params.get("num_few_shot", 0))
             random_seed = int(benchmark_params.get("random_seed", 42))
+            apply_chat_template = _chat_template_enabled(benchmark_params)
 
             model_backend, model_args, gen_kwargs = build_lmeval_config(config)
 
@@ -877,6 +969,7 @@ class LMEvalAdapter(FrameworkAdapter):
             logger.info(f"Benchmark: {benchmark_id}")
             logger.info(f"Examples limit: {num_examples}")
             logger.info(f"Few-shot: {num_fewshot}")
+            logger.info("Apply chat template: %s", apply_chat_template)
             logger.info("Device: cpu (forced)")
             logger.info(f"Model backend: {model_backend}")
 
@@ -927,6 +1020,7 @@ class LMEvalAdapter(FrameworkAdapter):
                         model_args=model_args,
                         tasks=[lmeval_task],
                         num_fewshot=int(num_fewshot),
+                        apply_chat_template=apply_chat_template,
                         device="cpu",
                         limit=num_examples,
                         random_seed=random_seed,
@@ -967,10 +1061,7 @@ class LMEvalAdapter(FrameworkAdapter):
             )
 
             # Get number of examples evaluated
-            samples = results.get("samples", {}).get(lmeval_task, [])
-            num_examples_evaluated = (
-                len(samples) if isinstance(samples, list) else num_examples
-            )
+            num_examples_evaluated = _get_lmeval_evaluated_count(results, lmeval_task)
 
             duration = time.time() - start_time
 

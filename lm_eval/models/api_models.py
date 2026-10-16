@@ -85,6 +85,7 @@ class TemplateAPI(TemplateLM):
         eos_string: str = None,
         # timeout in seconds
         timeout: int = 300,
+        loglikelihood_context_overflow: Literal["error", "truncate"] = "truncate",
         **kwargs,
     ) -> None:
         super().__init__()
@@ -116,6 +117,11 @@ class TemplateAPI(TemplateLM):
         # max_length - 1 as we always have 1 token for generation
         eval_logger.info(f"Using max length {max_length} - 1")
         self.max_length = max_length - 1
+        if loglikelihood_context_overflow not in ("error", "truncate"):
+            raise ValueError(
+                "loglikelihood_context_overflow must be 'error' or 'truncate'"
+            )
+        self.loglikelihood_context_overflow = loglikelihood_context_overflow
         if int(num_concurrent) <= 1:
             eval_logger.info(
                 "Concurrent requests are disabled. To enable concurrent requests, set `num_concurrent` > 1."
@@ -278,17 +284,23 @@ class TemplateAPI(TemplateLM):
         """
         return ""
 
+    def _render_hf_chat_template(
+        self, chat_history: list[dict[str, str]], add_generation_prompt: bool
+    ) -> str:
+        """Render a Hugging Face chat template with shared generation settings."""
+        return self.tokenizer.apply_chat_template(
+            chat_history,
+            tokenize=False,
+            add_generation_prompt=add_generation_prompt,
+            continue_final_message=not add_generation_prompt,
+        )
+
     def apply_chat_template(
         self, chat_history: List[Dict[str, str]], add_generation_prompt: bool = True
     ) -> Union[str, JsonChatStr]:
         """Applies a chat template to a list of chat history between user and model."""
         if self.tokenizer_backend == "huggingface" and self.tokenized_requests:
-            return self.tokenizer.apply_chat_template(
-                chat_history,
-                tokenize=False,
-                add_generation_prompt=add_generation_prompt,
-                continue_final_message=not add_generation_prompt,
-            )
+            return self._render_hf_chat_template(chat_history, add_generation_prompt)
         else:
             # bit of a hack. We'll load back before sending to the API
             return JsonChatStr(json.dumps(chat_history, ensure_ascii=False))
@@ -476,6 +488,18 @@ class TemplateAPI(TemplateLM):
         cache_keys = []
         for chunk in chunks:
             for cache_key, context_enc, continuation_enc in chunk:
+                total_length = len(context_enc) + len(continuation_enc)
+                if (
+                    total_length > self.max_length
+                    and self.loglikelihood_context_overflow == "error"
+                ):
+                    raise ValueError(
+                        f"Loglikelihood input has {total_length} tokens, exceeding "
+                        f"the {self.max_length}-token input budget (max_length minus "
+                        "one output token). No truncated request was sent. Use a "
+                        "larger supported context limit or explicitly select "
+                        "loglikelihood_context_overflow='truncate'."
+                    )
                 # max_length - 1 as we always have 1 token for generation
                 inp = (context_enc + continuation_enc)[-self.max_length :]
                 if len(inp) < len(context_enc + continuation_enc):

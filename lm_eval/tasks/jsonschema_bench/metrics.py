@@ -1,9 +1,7 @@
-import ipaddress
 import json
 import logging
 import os
 import signal
-import uuid
 from typing import Any, Dict
 
 
@@ -72,24 +70,8 @@ def is_json_schema_valid(schema: dict):
         return False
 
 
-# Initialize the FormatChecker
+# Use the library's format checks, which return booleans and handle invalid values.
 format_checker = FormatChecker()
-
-
-# Add custom format checkers
-@format_checker.checks("ipv4")
-def ipv4_check(value):
-    ipaddress.IPv4Address(value)
-
-
-@format_checker.checks("ipv6")
-def ipv6_check(value):
-    ipaddress.IPv6Address(value)
-
-
-@format_checker.checks("uuid")
-def uuid_check(value):
-    uuid.UUID(value)
 
 
 def schema_conform_with_format_checker(
