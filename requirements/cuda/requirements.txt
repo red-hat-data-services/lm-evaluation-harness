@@ -303,8 +303,9 @@ mdurl==0.1.2 \
     --hash=sha256:9a1222d5fee97d12fd3e1b9da56de6b53548b9b0d1ff9f92d56e9915bd4b9297
     # via markdown-it-py
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
-more-itertools==10.5.0 \
-    --hash=sha256:831687b44ad30aeee3ecc111141f268b532a2389f9f78cf3bb99a00beba48baf
+more-itertools==11.1.0 \
+    --hash=sha256:48e8f4d9e7e5878571ecf6f2b4e57634f93cd474cc8cfbd2376f2d11b396e30d \
+    --hash=sha256:4b65538ae22f6fed0ce4874efd317463a7489796a0939fa66824dd542125a192
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
 mpmath==1.3.0 \
