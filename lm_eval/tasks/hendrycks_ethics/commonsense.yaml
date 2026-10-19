@@ -1,12 +1,16 @@
 tag:
   - hendrycks_ethics
 task: ethics_cm
-dataset_path: EleutherAI/hendrycks_ethics
-dataset_name: commonsense
+dataset_path: parquet
 dataset_kwargs:
   # Siblings inherit this entire dict via shallow dict.update() (lm_eval/utils.py).
-  # If a sibling needs to add any dataset_kwargs key, it must also repeat this revision pin.
-  revision: a710dd862056df1a92346e7afee93a34d57a5f42
+  # If a sibling needs to add any dataset_kwargs key, it must also repeat these data_files.
+  # EleutherAI/hendrycks_ethics ships a loading script, which datasets >= 4 no longer
+  # supports; read the Hub's auto-generated parquet conversion instead (same recipe as
+  # EleutherAI/lm-evaluation-harness#3976).
+  data_files:
+    train: hf://datasets/EleutherAI/hendrycks_ethics@refs%2Fconvert%2Fparquet/commonsense/train/0000.parquet
+    test: hf://datasets/EleutherAI/hendrycks_ethics@refs%2Fconvert%2Fparquet/commonsense/test/0000.parquet
 output_type: multiple_choice
 training_split: train
 test_split: test
