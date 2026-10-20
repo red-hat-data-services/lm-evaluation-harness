@@ -49,10 +49,11 @@ def _get_lmeval_version() -> str:
 _JOB_SPEC_ALLOWED_ROOT = Path("/meta")
 
 # Benchmarks whose HuggingFace datasets use custom loading scripts and require trust_remote_code.
-# Remove an entry here once the dataset is converted to parquet on the Hub.
-_BENCHMARKS_REQUIRING_REMOTE_CODE: frozenset[str] = frozenset({
-    "ethics_cm",
-})
+# Remove an entry here once the dataset reads a parquet conversion instead of a loading script.
+# The hendrycks_ethics tasks now read the Hub's refs/convert/parquet conversion directly, so
+# this set is currently empty; the mechanism is kept for datasets < 4, which still honours
+# the toggle.
+_BENCHMARKS_REQUIRING_REMOTE_CODE: frozenset[str] = frozenset()
 
 
 def _needs_trust_remote_code(benchmark_id: str) -> bool:
@@ -721,9 +722,13 @@ class LMEvalAdapter(FrameworkAdapter):
             )
 
             # Some datasets use custom HF loading scripts and require trust_remote_code.
+            # datasets 4+ removed HF_DATASETS_TRUST_REMOTE_CODE and dropped dataset-script
+            # support entirely; tasks that used scripts now read the Hub's parquet
+            # conversion instead (see lm_eval/tasks/hendrycks_ethics). Guard the toggle so
+            # the adapter keeps working across both generations of datasets.
             import datasets as _datasets
-            _prev_trust_remote_code = _datasets.config.HF_DATASETS_TRUST_REMOTE_CODE
-            if _needs_trust_remote_code(benchmark_id):
+            _prev_trust_remote_code = getattr(_datasets.config, "HF_DATASETS_TRUST_REMOTE_CODE", None)
+            if _prev_trust_remote_code is not None and _needs_trust_remote_code(benchmark_id):
                 _datasets.config.HF_DATASETS_TRUST_REMOTE_CODE = True
                 logger.info("trust_remote_code enabled for benchmark %s", benchmark_id)
 
@@ -745,7 +750,8 @@ class LMEvalAdapter(FrameworkAdapter):
                     gen_kwargs=gen_kwargs,
                 )
             finally:
-                _datasets.config.HF_DATASETS_TRUST_REMOTE_CODE = _prev_trust_remote_code
+                if _prev_trust_remote_code is not None:
+                    _datasets.config.HF_DATASETS_TRUST_REMOTE_CODE = _prev_trust_remote_code
             # Phase 4: Post-processing
             callbacks.report_status(
                 JobStatusUpdate(

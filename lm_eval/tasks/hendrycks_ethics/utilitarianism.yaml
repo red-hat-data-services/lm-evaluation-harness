@@ -2,7 +2,10 @@ include: commonsense.yaml
 tag:
   - hendrycks_ethics
 task: ethics_utilitarianism
-dataset_name: utilitarianism
+dataset_kwargs:
+  data_files:
+    train: hf://datasets/EleutherAI/hendrycks_ethics@refs%2Fconvert%2Fparquet/utilitarianism/train/0000.parquet
+    test: hf://datasets/EleutherAI/hendrycks_ethics@refs%2Fconvert%2Fparquet/utilitarianism/test/0000.parquet
 doc_to_text: !function utils.doc_to_text
 doc_to_target: !function utils.doc_to_target
 doc_to_choice: ['no', 'yes']
