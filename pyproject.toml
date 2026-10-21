@@ -79,7 +79,7 @@ dev = [
     "pytest-cov==6.0.0",
     "pytest-xdist==3.6.1",
     "pre-commit==4.0.1",
-    "mypy==1.13.0",
+    "mypy==2.4.0",
     "virtualenv==21.7.13",
 ]
 hf_transfer = ["hf-transfer==0.1.9"]
