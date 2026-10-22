@@ -480,16 +480,17 @@ pybind11==2.13.6 \
     --hash=sha256:3f3dde3f1fa96b2065969b4eb4e55d48901a774a668f943544b7e51374fffabe
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9-test/simple/
-pydantic==2.13.5 \
-    --hash=sha256:21cd5f17d85926d61ff034a257ae8c82965e3dc4810046745fde785bb3b5ccd4
+pydantic==2.14.1 \
+    --hash=sha256:44f4398fc7236b4e10d752d6cb2b8d32e01ca0e25ea042935d3cafb687ada748
     # via
+    #   -c requirements/constraints.txt
     #   eval-hub-sdk
     #   olot
     #   pydantic-settings
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9-test/simple/
-pydantic-core==2.46.5 \
-    --hash=sha256:32514cc078eb936ec2ababbe46d2bdc0835e42fa4818b043eef7763497eb9ffb \
-    --hash=sha256:7230b2817b91cce58a2f8084b09c3e38ff42b6b83abf23d32f7e19b60922634e
+pydantic-core==2.50.1 \
+    --hash=sha256:9ac1efb964fa49bc8c8d6bdb8356c3a9a563aa6afa7f7ef04c265a9f44317c0b \
+    --hash=sha256:bd4ffd7a2096b63d48d311360f1c87baac5e68f7928b723d6dced63e41dbe250
     # via
     #   -c requirements/constraints.txt
     #   pydantic
