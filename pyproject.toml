@@ -19,11 +19,15 @@ classifiers = [
 requires-python = ">=3.11,<3.13"
 license = { "text" = "MIT" }
 dependencies = [
-    "urllib3==2.6.3",
     "accelerate>=1.0.1",
+    "anyio>=4.14.2",
+    "pyarrow>=23.0.1",
+    "virtualenv>=21.7.13",
+    "urllib3>=2.8.0",
     "evaluate>=0.4.3",
-    "eval-hub-sdk[adapter]~=1.0.0",
-    "datasets>=3.1.0",
+    "eval-hub-sdk[adapter]~=1.0.6",
+    "datasets>=3.1.0,<4",
+    "certifi>=2026.10.19",
     "jsonlines==4.0.0",
     "numexpr>=2.10.1",
     "peft>=0.13.2",
@@ -41,7 +45,7 @@ dependencies = [
     "word2number==1.1",
     "more_itertools==10.5.0",
     "unitxt>=1.17.2",
-    "jiwer>=3.0.5,<4.0.0",
+    "jiwer>=3.0.5,<4",
     "boto3>=1.42.12",
     "olot>=0.1.15",
 ]
@@ -64,7 +68,7 @@ Repository = "https://github.com/EleutherAI/lm-evaluation-harness"
 [project.optional-dependencies]
 api = [
     "requests==2.32.5",
-    "aiohttp==3.13.3",
+    "aiohttp>=3.14.4",
     "tenacity==9.0.0",
     "tqdm==4.66.6",
     "tiktoken>=0.8.0",
