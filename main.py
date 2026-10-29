@@ -13,13 +13,13 @@ Optional environment variables:
 - REGISTRY_PASSWORD: Registry password/token (optional)
 
 Offline / air-gapped clusters: The job file is read before ``lm_eval`` loads (see
-``_seed_hf_offline_before_lm_eval_import``). The adapter only checks top-level
-``parameters.tokenizer``—the same tokenizer path used everywhere else, not anything under nested
-``parameters.parameters``. If that path exists on disk, sits under ``/test_data`` but is not the
-``/test_data`` mount path by itself, and another folder next to it under ``/test_data`` contains
-``dataset_dict.json`` (offline dataset files, e.g. next to ``tokenizer/``), the adapter turns on
-Hugging Face offline mode: it sets ``HF_HOME`` and related env vars so those libraries use local
-files and do not call the Hub. You do not need ``parameters.offline``.
+``_seed_hf_offline_before_lm_eval_import``). The adapter uses top-level
+``parameters.tokenizer`` when set. If it is omitted or blank, a staged ``/test_data/tokenizer``
+may be used when a sibling folder under ``/test_data`` contains ``dataset_dict.json``. In either
+case, when the tokenizer is a local path under ``/test_data`` and a staged dataset bundle is
+present, the adapter enables Hugging Face offline mode and points its caches at ``/test_data`` so
+asset resolution does not call the Hub. Explicit tokenizer values take precedence. You do not
+need ``parameters.offline``.
 """
 
 import json
@@ -116,42 +116,50 @@ def _resolve_job_spec_path_for_read(path: str) -> Path | None:
     return resolved
 
 
-def _read_job_spec_parameters_from_path(path: str) -> dict[str, Any]:
-    """Load top-level ``parameters`` object from the job spec JSON file.
+def _read_job_spec_parameters_from_path(path: str) -> dict[str, Any] | None:
+    """Load top-level ``parameters`` from the job spec.
 
-    Only files whose resolved path stays under ``/meta`` are opened (see ``EVALHUB_JOB_SPEC_PATH``).
+    Return ``None`` if the job spec cannot be read or is malformed; a valid spec
+    without a ``parameters`` key returns an empty dict. Only files under ``/meta``
+    are opened (see ``EVALHUB_JOB_SPEC_PATH``).
     """
     resolved = _resolve_job_spec_path_for_read(path)
     if resolved is None:
-        return {}
+        return None
     try:
         with open(resolved, encoding="utf-8") as f:
             spec = json.load(f)
     except FileNotFoundError:
-        return {}
+        return None
     except PermissionError as exc:
         print(
             f"WARNING: permission denied reading job spec {resolved!r}: {exc}",
             file=sys.stderr,
         )
-        return {}
+        return None
     except OSError as exc:
         print(f"WARNING: I/O error reading job spec {resolved!r}: {exc}", file=sys.stderr)
-        return {}
+        return None
     except json.JSONDecodeError as exc:
         print(f"WARNING: invalid JSON in job spec {resolved!r}: {exc}", file=sys.stderr)
-        return {}
+        return None
     except TypeError as exc:
         print(
             f"WARNING: unexpected type while parsing job spec {resolved!r}: {exc}",
             file=sys.stderr,
         )
-        return {}
+        return None
     if not isinstance(spec, dict):
+        return None
+    if "parameters" not in spec:
         return {}
-    parameters = spec.get("parameters")
+    parameters = spec["parameters"]
     if not isinstance(parameters, dict):
-        return {}
+        print(
+            f"WARNING: job spec parameters in {resolved!r} are not a JSON object",
+            file=sys.stderr,
+        )
+        return None
     return parameters
 
 
@@ -200,13 +208,15 @@ def _infer_auto_offline_from_local_test_data(
     *,
     test_data_root: str | Path = _TEST_DATA_DIR,
 ) -> bool:
-    """True when ``parameters.tokenizer`` points into ``test_data_root`` and datasets are co-located.
+    """True when a local staged tokenizer and dataset bundle are co-located under ``test_data_root``.
 
-    Tokenizer: absolute path under ``test_data_root``, not the mount root alone, path exists.
-    Datasets: see ``_dataset_material_present_under_test_data`` (same ``/test_data`` directory).
+    An explicit top-level ``parameters.tokenizer`` path is used when present. Otherwise,
+    ``<test_data_root>/tokenizer`` is the conventional staged tokenizer location. The tokenizer
+    must be an absolute path under ``test_data_root``, not the mount root itself, and exist.
+    Datasets are checked by ``_dataset_material_present_under_test_data``.
     """
     tokenizer_str = _extract_tokenizer_parameter(parameters)
-    if not tokenizer_str or not tokenizer_str.startswith("/"):
+    if tokenizer_str is not None and not tokenizer_str.startswith("/"):
         return False
 
     root = Path(test_data_root)
@@ -217,7 +227,9 @@ def _infer_auto_offline_from_local_test_data(
     if not root_res.is_dir():
         return False
 
-    tokenizer_path = Path(tokenizer_str)
+    tokenizer_path = (
+        Path(tokenizer_str) if tokenizer_str is not None else root_res / "tokenizer"
+    )
     try:
         tok_res = tokenizer_path.resolve()
     except OSError:
@@ -252,7 +264,12 @@ def configure_hf_offline_environment(hf_home: str) -> None:
 
 def _seed_hf_offline_before_lm_eval_import() -> None:
     path = os.environ.get("EVALHUB_JOB_SPEC_PATH", "/meta/job.json")
-    if not _infer_auto_offline_from_local_test_data(_read_job_spec_parameters_from_path(path)):
+    parameters = _read_job_spec_parameters_from_path(path)
+    if parameters is None:
+        return
+    if not _infer_auto_offline_from_local_test_data(
+        parameters, test_data_root=_TEST_DATA_DIR
+    ):
         return
     configure_hf_offline_environment(_TEST_DATA_DIR)
 
@@ -830,8 +847,17 @@ def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
         completions_url = f"{base}/v1/completions"
 
     # For OpenAI-compatible endpoints, we need a HuggingFace tokenizer.
-    # The tokenizer can be specified in parameters, otherwise use model.name
-    tokenizer = str(benchmark_params.get("tokenizer", model_name))
+    # The tokenizer can be specified in parameters. In disconnected deployments, use the
+    # conventional staged tokenizer only when a local dataset bundle is staged alongside it.
+    configured_tokenizer = _extract_tokenizer_parameter(benchmark_params)
+    if configured_tokenizer is not None:
+        tokenizer = configured_tokenizer
+    elif _infer_auto_offline_from_local_test_data(
+        benchmark_params, test_data_root=_TEST_DATA_DIR
+    ):
+        tokenizer = str((Path(_TEST_DATA_DIR) / "tokenizer").resolve())
+    else:
+        tokenizer = model_name
 
     # Helpful error message if tokenizer is not a valid HF model
     if tokenizer == model_name and "/" not in tokenizer:
@@ -918,13 +944,13 @@ class LMEvalAdapter(FrameworkAdapter):
                 test_data_dir = _TEST_DATA_DIR
                 if not os.path.isdir(test_data_dir):
                     raise RuntimeError(
-                        f"Local /test_data layout detected from parameters.tokenizer but "
+                        f"Local /test_data assets detected but the test-data mount "
                         f"{test_data_dir} does not exist. Ensure test_data_ref is configured so "
                         "the init container populates the directory before the adapter starts."
                     )
                 configure_hf_offline_environment(test_data_dir)
                 logger.info(
-                    "HF offline mode (auto-detected from parameters.tokenizer + /test_data): "
+                    "HF offline mode (auto-detected from staged tokenizer + dataset under /test_data): "
                     "HF_HOME=%s, downloads disabled",
                     test_data_dir,
                 )
