@@ -2,7 +2,7 @@
 # Stage 1 Base builder image with common tooling
 ###############################################################
 
-FROM registry.redhat.io/ubi9/python-312:latest@sha256:e6a10c3150624fbfd33dbd7721ef99ce7a1001b417d64427ad58515ab8044121 AS builder
+FROM registry.redhat.io/ubi9/python-312:latest@sha256:5b0c67feb3f2e5637c6301ea22e2839d402dd71d88c3cec8d1fd278ce0f9e69a AS builder
 USER root
 
 ENV TORCH_VERSION=2.6.0
@@ -20,7 +20,7 @@ RUN if [ "$TARGETARCH" = "s390x" ]; then \
         dnf install -y gcc-toolset-13 make wget unzip rust cargo && \
         dnf clean all                                             ; \
     fi                                                           && \
-    pip install --upgrade pip 'cmake<4' setuptools wheel
+    pip install --upgrade "pip>=26.2.2" 'cmake<4' setuptools wheel
 
 # Create a dummy file to trigger build dependency
 RUN touch /tmp/control
