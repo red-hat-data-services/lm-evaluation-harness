@@ -19,6 +19,7 @@ classifiers = [
 requires-python = "<3.13,>=3.10"
 license = { "text" = "MIT" }
 dependencies = [
+    "certifi==2026.10.23",
     "accelerate==1.0.1",
     "evaluate==0.4.3",
     "datasets==3.1.0",
