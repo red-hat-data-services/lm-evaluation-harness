@@ -2,7 +2,7 @@
 # Stage 1 Base builder image with common tooling
 ###############################################################
 
-FROM registry.redhat.io/ubi9/python-312:latest@sha256:67c88185f64a58e4493bd327c9705d58168380a81b9b817402b58319146b813e AS builder
+FROM registry.redhat.io/ubi9/python-312:latest@sha256:5b0c67feb3f2e5637c6301ea22e2839d402dd71d88c3cec8d1fd278ce0f9e69a AS builder
 USER root
 
 ENV PATH="$HOME/.cargo/bin:$PATH"
@@ -19,7 +19,7 @@ RUN if [ "$TARGETARCH" = "s390x" ]; then \
         dnf install -y gcc-toolset-13 make wget unzip rust cargo && \
         dnf clean all                                             ; \
     fi                                                           && \
-    pip install --upgrade pip 'cmake<4' setuptools wheel
+    pip install --upgrade "pip>=26.2.2" 'cmake<4' setuptools wheel
 
 COPY requirements.txt .
 
