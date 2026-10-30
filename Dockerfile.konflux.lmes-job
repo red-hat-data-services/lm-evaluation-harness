@@ -19,7 +19,7 @@ RUN if [ "$TARGETARCH" = "s390x" ]; then \
         dnf install -y gcc-toolset-13 make wget unzip rust cargo && \
         dnf clean all                                             ; \
     fi                                                           && \
-    pip install --upgrade pip 'cmake<4' setuptools wheel
+    pip install --upgrade "pip>=26.2.2" 'cmake<4' setuptools wheel
 
 COPY requirements.txt .
 
