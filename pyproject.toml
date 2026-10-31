@@ -29,7 +29,7 @@ dependencies = [
     "fsspec==2026.6.0",
     "filelock==4.2.1",
     "jsonlines==4.0.0",
-    "numexpr==2.10.1",
+    "numexpr==2.14.2",
     "peft==0.13.2",
     "pybind11==2.13.6",
     "pytablewriter==1.2.0",
