@@ -225,8 +225,9 @@ ibm-cos-sdk-s3transfer==2.14.3 \
     --hash=sha256:d20e33237f16ba70f99ba1d1f91a5ac4053814aefc8b207e4435eafeef9f8ae9
     # via ibm-cos-sdk
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-ibm-watsonx-ai==1.4.11 \
-    --hash=sha256:7b6d9208175d7a207b20af35e4dcb7c8da605ff645e76cc28289e855ab320dc0
+ibm-watsonx-ai==1.8.1 \
+    --hash=sha256:cc656728da7d7b2e6461bdf340f5244194f6eb047b18343c38ee33c017560073 \
+    --hash=sha256:d8e1a06e58455a7515bc1c3fe585bd3f115ed15e648d1e5325aee06765e646ef
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 idna==3.19 \
