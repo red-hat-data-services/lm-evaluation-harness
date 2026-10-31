@@ -57,8 +57,9 @@ bert-score==0.3.13 \
     --hash=sha256:d89364df6283dba8ac9debea9081ac442d83ff3be4aa3fb45de982c97c07135d
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-boto3==1.43.78 \
-    --hash=sha256:53803ed63ea3bb9f72878f88592be0d20c46cc64eb257ba6d473e001f2f5de29
+boto3==1.43.118 \
+    --hash=sha256:ab8f3d2c622ef039338b4f228d97ea55f1abd573d84bb9b9a5ee8cb6780c0ccd \
+    --hash=sha256:c0620f799e0f0c222ba42c337b65cdbcd3da38a3121187f634d8926cbbb28a9c
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 botocore==1.43.78 \
