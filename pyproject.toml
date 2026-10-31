@@ -27,7 +27,7 @@ dependencies = [
     "certifi==2026.10.23",
     "datasets==5.0.1",
     "fsspec==2026.6.0",
-    "filelock==4.2.1",
+    "filelock==4.2.4",
     "jsonlines==4.0.0",
     "numexpr==2.10.1",
     "peft==0.13.2",
