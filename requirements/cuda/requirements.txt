@@ -292,8 +292,9 @@ latex2sympy2-extended==1.11.0 \
     --hash=sha256:3134e88a84e41b5584d1ac22eddbec9c146fa24270a200bf2273b55b859df7c6
     # via math-verify
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-lomond==0.3.3 \
-    --hash=sha256:b5eb41aa71862989e7239b6e51f8402a652299deaae24624af05927710b5b80e
+lomond==0.3.4 \
+    --hash=sha256:250202a83ba45e3b265bf5dfef4db54d9c46b981230579dbe3b453dad320ba71 \
+    --hash=sha256:a63de62d1887e5038f51ce79b6aedbf31d4cac6e7cb135f592ddec9fff6a53cd
     # via ibm-watsonx-ai
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 lxml==6.1.2 \
