@@ -146,8 +146,9 @@ evaluate==0.4.6 \
     #   lm-eval (pyproject.toml)
     #   unitxt
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-filelock==3.32.3 \
-    --hash=sha256:6a20db1a645307e868677bba4a3d796612206883e33a24a2358d972eac2578ba
+filelock==3.32.7 \
+    --hash=sha256:37b8a3d9811b0f9aef7e5ec5c71bb320de52df51e6ca9bcd6f5ad81187660da7 \
+    --hash=sha256:65ff0d0190ea42038b32bda4b77834fb05be2cad4c5b9b01aa4dfb3614536e52
     # via
     #   datasets
     #   huggingface-hub
