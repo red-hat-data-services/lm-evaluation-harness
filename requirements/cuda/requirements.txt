@@ -249,8 +249,9 @@ jinja2==3.1.6 \
     --hash=sha256:5917bc78e5360c6a49ee29dd87b5815aaa99cec817b4d134f52a70832cd59f14
     # via torch
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-jiwer==3.0.5 \
-    --hash=sha256:b67c07b7935ac11e42f93cedf95af82a4de8997e9f1141ba975b3764dc01227b
+jiwer==4.0.0 \
+    --hash=sha256:7efaf0bd336b095d99ddef9dd67e1ee829d75d58aa2a81d9639870b01d6d95ea \
+    --hash=sha256:ae9c051469102a61ef0927100baeeb4546f78d180c9b0948281d08eaf44c191e
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 jmespath==1.0.1 \
