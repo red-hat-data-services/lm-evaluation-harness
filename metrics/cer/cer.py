@@ -11,17 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""" Character Error Ratio (CER) metric. """
+"""Character Error Ratio (CER) metric."""
 
 from typing import List
 
 import datasets
+import evaluate
 import jiwer
 import jiwer.transforms as tr
 from datasets.config import PY_VERSION
 from packaging import version
-
-import evaluate
 
 
 if PY_VERSION < version.parse("3.8"):
@@ -46,12 +45,20 @@ if version.parse(importlib_metadata.version("jiwer")) < version.parse("2.3.0"):
             chars = []
             for sent_idx, sentence in enumerate(inp):
                 chars.extend(self.process_string(sentence))
-                if self.sentence_delimiter is not None and self.sentence_delimiter != "" and sent_idx < len(inp) - 1:
+                if (
+                    self.sentence_delimiter is not None
+                    and self.sentence_delimiter != ""
+                    and sent_idx < len(inp) - 1
+                ):
                     chars.append(self.sentence_delimiter)
             return chars
 
     cer_transform = tr.Compose(
-        [tr.RemoveMultipleSpaces(), tr.Strip(), SentencesToListOfCharacters(SENTENCE_DELIMITER)]
+        [
+            tr.RemoveMultipleSpaces(),
+            tr.Strip(),
+            SentencesToListOfCharacters(SENTENCE_DELIMITER),
+        ]
     )
 else:
     cer_transform = tr.Compose(
@@ -136,24 +143,31 @@ class CER(evaluate.Metric):
         )
 
     def _compute(self, predictions, references, concatenate_texts=False):
+        # Keep the metric's existing empty-reference contract with jiwer 4,
+        # which otherwise accepts empty references and counts insertions.
+        if any(reference == "" for reference in references):
+            raise ValueError("one or more references are empty strings")
+
         if concatenate_texts:
-            return jiwer.compute_measures(
+            return jiwer.process_characters(
                 references,
                 predictions,
-                truth_transform=cer_transform,
+                reference_transform=cer_transform,
                 hypothesis_transform=cer_transform,
-            )["wer"]
+            ).cer
 
         incorrect = 0
         total = 0
         for prediction, reference in zip(predictions, references):
-            measures = jiwer.compute_measures(
+            measures = jiwer.process_characters(
                 reference,
                 prediction,
-                truth_transform=cer_transform,
+                reference_transform=cer_transform,
                 hypothesis_transform=cer_transform,
             )
-            incorrect += measures["substitutions"] + measures["deletions"] + measures["insertions"]
-            total += measures["substitutions"] + measures["deletions"] + measures["hits"]
+            incorrect += (
+                measures.substitutions + measures.deletions + measures.insertions
+            )
+            total += measures.substitutions + measures.deletions + measures.hits
 
         return incorrect / total
