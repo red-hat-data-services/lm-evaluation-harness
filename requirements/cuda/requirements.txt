@@ -359,8 +359,9 @@ networkx==3.6.1 \
     --hash=sha256:214d46e36e8f2d122bf5bb9edaa213ff93bc26a3e23aafb58086258defa65064
     # via torch
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-nltk==3.9.3 \
-    --hash=sha256:65d24339b57aa858d528529a03806eba216bc30ecb96aae3bb835910c0a72d5a
+nltk==3.10.4 \
+    --hash=sha256:44679f4e9220abfd496d2c8cdb22f8425ccbe557604f9aa5cacb1c44003dabc1 \
+    --hash=sha256:769ba5413f265b7d3e87cd163cc28efa01e29eeef8bb6080bc907949d9fcfb51
     # via
     #   lm-eval (pyproject.toml)
     #   rouge-score
