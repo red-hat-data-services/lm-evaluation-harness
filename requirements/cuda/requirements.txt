@@ -808,8 +808,9 @@ yarl==1.24.5 \
     --hash=sha256:42d31f586b665fd4e823096c6a9314652c78b276620dab31e46e265b3d8fcaa2
     # via aiohttp
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-zipp==4.1.0 \
-    --hash=sha256:4fac58cd5fcc6507e8189d879c5124ad022eda482e7d02f73704aec3e618a7f8
+zipp==4.1.2 \
+    --hash=sha256:b30cb6cd253122169c47de245ca24a86bac2a5d3802ba15bf7ba6414eb9e144d \
+    --hash=sha256:cf474b90b07ea932637e17c6b9479de2b2882900b0d311bdaf4f5c000a15a97f
     # via importlib-metadata
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 zstandard==0.25.0 \
