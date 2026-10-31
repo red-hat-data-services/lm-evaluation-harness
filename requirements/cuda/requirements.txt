@@ -712,8 +712,9 @@ torch==2.13.0 \
     #   bert-score
     #   peft
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-tqdm==4.66.6 \
-    --hash=sha256:21cc437c6b110904d15755e276673ec6d93a286a1e9be2dc434e545e098b3e14
+tqdm==4.70.1 \
+    --hash=sha256:c293e525e6fef9c20e8728fd4612df02a0aa31bb5fe91ecd93e123b1b7bffa73 \
+    --hash=sha256:cefd0eca11b2a37a3aee776544d4f4ae913f02688135b5556b8788dfa474afc4
     # via
     #   lm-eval (pyproject.toml)
     #   bert-score
