@@ -237,8 +237,9 @@ idna==3.19 \
     #   requests
     #   yarl
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-immutabledict==4.2.1 \
-    --hash=sha256:33d10d2119cb56cb17138dcb34f78f80b60965aed1affe9c71fa9368cad273b8
+immutabledict==4.3.1 \
+    --hash=sha256:c9facdc0ff30fdb8e35bd16532026cac472a549e182c94fa201b51b25e4bf7bf \
+    --hash=sha256:f844a669106cfdc73f47b1a9da003782fb17dc955a54c80972e0d93d1c63c514
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 importlib-metadata==9.0.0 \
