@@ -6,8 +6,9 @@ absl-py==2.5.0 \
     --hash=sha256:a2d2187e9ddaba5303bf0867e548737b4bde0cdc765a58c890a9e8a8a17ffb56
     # via rouge-score
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-accelerate==1.14.0 \
-    --hash=sha256:1e190331236218f564770ce53705cb929a1810105b2956dd5042d0905f6a4796
+accelerate==1.15.0 \
+    --hash=sha256:5654f8c5eaa0d4fa68b33e287a97765da6849bf6d51dcac874e73fbbddfb6134 \
+    --hash=sha256:97eacca0b73e45cb867dbf8c5d5d4dc32219544300e0c8992c7334dc2ef33cec
     # via
     #   lm-eval (pyproject.toml)
     #   peft
