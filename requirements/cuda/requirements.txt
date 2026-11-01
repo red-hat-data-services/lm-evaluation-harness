@@ -229,8 +229,9 @@ ibm-watsonx-ai==1.4.11 \
     --hash=sha256:7b6d9208175d7a207b20af35e4dcb7c8da605ff645e76cc28289e855ab320dc0
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-idna==3.19 \
-    --hash=sha256:0a2cd2dae9a5aaed3f56ba99d2c3cef899cee26157834e6272e2c67df6beb43f
+idna==3.20 \
+    --hash=sha256:a7db850025b95ded1eae8a46181a1a6c56c92c96f0e2b005d9ff8dc0210cab44 \
+    --hash=sha256:ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c
     # via
     #   anyio
     #   httpx
