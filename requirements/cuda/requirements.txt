@@ -71,8 +71,9 @@ cachetools==7.1.7 \
     --hash=sha256:c0b62452cdc97fca3385a7147bf1bb6bbb048eefc0b19773c0a2f66c90d89387
     # via ibm-watsonx-ai
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-certifi==2026.7.22 \
-    --hash=sha256:5c9d1888ceca2e973f8619ddaa991debcdfda00691a3456e5f1cac47679a8952
+certifi==2026.10.23 \
+    --hash=sha256:a9895e6e2758b371e0545e321a3a8fd1fcfd9829ada8824a936dfb16aaaf36cd \
+    --hash=sha256:e9b54de76e530bb6cf0ccd036787103acb58fd42ba930ea8bf948ddbaa2f61d1
     # via
     #   httpcore
     #   httpx
