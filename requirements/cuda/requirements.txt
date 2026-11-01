@@ -241,8 +241,9 @@ immutabledict==4.2.1 \
     --hash=sha256:33d10d2119cb56cb17138dcb34f78f80b60965aed1affe9c71fa9368cad273b8
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-importlib-metadata==9.0.0 \
-    --hash=sha256:302312d7c2016ae9c6ba263766616cc0417db83231dd15e4b39dbdf6851f11b1
+importlib-metadata==9.1.0 \
+    --hash=sha256:626c65eddcd23c0ee0ffb17567aa882f8cfce0e552c424f2fa37c8b679374078 \
+    --hash=sha256:9607fb24f95d4e0b1c17d57ec4604357d76d3f0d154f19fd4861f2e31c8e4065
     # via eval-hub-sdk
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 jinja2==3.1.6 \
