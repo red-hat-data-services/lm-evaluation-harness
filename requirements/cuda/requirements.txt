@@ -136,8 +136,9 @@ diskcache==5.6.3 \
     --hash=sha256:05dc5070980587740ff5f432a81c31f0d769423091fb2588491f9c40e57639aa
     # via unitxt
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-eval-hub-sdk==1.0.4 \
-    --hash=sha256:54fe515fd22338ecaf741c5b819a261559b5d89cf8c23e40e25bd5321ea6d08b
+eval-hub-sdk==1.0.7 \
+    --hash=sha256:a5c764769b7286c6d3920fe3d19c5c1da5f849c44dc9c4b61f49474e477cd53a \
+    --hash=sha256:d6c1d68e330bebf64b6b782b329e8c2a391c5ee4b04ff993dab543bc6487bb79
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 evaluate==0.4.6 \
