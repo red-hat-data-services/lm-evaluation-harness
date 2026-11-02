@@ -35,8 +35,9 @@ annotated-types==0.8.0 \
     --hash=sha256:ceb5731485f424d225748ecdb7552c50d14fb9a5d1ef71f2c739f36e93930f9e
     # via pydantic
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-antlr4-python3-runtime==4.11.0 \
-    --hash=sha256:af2172ab9788b47e6d8cc2da1d5450285d0d1aa15f8da16a4266ba153a5b8e7f
+antlr4-python3-runtime==4.13.2 \
+    --hash=sha256:909b647e1d2fc2b70180ac586df3933e38919c85f98ccc656a96cd3f25ef3916 \
+    --hash=sha256:fe3835eb8d33daece0e799090eda89719dbccee7aa39ef94eed3818cafa5a7e8
     # via
     #   lm-eval (pyproject.toml)
     #   latex2sympy2-extended
