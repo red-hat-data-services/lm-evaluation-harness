@@ -116,8 +116,9 @@ dataproperty==1.1.1 \
     #   pytablewriter
     #   tabledata
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-datasets==3.6.0 \
-    --hash=sha256:86ea6fada9204cc101a5c3b5f3b55912373894b40dc6cee8b0be174a6a508010
+datasets==5.1.0 \
+    --hash=sha256:1561347daa8841b51351ef2ad1647b4ee4af406852c0f7bd1df587ac1ca7888e \
+    --hash=sha256:86fd08b280485aab82894d2c81842c4151d93b575efea0054315104cb7bc3cec
     # via
     #   -c requirements/constraints.txt
     #   lm-eval (pyproject.toml)
