@@ -201,8 +201,9 @@ httpx==0.28.1 \
     #   huggingface-hub
     #   ibm-watsonx-ai
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-huggingface-hub==1.31.0 \
-    --hash=sha256:e452073b85cd90b20515da6d4f6c6e3fbb427a09e9a466e0a1be0d78f9b29b63
+huggingface-hub==1.33.0 \
+    --hash=sha256:04e434b06e100eddbce9a6e817d72693a7884b10a79bd67ab48080d5c07eb899 \
+    --hash=sha256:367be21a201db9523eddf8aeac7048f2602c1b308691c97640d5e72ed188007e
     # via
     #   accelerate
     #   datasets
