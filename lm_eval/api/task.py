@@ -89,6 +89,12 @@ def _offline_datasetdict_bundle_dir(
 
 def _load_datasetdict_from_offline_bundle(bundle: Path) -> Any:
     """Load a DatasetDict export from disk; clarify failures caused by datasets/PyArrow version skew."""
+    # Staged inputs are read-only. Dataset.map/filter normally place caches next
+    # to their source Arrow files, even when HF_DATASETS_CACHE points elsewhere.
+    # With caching disabled, datasets writes transformation files to its writable
+    # temporary directory and removes them at process exit. Apply this once for
+    # all staged tasks rather than adding per-benchmark cache-file overrides.
+    datasets.disable_caching()
     try:
         return datasets.load_from_disk(str(bundle))
     except TypeError as exc:
