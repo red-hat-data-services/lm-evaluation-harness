@@ -241,14 +241,14 @@ files = [
 
 [[package]]
 name = "anyio"
-version = "4.12.1"
+version = "4.14.2"
 description = "High-level concurrency and networking framework on top of asyncio or Trio"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "anyio-4.12.1-py3-none-any.whl", hash = "sha256:d405828884fc140aa80a3c667b8beed277f1dfedec42ba031bd6ac3db606ab6c"},
-    {file = "anyio-4.12.1.tar.gz", hash = "sha256:41cfcc3a4c85d3f05c932da7c26d0201ac36f72abd4435ba90d0464a3ffed703"},
+    {file = "anyio-4.14.2-py3-none-any.whl", hash = "sha256:9f505dda5ac9f0c8309b5e8bd445a8c2bf7246f3ce950121e45ea15bc41d1494"},
+    {file = "anyio-4.14.2.tar.gz", hash = "sha256:cfa139f3ed1a23ee8f88a145ddb5ac7605b8bbfd8592baacd7ce3d8bb4313c7f"},
 ]
 
 [package.dependencies]
@@ -256,7 +256,7 @@ idna = ">=2.8"
 typing_extensions = {version = ">=4.5", markers = "python_version < \"3.13\""}
 
 [package.extras]
-trio = ["trio (>=0.31.0) ; python_version < \"3.10\"", "trio (>=0.32.0) ; python_version >= \"3.10\""]
+trio = ["trio (>=0.32.0)"]
 
 [[package]]
 name = "attrs"
@@ -1030,17 +1030,18 @@ files = [
 
 [[package]]
 name = "eval-hub-sdk"
-version = "1.0.3"
+version = "1.0.7"
 description = "Python SDK for EvalHub: common models, REST API client, and framework adapter SDK"
 optional = false
 python-versions = ">=3.11"
 groups = ["main"]
 files = [
-    {file = "eval_hub_sdk-1.0.3-py3-none-any.whl", hash = "sha256:9e395c541acd94148ce5748227a74c1ee420860d6801517e7dfcf42e8bd818c0"},
-    {file = "eval_hub_sdk-1.0.3.tar.gz", hash = "sha256:1e39188e22300ef2168957f93fcd0b59b4dc5dcc9af938e417bc4de0e78d5167"},
+    {file = "eval_hub_sdk-1.0.7-py3-none-any.whl", hash = "sha256:a5c764769b7286c6d3920fe3d19c5c1da5f849c44dc9c4b61f49474e477cd53a"},
+    {file = "eval_hub_sdk-1.0.7.tar.gz", hash = "sha256:d6c1d68e330bebf64b6b782b329e8c2a391c5ee4b04ff993dab543bc6487bb79"},
 ]
 
 [package.dependencies]
+anyio = {version = ">=4.14.2", optional = true, markers = "extra == \"core\""}
 httpx = {version = ">=0.25.0", optional = true, markers = "extra == \"core\""}
 importlib-metadata = ">=6.0.0"
 olot = {version = ">=0.1.15", optional = true, markers = "extra == \"adapter\""}
@@ -1050,15 +1051,16 @@ opentelemetry-sdk = {version = ">=1.44.0", optional = true, markers = "extra == 
 oras = {version = ">=0.2.39", optional = true, markers = "extra == \"adapter\""}
 pydantic = ">=2.7.0"
 pydantic-settings = ">=2.0.0"
+urllib3 = ">=2.8.0"
 
 [package.extras]
 adapter = ["eval-hub-sdk[core]", "olot (>=0.1.15)", "opentelemetry-api (>=1.44.0)", "opentelemetry-exporter-otlp-proto-grpc (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)", "oras (>=0.2.39)"]
 all = ["eval-hub-sdk[adapter,cli,client,core,dev,mcp]"]
 cli = ["click (>=8.1.0)", "eval-hub-sdk[core]", "packaging (>=21.0)", "pyyaml (>=6.0)", "rich (>=13.0.0)"]
 client = ["eval-hub-sdk[core]"]
-core = ["httpx (>=0.25.0)"]
-dev = ["eval-hub-sdk[cli]", "mypy (==1.19.1)", "opentelemetry-exporter-otlp-proto-grpc (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)", "pre-commit (>=3.4.0)", "pytest (>=7.4.0)", "pytest-asyncio (>=0.23.0)", "pytest-cov (>=4.1.0)", "ruff (==0.1.6)"]
-examples = ["lm-eval (>=0.4.0)", "ragas (>=0.1.0)"]
+core = ["anyio (>=4.14.2)", "httpx (>=0.25.0)"]
+dev = ["eval-hub-sdk[cli]", "mypy (==1.19.1)", "opentelemetry-exporter-otlp-proto-grpc (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)", "pre-commit (>=3.4.0)", "pytest (>=7.4.0)", "pytest-asyncio (>=0.23.0)", "pytest-cov (>=4.1.0)", "ruff (==0.1.6)", "virtualenv (>=21.14.9)"]
+examples = ["aiohttp (>=3.14.4)", "lm-eval (>=0.4.0)", "nltk (>=3.10.4)", "pillow (>=13.0.0)", "ragas (>=0.1.0)"]
 mcp = ["eval-hub-mcp (>=1.0.0)", "eval-hub-sdk[cli]"]
 server = ["eval-hub-sdk[cli]", "eval-hub-server (>=1.0.1)"]
 
@@ -5523,14 +5525,14 @@ watsonx = ["ibm-watsonx-ai (==1.1.14)"]
 
 [[package]]
 name = "urllib3"
-version = "2.6.3"
+version = "2.8.0"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "urllib3-2.6.3-py3-none-any.whl", hash = "sha256:bf272323e553dfb2e87d9bfd225ca7b0f467b919d7bbd355436d3fd37cb0acd4"},
-    {file = "urllib3-2.6.3.tar.gz", hash = "sha256:1b62b6884944a57dbe321509ab94fd4d3b307075e0c2eae991ac71ee15ad38ed"},
+    {file = "urllib3-2.8.0-py3-none-any.whl", hash = "sha256:0cf3cae568d36aa9576b28dfb35f11328f1cb974ca7647d9475ebb86c75ac6e3"},
+    {file = "urllib3-2.8.0.tar.gz", hash = "sha256:63bf2ead4c879426ebf22ef2a781eeb4aa3b4ae798a0435506f8687fd5bb9b63"},
 ]
 
 [package.extras]
@@ -6012,4 +6014,4 @@ testing = ["pytest", "pytest-cov", "pytest-xdist"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.13"
-content-hash = "74246b984c91e27aba6588bb3a7f93dddd34d08b10ba4bdd5c733471029f4e32"
+content-hash = "2f3af354750f459ac8e8a54a6ad56c561fee72ff440e17406c3954cf72c193c4"
