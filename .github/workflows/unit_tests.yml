@@ -19,11 +19,15 @@ jobs:
     if: false  # Disabled
     name: Linters
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     timeout-minutes: 5
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      with:
+        persist-credentials: false
     - name: Set up Python 3.11
       uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
       with:
@@ -42,6 +46,8 @@ jobs:
   testcpu:
     name: CPU Tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         python-version: [ "3.11" ]
@@ -49,6 +55,8 @@ jobs:
     steps:
     - name: Checkout Code
       uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      with:
+        persist-credentials: false
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
       with:
@@ -76,10 +84,14 @@ jobs:
     if: false  # Disabled
     name: External LM Tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     timeout-minutes: 30
     steps:
     - name: Checkout Code
       uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      with:
+        persist-credentials: false
     - name: Set up Python 3.11
       uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
       with:
