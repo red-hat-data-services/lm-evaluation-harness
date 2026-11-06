@@ -775,8 +775,9 @@ typing-inspection==0.4.4 \
     #   pydantic
     #   pydantic-settings
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-tzdata==2026.3 \
-    --hash=sha256:1c16a6e55bad6c5ac9b0cb29c5abcb1d04814edb284269e1977a185d2d6e53a5
+tzdata==2026.6 \
+    --hash=sha256:0a10eec6e13ef16b627fabed9a5f2ba61a62b1c67f327305f4e7e412a70b4aec \
+    --hash=sha256:85d2cd9c09f81f0bb29db27759fc83af4f1e620efb814f8c5bf8b4cc4feece6d
     # via pandas
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 unitxt==1.26.10 \
