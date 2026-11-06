@@ -404,8 +404,9 @@ opentelemetry-api==1.44.0 \
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-opentelemetry-exporter-otlp-proto-common==1.44.0 \
-    --hash=sha256:0ae007789fb8669b36d764042891562af42bf93d97e06f412fa52c453024d147
+opentelemetry-exporter-otlp-proto-common==1.45.2 \
+    --hash=sha256:af483b24217028892f017096731b794b196b785025d2e6808874720fd0b05a80 \
+    --hash=sha256:f1f2806f3f28ce7938033823e50934fcd91595a39de38e69a28a51e19f40fc6d
     # via opentelemetry-exporter-otlp-proto-grpc
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 opentelemetry-exporter-otlp-proto-grpc==1.44.0 \
