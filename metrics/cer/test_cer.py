@@ -97,7 +97,9 @@ class TestCER(unittest.TestCase):
         # S = 0, D = 0, I = 2, N = 28, CER = 2 / 28
         # whitespace at the front of " of eels" will be strip during preporcessing
         # so need to insert 2 whitespaces
-        char_error_rate = cer.compute(predictions=preds, references=refs, concatenate_texts=True)
+        char_error_rate = cer.compute(
+            predictions=preds, references=refs, concatenate_texts=True
+        )
         self.assertTrue(abs(char_error_rate - 0.071428) < 1e-6)
 
     def test_cer_unicode(self):
@@ -122,6 +124,21 @@ class TestCER(unittest.TestCase):
         preds = ["Hypothesis"]
         with self.assertRaises(ValueError):
             cer.compute(predictions=preds, references=refs)
+
+    def test_cer_empty_concatenated(self):
+        with self.assertRaises(ValueError):
+            cer.compute(
+                predictions=["a", "b"],
+                references=["", "b"],
+                concatenate_texts=True,
+            )
+
+    def test_cer_weighted_sentences(self):
+        # Aggregate edit counts, rather than averaging each sentence's CER.
+        self.assertAlmostEqual(
+            cer.compute(predictions=["x", "abcd"], references=["a", "abcde"]),
+            2 / 6,
+        )
 
 
 if __name__ == "__main__":

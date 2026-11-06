@@ -89,6 +89,12 @@ def _offline_datasetdict_bundle_dir(
 
 def _load_datasetdict_from_offline_bundle(bundle: Path) -> Any:
     """Load a DatasetDict export from disk; clarify failures caused by datasets/PyArrow version skew."""
+    # Staged inputs are read-only. Dataset.map/filter normally place caches next
+    # to their source Arrow files, even when HF_DATASETS_CACHE points elsewhere.
+    # With caching disabled, datasets writes transformation files to its writable
+    # temporary directory and removes them at process exit. Apply this once for
+    # all staged tasks rather than adding per-benchmark cache-file overrides.
+    datasets.disable_caching()
     try:
         return datasets.load_from_disk(str(bundle))
     except TypeError as exc:
@@ -782,6 +788,9 @@ class ConfigurableTask(Task):
         download_mode=None,
         config: Optional[dict] = None,
     ) -> None:  # TODO no super() call here
+        # Keep randomized processing (e.g. GPQA choice shuffling) consistent
+        # across few-shot sampling, request construction and result scoring.
+        self._processed_splits: Dict[str, datasets.Dataset] = {}
         # Get pre-configured attributes
         self._config = self.CONFIG
 
@@ -1070,33 +1079,30 @@ class ConfigurableTask(Task):
         else:
             return False
 
+    def _get_processed_split(self, split: str) -> datasets.Dataset:
+        """Process a split once per task, independently of disk-cache settings."""
+        if split not in self._processed_splits:
+            docs = self.dataset[split]
+            if self.config.process_docs is not None:
+                docs = self.config.process_docs(docs)
+            self._processed_splits[split] = docs
+        return self._processed_splits[split]
+
     def training_docs(self) -> datasets.Dataset:
         if self.has_training_docs():
-            if self.config.process_docs is not None:
-                return self.config.process_docs(
-                    self.dataset[self.config.training_split]
-                )
-            return self.dataset[self.config.training_split]
+            return self._get_processed_split(self.config.training_split)
 
     def validation_docs(self) -> datasets.Dataset:
         if self.has_validation_docs():
-            if self.config.process_docs is not None:
-                return self.config.process_docs(
-                    self.dataset[self.config.validation_split]
-                )
-            return self.dataset[self.config.validation_split]
+            return self._get_processed_split(self.config.validation_split)
 
     def test_docs(self) -> datasets.Dataset:
         if self.has_test_docs():
-            if self.config.process_docs is not None:
-                return self.config.process_docs(self.dataset[self.config.test_split])
-            return self.dataset[self.config.test_split]
+            return self._get_processed_split(self.config.test_split)
 
     def fewshot_docs(self):
         if self.config.fewshot_split is not None:
-            if self.config.process_docs is not None:
-                return self.config.process_docs(self.dataset[self.config.fewshot_split])
-            return self.dataset[self.config.fewshot_split]
+            return self._get_processed_split(self.config.fewshot_split)
         elif (
             self.config.fewshot_config is not None
             and self.config.fewshot_config.get("samples", None) is not None

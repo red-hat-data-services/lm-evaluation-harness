@@ -1,8 +1,10 @@
+import ast
+
 from lm_eval.utils import weighted_f1_score
 
 
 def doc_to_choice(doc):
-    choices = eval(doc["choices"])
+    choices = ast.literal_eval(doc["choices"])
     return choices
 
 
@@ -20,7 +22,7 @@ def doc_to_text(doc):
 
                 Answer:  """
 
-    choices = eval(doc["choices"])
+    choices = ast.literal_eval(doc["choices"])
     text = output.format(
         subject=doc["subject"],
         question=doc["question"],

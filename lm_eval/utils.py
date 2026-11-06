@@ -460,11 +460,10 @@ def load_yaml_config(yaml_path=None, yaml_config=None, yaml_dir=None, mode="full
         # Attach yaml_path to the import function so that it can be used later
         constructor_fn = functools.partial(import_function, yaml_path=Path(yaml_path))
 
-    loader = yaml.CLoader if yaml.__with_libyaml__ else yaml.FullLoader
-    # Add the import_function constructor to the YAML loader
+    loader = yaml.CSafeLoader if yaml.__with_libyaml__ else yaml.SafeLoader
     yaml.add_constructor("!function", constructor_fn, Loader=loader)
     if yaml_config is None:
-        with open(yaml_path, "rb") as file:
+        with open(yaml_path, "rb") as file:  # type: ignore[arg-type]
             yaml_config = yaml.load(file, Loader=loader)
 
     if yaml_dir is None:

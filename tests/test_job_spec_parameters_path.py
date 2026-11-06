@@ -28,19 +28,28 @@ def test_read_parameters_success(monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     assert main._read_job_spec_parameters_from_path(str(job)) == {"limit": 3}
 
 
-def test_read_parameters_missing_file_returns_empty(
+def test_read_parameters_missing_file_returns_none(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     monkeypatch.setattr(main, "_JOB_SPEC_ALLOWED_ROOT", tmp_path)
-    assert main._read_job_spec_parameters_from_path(str(tmp_path / "nope.json")) == {}
+    assert main._read_job_spec_parameters_from_path(str(tmp_path / "nope.json")) is None
 
 
-def test_read_parameters_invalid_json_returns_empty(
+def test_read_parameters_missing_key_returns_empty(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(main, "_JOB_SPEC_ALLOWED_ROOT", tmp_path)
+    job = tmp_path / "job.json"
+    job.write_text("{}", encoding="utf-8")
+    assert main._read_job_spec_parameters_from_path(str(job)) == {}
+
+
+def test_read_parameters_invalid_json_returns_none(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setattr(main, "_JOB_SPEC_ALLOWED_ROOT", tmp_path)
     job = tmp_path / "job.json"
     job.write_text("{not-json", encoding="utf-8")
-    assert main._read_job_spec_parameters_from_path(str(job)) == {}
+    assert main._read_job_spec_parameters_from_path(str(job)) is None
     err = capsys.readouterr().err
     assert "invalid JSON" in err

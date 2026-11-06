@@ -55,10 +55,17 @@ The Language Model Evaluation Harness is the backend for 🤗 Hugging Face's pop
 To install the `lm-eval` package from the github repository, run:
 
 ```bash
-git clone --depth 1 https://github.com/EleutherAI/lm-evaluation-harness
+git clone --depth 1 https://github.com/opendatahub-io/lm-evaluation-harness --branch incubation
 cd lm-evaluation-harness
-pip install -e .
+pip install -e . \
+  --extra-index-url https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cpu-ubi9/simple/
 ```
+
+This branch requires `tinybenchmarks==1.0.0` from Red Hat's AIPCC index; it is
+not published on PyPI. pip does not read Poetry's package-source configuration,
+so include the same `--extra-index-url` when installing optional extras with
+`pip install -e ".[NAME]"`. The exported `requirements.txt` already includes
+this index. Access to the AIPCC index is required for these installation paths.
 
 We also provide a number of optional dependencies for extended functionality. A detailed table is available at the end of this document.
 
