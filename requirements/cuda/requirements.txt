@@ -468,8 +468,9 @@ pillow==13.0.0 \
     --hash=sha256:f477f46dcf4f10e503dd5746a8c64d1804be23217514a1629c59e937762b14f8
     # via matplotlib
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-portalocker==4.2.0 \
-    --hash=sha256:8cc35ddbee26dd5ed35b490707fbb02432d918e57dac859fdc134aaa83e26962
+portalocker==4.4.2 \
+    --hash=sha256:7ac85bb2aa3c7873bf2ac72586fc6154afa4671ac786994a16617a6b7ccb3e5e \
+    --hash=sha256:e661b91af34fc1806740f8e0e42990fe55cd85cbae55675ac48a400a9656a51b
     # via sacrebleu
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 propcache==0.5.2 \
