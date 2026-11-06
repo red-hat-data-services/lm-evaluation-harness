@@ -459,8 +459,9 @@ pathvalidate==3.3.1 \
     --hash=sha256:665f5f513d7caf31d43ef5931915246d0206f94f5654d458ed7fd1694ddf7cd0
     # via pytablewriter
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-peft==0.20.0 \
-    --hash=sha256:ae5db2497b8b577e73df1432d644ca4b5982b05e4bc1bc57341635ecdcdea1d4
+peft==0.21.2 \
+    --hash=sha256:106ab6077ff72c54d21577f9af5970e34bac7582cb14209f7b2b511e322a4eae \
+    --hash=sha256:b803ccfb3f3f316004d850284306687833a2235ea278fb56abc856203456142e
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 pillow==13.0.0 \
