@@ -261,8 +261,9 @@ jmespath==1.0.1 \
     #   ibm-cos-sdk
     #   ibm-cos-sdk-core
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-joblib==1.5.3 \
-    --hash=sha256:832cfe41deb1a907a9e05ea12ef64c922c047daefced898aae9ddc4aec7389dd
+joblib==1.6.0 \
+    --hash=sha256:2ccc96785b12046c08fd6d55839c12857831b54a3c1673ffadd2f04bfc4eda03 \
+    --hash=sha256:3dbbf9f6e4b592a2357b854608e980fe6390d131d7a82f011a377ef2ebef7aba
     # via
     #   nltk
     #   scikit-learn
