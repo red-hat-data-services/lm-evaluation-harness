@@ -355,8 +355,9 @@ narwhals==2.25.0 \
     --hash=sha256:b78ae090e328abb0ffd83b6c3ef705b3fc01cdbf06d2bfcb116b5a4da897decd
     # via scikit-learn
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-networkx==3.6.1 \
-    --hash=sha256:214d46e36e8f2d122bf5bb9edaa213ff93bc26a3e23aafb58086258defa65064
+networkx==3.7 \
+    --hash=sha256:e3fd2c13a7814cee3746340d8d7f8598a67f16a58bf47fb7f8793fab6efca1b0 \
+    --hash=sha256:fd77a511bd90f39f3d016351345b52cf5319b813bdca01de3f755d3cca62e96a
     # via torch
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 nltk==3.9.3 \
