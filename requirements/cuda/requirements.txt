@@ -609,8 +609,9 @@ rpds-py==2026.6.3 \
     #   jsonschema
     #   referencing
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-s3transfer==0.19.2 \
-    --hash=sha256:2bfe0b6ef27295c23537c825b99a44c50b2c18f1a222f84bbcce47f18ef8e8db
+s3transfer==0.19.3 \
+    --hash=sha256:24eb7535804306355e31c952a90022bf5b2f9d760f9a11062c7493a217c08553 \
+    --hash=sha256:8326acc3d056d7f7b8a37110c7d2aea41f67e83f6ae79cd3b5fbcca34c726406
     # via boto3
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 sacrebleu==2.4.3 \
