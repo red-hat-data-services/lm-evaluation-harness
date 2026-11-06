@@ -541,8 +541,9 @@ python-dateutil==2.9.0.post0 \
     #   pandas
     #   typepy
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-python-dotenv==1.2.3 \
-    --hash=sha256:c0f4d26663e8482cc19657d371218c1be9a2abbd5a30611d8e59ca2cadc3ab2b
+python-dotenv==1.2.4 \
+    --hash=sha256:42269a8a5b3fd54ffa6f3d84b18abed50064717576b4ecf03dc4a55d8aa04fdc \
+    --hash=sha256:f0d53e69935a851c0dcc78f3ab7aaccd8cabef0b92382b576b824212902873c0
     # via pydantic-settings
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 pytz==2026.3.post1 \
