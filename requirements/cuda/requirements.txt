@@ -516,8 +516,9 @@ pydantic-core==2.46.5 \
     #   -c requirements/constraints.txt
     #   pydantic
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-pydantic-settings==2.15.0 \
-    --hash=sha256:9b4b4541900a4e5d72d35b48b1dc92a5450c8f8e9d08fb55fd8104233e1ccb7a
+pydantic-settings==2.16.2 \
+    --hash=sha256:3dc08ffabed2bbd5dc2dd55ead7b78b4e4c5cd776aecd04310db5f1224caaf46 \
+    --hash=sha256:8d523e5c129b097686bde019bd6109bff53f4c8c3f63f1ddf9933ffa42e5ab4f
     # via eval-hub-sdk
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 pygments==2.21.0 \
