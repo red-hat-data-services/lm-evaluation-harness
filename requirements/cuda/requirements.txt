@@ -418,8 +418,9 @@ opentelemetry-proto==1.44.0 \
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-grpc
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-opentelemetry-sdk==1.44.0 \
-    --hash=sha256:11f02866083c887e027dcc71a2a1af5700e2b48e348c6ccce6f9853fbf175ae6
+opentelemetry-sdk==1.45.2 \
+    --hash=sha256:7eec4de13dd21ff3a1670dcb0e02079e692736f94d733dfdce5af461d884248d \
+    --hash=sha256:ff974ea70ee4f1d51e2ec152db37c2b626c7bf82bb3f7d86114fd8704e7199c6
     # via
     #   eval-hub-sdk
     #   opentelemetry-exporter-otlp-proto-grpc
