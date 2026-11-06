@@ -613,8 +613,9 @@ s3transfer==0.19.2 \
     --hash=sha256:2bfe0b6ef27295c23537c825b99a44c50b2c18f1a222f84bbcce47f18ef8e8db
     # via boto3
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-sacrebleu==2.4.3 \
-    --hash=sha256:310dca42d17524b4da5717bab6e516ddd3bcba306c83dcf28d9bf6d166802f3c
+sacrebleu==2.6.0 \
+    --hash=sha256:3edc1531575cfe4ad04ce53491a9307e234af1c3f805a1f491cbec844229a8a8 \
+    --hash=sha256:91499b6cd46138d95154fff1e863c2f9be57e82f0c719d8dd718d0006cf6c566
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 safetensors==0.8.0 \
