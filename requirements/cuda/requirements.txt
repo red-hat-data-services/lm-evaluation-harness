@@ -545,8 +545,9 @@ python-dotenv==1.2.3 \
     --hash=sha256:c0f4d26663e8482cc19657d371218c1be9a2abbd5a30611d8e59ca2cadc3ab2b
     # via pydantic-settings
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-pytz==2026.3.post1 \
-    --hash=sha256:25bf0f7830aab9a9e1b00df94926698eef4a315ef45c2604ad950126e47892bb
+pytz==2026.6 \
+    --hash=sha256:3b0fc2727707663d6e517936f444fd8a8b240f1fc32f4bf7ee03274245945284 \
+    --hash=sha256:7fed3fee8fd6bd4a2b7b75a8d56021d0624127bf69bd5691f115db929ac570b3
     # via
     #   pandas
     #   typepy
