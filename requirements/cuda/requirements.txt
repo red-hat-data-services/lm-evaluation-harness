@@ -351,8 +351,9 @@ multiprocess==0.70.16 \
     #   datasets
     #   evaluate
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-narwhals==2.25.0 \
-    --hash=sha256:b78ae090e328abb0ffd83b6c3ef705b3fc01cdbf06d2bfcb116b5a4da897decd
+narwhals==2.28.0 \
+    --hash=sha256:1f69d6385ec30e2fa6e1fdeb37c562ecabd0f713f6f3e3b58a668c5c9df9567f \
+    --hash=sha256:2d9860c80d6610820826e94c6e42ce4b1d92d89cdd479586e652a8d211dab345
     # via scikit-learn
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 networkx==3.6.1 \
