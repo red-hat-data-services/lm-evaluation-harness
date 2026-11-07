@@ -34,11 +34,24 @@ grpcio==1.83.0 ; python_full_version < '3.13' \
     --hash=sha256:ecccb24f52e08c4448cfc99204fa1963bf5356a25b14766b69a92f75f2c0788e
     # via opentelemetry-exporter-otlp-proto-grpc
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cpu-ubi9/simple/
-hf-xet==1.6.0 ; platform_machine == 'AMD64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64' \
-    --hash=sha256:a241d72da3649b6b904a25f08833327bb863939a645ef8c6d4995e2e5c331131 \
-    --hash=sha256:c57b75539cf126a41394254640393f926bb60efbfa624e1185de0eaeedcf3dc2 \
-    --hash=sha256:dd6b3f3f42a1474e3a976ba20c360371d8943ac3bc05e03af0ffc88df8a35020 \
-    --hash=sha256:e5003f8a1b66bcce4f8912d886629557ab45f32ccdb3938a370146465fb4dae5
+hf-xet==1.8.0; platform_machine == 'AMD64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64' \
+    --hash=sha256:07a06d7481702616726c2d8578cfb00052a5b3f21beed6a674592bc837a10330 \
+    --hash=sha256:10ed23b51dacf7917d64f335c25048deb470efa755e9989b218fc0531386138e \
+    --hash=sha256:1ebaf248c9bef8bb0c9d1d8d71db1fdf0cac14f922cc7a936a81adbf12eb5f01 \
+    --hash=sha256:23c262e9f5e137b18dadbce60becfeea84156b0d43119c320bffe260d32cd2fa \
+    --hash=sha256:29dab7c904cd1914a0439c6e1306c12c7497c8bd32290fbe563ebf51ca4b6d6d \
+    --hash=sha256:3e8934784425781f0f779b91044df441f3a7af4dab47375d7e3aeaecbb8eecb4 \
+    --hash=sha256:3ecfe2934448cca55a4c42732b60f985266aecb241905945219b3d388aceb7ba \
+    --hash=sha256:42b66fdc688eaa4ff3eb77dc9275e5a0f1258ecc9fdd083ddaf43bb49bec925b \
+    --hash=sha256:56735c2d4f416d7473fc986586b26a8756e067832ca4b7fdaad32a0d6f2ce740 \
+    --hash=sha256:62b056aedb89ac809f78940baf465fe553b70c8b25ee56890fbab3039fffec1b \
+    --hash=sha256:7edeb21c5d381903ee5f4857fc746fa7b52a4b374035e8811ecfb67ee27add0c \
+    --hash=sha256:8800e3444770f2c630b361bc6d5c6ebb770b7830646cf632fbb79d0e5bbc9e7f \
+    --hash=sha256:92188598dedc1e1f5609bd718d4db8687a6c89915553912571e2f587892eecec \
+    --hash=sha256:a584a7b3268da62f23c3187cc7201ca01f7b610985a36b1b6119c66bccb0383c \
+    --hash=sha256:c74e3751cbcdae9222c5170e8d788e83201a03dc5e5f4308a20f17a5b6023b56 \
+    --hash=sha256:e00d8f60170cd3dd55d98306e41dbaf28b27ff1bcfefbfa84279d197221be83e \
+    --hash=sha256:f42940869572dc2b05dfe06f4cc398c6291503e086ddc4eddfb7a6ab9409ad01
     # via huggingface-hub
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cpu-ubi9/simple/
 kiwisolver==1.5.1 \
