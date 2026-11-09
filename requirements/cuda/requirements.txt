@@ -532,8 +532,9 @@ pytablewriter==1.2.0 \
     --hash=sha256:cb37dfd75cb5681e12cf9922c35abcd75cfb4770c32227aedc5fbe71861f437f
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-python-dateutil==2.9.0.post0 \
-    --hash=sha256:fc32ba393a3df02206e7209ba902ddddca23cd22712585b169b1e0ff42a52053
+python-dateutil==4.0.0 \
+    --hash=sha256:a5e246f79eb80475e691bf93862cead98decd8a498cf53ba0516fcdc0f50dc1c \
+    --hash=sha256:d7295ff14fdc0f92f662100bfb6c551d160ca090f2939f1ec5b9794265c03f06
     # via
     #   botocore
     #   ibm-cos-sdk-core
