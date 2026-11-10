@@ -676,8 +676,9 @@ tqdm-multiprocess==0.0.11 \
     --hash=sha256:d465e221c616c3e9806d48c7da61b008cba1e97c713a47b9fc0a7a7473a8fdfc
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
-transformers==5.15.1 \
-    --hash=sha256:1da99e1e202bda65308106c1f8618e328bf3c1c0289524859dc869204c032b59
+transformers==5.16.1 \
+    --hash=sha256:17b0eac726ddc55e84ac58946063e0c6d37fd000c456b581f050ea0f4e822869 \
+    --hash=sha256:2f2d5b98a5ad3718713653734298fa620754ed683702a635ebb587df3ed29c7e
     # via
     #   lm-eval (pyproject.toml)
     #   peft
