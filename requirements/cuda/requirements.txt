@@ -83,8 +83,9 @@ charset-normalizer==3.5.1 \
     --hash=sha256:d9c52b6daac930ba203ec4d4e2221fabb3dac87af4b1750f8d9d3855786d57ed
     # via requests
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
-click==8.4.2 \
-    --hash=sha256:4e90c67eff90cf0ae6dfea593cba6e9b8e8a64ddbbc983a3cd4ba0b4ae442914
+click==8.5.0 \
+    --hash=sha256:255bc9599cf7748b4b1a446ccc735421bd08a2ae529a8b88597d3de5664ee360 \
+    --hash=sha256:ba0d2089de75ea0310e2dde03160e6ca10009947fb95a182f9b54021bb272e34
     # via
     #   huggingface-hub
     #   jiwer
