@@ -57,8 +57,9 @@ boto3==1.43.78 \
     --hash=sha256:4a502c067a656631d47d8f67d908b16435a74ce8baf3c8905b0ca27aa5f74b42
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6-EA1/cuda13.0-ubi9-test/simple/
-botocore==1.43.78 \
-    --hash=sha256:3d94a9b7f3b932456d3e4d987321091c602bd28bdc4d13207f7fadae82473486
+botocore==1.43.83 \
+    --hash=sha256:bf75a6cf587c22d968e43e79fe122c39f82deafbe9c3422bc5d3e80b6210fc98 \
+    --hash=sha256:d9389b3b74400c34219965a2fb858c1d48744718865ee0496fd03bd5b21b943f
     # via
     #   boto3
     #   s3transfer
