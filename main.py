@@ -52,6 +52,7 @@ from evalhub.adapter import (
     OCIArtifactSpec,
 )
 from evalhub.adapter.auth import read_model_auth_key, resolve_model_credentials
+from evalhub.adapter.config import EvalHubMode
 from evalhub.adapter.mlflow import MlflowFileArtifact
 from evalhub.adapter.settings import AdapterSettings
 from evalhub.models import MetricSchema, ResultType
@@ -131,7 +132,7 @@ def _resolve_job_spec_path_for_read(settings: AdapterSettings) -> Path | None:
         print(f"WARNING: invalid job spec path {path!r}: {exc}", file=sys.stderr)
         return None
     # Settings default to k8s; enforce containment only in that mode.
-    if settings.mode == "k8s":
+    if settings.mode == EvalHubMode.K8S:
         try:
             allowed = _JOB_SPEC_ALLOWED_ROOT.resolve()
         except OSError:
@@ -938,6 +939,7 @@ class LMEvalAdapter(FrameworkAdapter):
         """
         super().__init__(settings=settings)
         self._run_info: dict[str, Any] = {}
+        self.mlflow_artifacts: list[MlflowFileArtifact] = []
         logger.info("LMEval adapter initialized")
 
     def generate_additional_info(self, results: JobResults) -> dict[str, Any] | None:
@@ -957,6 +959,7 @@ class LMEvalAdapter(FrameworkAdapter):
         Raises:
             RuntimeError: If evaluation fails
         """
+        self.mlflow_artifacts = []
         start_time = time.time()
 
         try:

@@ -8,7 +8,7 @@ import main
 
 
 def _settings(path: str) -> main.AdapterSettings:
-    settings = main._load_adapter_settings()
+    settings = main.AdapterSettings(EVALHUB_MODE="k8s")
     settings.job_spec_path = Path(path)
     return settings
 
