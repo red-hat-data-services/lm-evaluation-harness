@@ -396,8 +396,9 @@ olot==1.2.1 \
     #   lm-eval (pyproject.toml)
     #   eval-hub-sdk
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-opentelemetry-api==1.44.0 \
-    --hash=sha256:4f7b93e2b75f60214a58faf78c5980a4f7e47ac75614e85cf310720558c77668
+opentelemetry-api==1.45.1 \
+    --hash=sha256:aa38ed19bcc084ba42782a73255b3582283eced7ad6dddbd6695189e69adfb75 \
+    --hash=sha256:b31553efa588ae44bc306f863c785c5333a9ecc091248c6ee68b4b6c87fdedfb
     # via
     #   eval-hub-sdk
     #   opentelemetry-exporter-otlp-proto-grpc
