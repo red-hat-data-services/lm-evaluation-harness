@@ -29,7 +29,6 @@ import math
 import mimetypes
 import os
 import re
-import stat
 import sys
 import time
 from contextlib import contextmanager
@@ -53,7 +52,7 @@ from evalhub.adapter import (
     OCIArtifactSpec,
 )
 from evalhub.adapter.auth import read_model_auth_key, resolve_model_credentials
-from evalhub.adapter.mlflow import MlflowArtifact
+from evalhub.adapter.mlflow import MlflowFileArtifact
 from evalhub.adapter.settings import AdapterSettings
 from evalhub.models import MetricSchema, ResultType
 
@@ -67,15 +66,6 @@ def _load_adapter_settings() -> AdapterSettings:
     # SDK 1.0.6 defaults to local; this entry point requires explicit local mode.
     os.environ.setdefault("EVALHUB_MODE", "k8s")
     return AdapterSettings.from_env()
-
-
-def _read_output_file(file: Path) -> bytes:
-    """Read a regular output file without following a file symlink."""
-    fd = os.open(file, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
-    with os.fdopen(fd, "rb") as stream:
-        if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
-            raise ValueError(f"Output file is not regular: {file}")
-        return stream.read()
 
 
 def _get_lmeval_version() -> str:
@@ -1184,11 +1174,12 @@ class LMEvalAdapter(FrameworkAdapter):
                     default=str,
                 )
 
-            # Capture the same output files sent to OCI for the MLflow export.
+            # Keep output files available until the synchronous MLflow save returns.
+            # The SDK streams these files without loading them into memory.
             self.mlflow_artifacts = [
-                MlflowArtifact(
+                MlflowFileArtifact(
                     path=file.relative_to(output_dir).as_posix(),
-                    content=_read_output_file(file),
+                    local_path=file,
                     content_type=mimetypes.guess_type(file.name)[0]
                     or "application/octet-stream",
                 )
@@ -1248,12 +1239,12 @@ def _save_mlflow_best_effort(
     callbacks: DefaultCallbacks,
     results: JobResults,
     job_spec: JobSpec,
-    artifacts: list[MlflowArtifact],
+    artifacts: list[MlflowFileArtifact],
 ) -> str | None:
     """Export to MLflow without failing a completed evaluation."""
     mlflow = callbacks.mlflow
-    # Temporary compatibility shim for eval-hub-sdk 1.0.6: save() reports FAILED
-    # before raising. Detach only its status callback during the synchronous save;
+    # The SDK reports FAILED before raising when an MLflow export fails.
+    # Detach only its status callback during the synchronous save;
     # remove this private-attribute workaround when the SDK supports best effort.
     original_callbacks = mlflow._callbacks
     try:

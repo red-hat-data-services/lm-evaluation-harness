@@ -11,7 +11,7 @@ import main
 
 
 @pytest.fixture
-def export_setup(monkeypatch):
+def export_setup(monkeypatch, tmp_path):
     results = SimpleNamespace(
         benchmark_id="benchmark",
         model_name="model",
@@ -28,8 +28,10 @@ def export_setup(monkeypatch):
     adapter.job_spec.tags = []
     adapter.job_spec.experiment_name = "experiment"
     adapter.run_benchmark_job.return_value = results
+    result_file = tmp_path / "results.json"
+    result_file.write_bytes(b"{}")
     adapter.mlflow_artifacts = [
-        sdk_mlflow.MlflowArtifact(path="results.json", content=b"{}")
+        sdk_mlflow.MlflowFileArtifact(path="results.json", local_path=result_file)
     ]
     callbacks = DefaultCallbacks(job_id="job", benchmark_id="benchmark")
     monkeypatch.setattr(callbacks, "report_status", Mock())
@@ -46,7 +48,7 @@ def export_setup(monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "operation", ["get_or_create_experiment", "log_batch", "upload_artifact"]
+    "operation", ["get_or_create_experiment", "log_batch", "upload_artifact_file"]
 )
 def test_mlflow_failure_still_reports_results(export_setup, caplog, operation):
     _, callbacks, client, results = export_setup
@@ -59,7 +61,7 @@ def test_mlflow_failure_still_reports_results(export_setup, caplog, operation):
     callbacks.report_status.assert_not_called()
     assert callbacks.mlflow._callbacks is callbacks
     assert results.mlflow_run_id is None
-    if operation == "upload_artifact":
+    if operation == "upload_artifact_file":
         client.log_batch.assert_called_once()
     warnings = [r.message for r in caplog.records if r.name == main.logger.name]
     assert any("continuing with evaluation results" in msg for msg in warnings)
@@ -76,7 +78,7 @@ def test_success_retains_run_id_and_restores_callback(export_setup):
     callbacks.report_status.assert_not_called()
     assert callbacks.mlflow._callbacks is callbacks
     client.log_batch.assert_called_once()
-    client.upload_artifact.assert_called_once()
+    client.upload_artifact_file.assert_called_once()
 
 
 def test_no_experiment_skips_mlflow(export_setup):
