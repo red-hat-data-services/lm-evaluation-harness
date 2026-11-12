@@ -16,7 +16,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-requires-python = "<3.13,>=3.10"
+requires-python = ">=3.11,<3.13"
 license = { "text" = "MIT" }
 dependencies = [
     "certifi==2026.10.23",
@@ -44,7 +44,8 @@ dependencies = [
     "lxml==6.1.3",
     "boto3==1.43.122",
     "botocore==1.43.122",
-    "urllib3 (>=2.7.0,<3.0.0)",
+    "urllib3==2.8.0",
+    "filelock==4.2.1",
 ]
 
 [tool.setuptools.packages.find]
@@ -65,19 +66,19 @@ Repository = "https://github.com/EleutherAI/lm-evaluation-harness"
 [project.optional-dependencies]
 api = [
     "requests==2.32.5",
-    "aiohttp==3.14.3",
+    "aiohttp==3.14.4",
     "tenacity==9.0.0",
     "tqdm==4.66.6",
     "tiktoken==0.8.0",
 ]
-ifeval = ["langdetect==1.0.9", "immutabledict==4.2.1", "nltk==3.10.3"]
+ifeval = ["langdetect==1.0.9", "immutabledict==4.2.1", "nltk==3.10.4"]
 math = ["sympy>=1.12", "antlr4-python3-runtime==4.11", "math_verify[antlr4_11_0]"]
 dev = [
     "pytest==8.3.3",
     "pytest-cov==6.0.0",
     "pytest-xdist==3.6.1",
     "pre-commit==4.0.1",
-    "virtualenv==21.7.13",
+    "virtualenv==21.14.13",
     "mypy==1.13.0",
 ]
 hf_transfer = ["hf-transfer==0.1.9"]
