@@ -29,7 +29,7 @@ dependencies = [
     "pybind11==2.13.6",
     "pytablewriter==1.2.0",
     "rouge-score==0.1.2",
-    "sacrebleu==2.4.3",
+    "sacrebleu==2.6.0",
     "scikit-learn==1.5.2",
     "sqlitedict==2.1.0",
     "torch==2.6.0",
