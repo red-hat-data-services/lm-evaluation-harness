@@ -744,8 +744,9 @@ tenacity==9.0.0 \
     --hash=sha256:821b66503df9dff051d9833261b377dcd9ec1fa69a1d5354c44323647628368b
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-threadpoolctl==3.6.0 \
-    --hash=sha256:bddc92311ef802cdc6860d8b03385c12714ebb7ce3f70859818374763c508062
+threadpoolctl==3.8.0 \
+    --hash=sha256:01080674ad7ac6182429c918a79de92da789bb448acc02fc0b620b1abd6b6137 \
+    --hash=sha256:f1b49c82704d50f13ffae019c727b0fa4f6791a58f48f06a09c45face1be66da
     # via scikit-learn
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 tiktoken==0.14.0 \
