@@ -788,8 +788,9 @@ tqdm-multiprocess==0.0.11 \
     --hash=sha256:b75c4ae9d31952cb71c320afb423ba3fb7bf4ad1bb46b563bece0c37e9a9241c
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-transformers==5.17.0 \
-    --hash=sha256:a4e00dc26d330156a28a29844e401770033bea47064485363cd169999d41088c
+transformers==5.22.2 \
+    --hash=sha256:55f57e5cbd7c0b500b7a706daa0ecd76567b56ca139e6e02ef0bba0437e3a763 \
+    --hash=sha256:829c2820aff91730b8ec45a4b8ff4be07f586a140b68a9073998b36fa35297dc
     # via
     #   lm-eval (pyproject.toml)
     #   bert-score
