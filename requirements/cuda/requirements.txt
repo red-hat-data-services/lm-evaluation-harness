@@ -828,8 +828,9 @@ typing-extensions==4.16.0 \
     #   torch
     #   typing-inspection
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-typing-inspection==0.4.4 \
-    --hash=sha256:531c5e03fff0edd8eca6b0040d2808c80448c5c162d2ffb75798613a71cbab5a
+typing-inspection==0.4.5 \
+    --hash=sha256:7f16c411e7930dc79596d42ab44672a3fe5f60eb34b781a1647e7872363120c7 \
+    --hash=sha256:bc210535442b39e1bf2805e0c7a17dfd6a4ace760c84c7f7d16245d23a6b1c39
     # via
     #   pydantic
     #   pydantic-settings
