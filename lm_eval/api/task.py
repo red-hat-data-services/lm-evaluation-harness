@@ -5,10 +5,10 @@ import os
 import random
 import re
 from collections.abc import Callable
-from pathlib import Path
 from copy import copy, deepcopy
 from dataclasses import asdict, dataclass
 from inspect import getsource
+from pathlib import Path
 from typing import (
     Any,
     Dict,
@@ -23,8 +23,8 @@ from typing import (
 )
 
 import datasets
-from datasets import DownloadConfig
 import numpy as np
+from datasets import DownloadConfig
 from tqdm import tqdm
 
 from lm_eval import utils
@@ -85,6 +85,75 @@ def _offline_datasetdict_bundle_dir(
     if not (bundle / "dataset_dict.json").is_file():
         return None
     return bundle
+
+
+# Hugging Face dataset ids that were namespaced in task YAMLs, mapped to the
+# un-namespaced id the YAMLs used before. Only ids listed here fall back to an
+# offline bundle staged under the old id. Any other id never falls back, so a
+# custom dataset such as ``myorg/gsm8k`` cannot silently load a ``gsm8k`` bundle.
+_LEGACY_DATASET_PATHS: Dict[str, str] = {
+    "allenai/winogrande": "winogrande",
+    "baber/piqa": "piqa",
+    "EdinburghNLP/orange_sum": "orange_sum",
+    "facebook/anli": "anli",
+    "facebook/xnli": "xnli",
+    "google-research-datasets/paws-x": "paws-x",
+    "lighteval/winograd_wsc": "winograd_wsc",
+    "nyu-mll/glue": "glue",
+    "openlifescienceai/medmcqa": "medmcqa",
+    "regisss/math_qa": "math_qa",
+    "Rowan/hellaswag": "hellaswag",
+    "stanfordnlp/web_questions": "web_questions",
+    "wmt/wmt16": "wmt16",
+}
+
+_DATA_SELECTION_KWARGS = ("revision", "data_files", "data_dir")
+
+
+def _legacy_fallback_allowed(dataset_kwargs: Optional[Dict[str, Any]]) -> bool:
+    """Legacy bundles were staged from the default revision/files; never use them when the task pins other data."""
+    return not any((dataset_kwargs or {}).get(k) for k in _DATA_SELECTION_KWARGS)
+
+
+def _resolve_offline_bundle_dir(
+    hf_home: Optional[str],
+    dataset_path: str,
+    dataset_name: Optional[str],
+    *,
+    allow_legacy_fallback: bool = True,
+) -> Optional[Path]:
+    """Resolve an offline DatasetDict bundle for ``dataset_path``, with a legacy fallback.
+
+    Tries the namespaced slug first (see ``_offline_datasetdict_bundle_dir``). If no
+    bundle is found and ``dataset_path`` is one of the ids renamed when task YAMLs
+    were namespaced (see ``_LEGACY_DATASET_PATHS``), falls back to the bundle staged
+    under the old, un-namespaced id (e.g. ``Rowan/hellaswag`` -> ``hellaswag``).
+    Ids not in that table never fall back.
+    ``allow_legacy_fallback=False`` disables the legacy fallback (the namespaced-slug
+    lookup still runs) — used when the task pins a revision/data_files/data_dir that
+    the legacy bundle, staged from the default revision/files, cannot be assumed to match.
+    """
+    bundle = _offline_datasetdict_bundle_dir(hf_home, dataset_path, dataset_name)
+    if bundle is not None:
+        return bundle
+    legacy_path = _LEGACY_DATASET_PATHS.get(dataset_path)
+    if legacy_path is None:
+        return None
+    if not allow_legacy_fallback:
+        eval_logger.debug(
+            "Offline: skipping legacy bundle fallback for %s because dataset_kwargs "
+            "pin a revision, data_files, or data_dir",
+            dataset_path,
+        )
+        return None
+    legacy_bundle = _offline_datasetdict_bundle_dir(hf_home, legacy_path, dataset_name)
+    if legacy_bundle is not None:
+        eval_logger.info(
+            "Offline: no bundle at namespaced slug for %s; using legacy bundle at %s",
+            dataset_path,
+            legacy_bundle,
+        )
+    return legacy_bundle
 
 
 def _load_datasetdict_from_offline_bundle(bundle: Path) -> Any:
@@ -331,10 +400,11 @@ class Task(abc.ABC):
         )
 
         if offline:
-            bundle = _offline_datasetdict_bundle_dir(
+            bundle = _resolve_offline_bundle_dir(
                 os.environ.get("HF_HOME"),
                 self.DATASET_PATH,
                 self.DATASET_NAME,
+                allow_legacy_fallback=(data_dir is None),
             )
             if bundle is not None:
                 eval_logger.info(
@@ -1026,10 +1096,11 @@ class ConfigurableTask(Task):
             or os.environ.get("HF_HUB_OFFLINE") == "1"
         )
         if offline:
-            bundle = _offline_datasetdict_bundle_dir(
+            bundle = _resolve_offline_bundle_dir(
                 os.environ.get("HF_HOME"),
                 self.DATASET_PATH,
                 self.DATASET_NAME,
+                allow_legacy_fallback=_legacy_fallback_allowed(kwargs),
             )
             if bundle is not None:
                 eval_logger.info(
