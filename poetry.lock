@@ -2653,22 +2653,23 @@ files = [
 
 [[package]]
 name = "olot"
-version = "0.1.15"
+version = "0.1.18"
 description = "oci layers on top"
 optional = false
-python-versions = "<4.0,>=3.9"
+python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "olot-0.1.15-py3-none-any.whl", hash = "sha256:1dbb3c833d247e5a1dff0f6a5e1cb0eea7245b46f8cf449225e421adf6ca87e8"},
-    {file = "olot-0.1.15.tar.gz", hash = "sha256:76869d1f50a7e9e3e4d9b1ce668ead25286aa346272154b7e97fa2dd1367a89f"},
+    {file = "olot-0.1.18-py3-none-any.whl", hash = "sha256:191b25e7f73afd1506564ee3472a5b246add7e5346e5fa23bc3836da73e9eb8f"},
+    {file = "olot-0.1.18.tar.gz", hash = "sha256:d261eeb382013cdf5d7228f3eb72bbab6eacdd2d7da3d4d2af2e8881922af81a"},
 ]
 
 [package.dependencies]
-click = ">=8.1.7,<9.0.0"
-pydantic = ">=2.10.3,<3.0.0"
+click = ">=8.1.7,<9"
+pydantic = ">=2.10.3,<3"
 
 [package.extras]
-modelcar-base-image = ["modelcar-base-image (>=0.1.0,<0.2.0)"]
+modelcar-base-image = ["modelcar-base-image (>=0.1.0,<0.2)"]
+oras-py = ["oras (>=0.2.42)"]
 
 [[package]]
 name = "oras"
@@ -5319,4 +5320,4 @@ testing = ["pytest", "pytest-cov", "pytest-xdist"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.13"
-content-hash = "56226c18670ada0b224926c9f6c4d8fb3a0eeed6ac2ca62ba273a9cc1caa6151"
+content-hash = "87e6fd6ef0b82677c8d754593e3460ee549803946750e08ea2d81be935794336"
