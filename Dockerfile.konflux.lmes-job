@@ -19,7 +19,7 @@ RUN if [ "$TARGETARCH" = "s390x" ]; then \
         dnf install -y gcc-toolset-13 make wget unzip rust cargo && \
         dnf clean all                                             ; \
     fi                                                           && \
-    pip install --upgrade "pip>=26.2.2" 'cmake<4' setuptools wheel
+    pip install --upgrade "pip==26.3" 'cmake<4' setuptools wheel
 
 COPY requirements.txt .
 
@@ -229,6 +229,9 @@ RUN if [ "$TARGETARCH" = "s390x" ]; then \
     else \
         pip install --no-cache-dir -r requirements.txt ; \
     fi
+
+# CVE-2026-114406: remove only the distrusted roots from IBM's vendored bundle.
+RUN python -c 'exec("""import re, ssl, tempfile\nfrom pathlib import Path\nbundle = Path(\"/opt/app-root/lib/python3.12/site-packages/ibm_botocore/cacert.pem\")\npattern = re.compile(rb\"-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----\", re.S)\nblocked = {\"emSign ECC Root CA - G3\", \"emSign Root CA - C1\", \"emSign ECC Root CA - C3\", \"AAA Certificate Services\"}\ncontent = bundle.read_bytes()\nremoved = set()\nwith tempfile.NamedTemporaryFile() as certificate_file:\n    def keep_certificate(match):\n        pem = match.group(0)\n        certificate_file.seek(0)\n        certificate_file.truncate()\n        certificate_file.write(pem)\n        certificate_file.flush()\n        subject = ssl._ssl._test_decode_cert(certificate_file.name)[\"subject\"]\n        common_names = {value for rdn in subject for key, value in rdn if key == \"commonName\"}\n        rejected = common_names & blocked\n        removed.update(rejected)\n        return b\"\" if rejected else pem + b\"\\n\"\n    patched = pattern.sub(keep_certificate, content)\nbundle.write_bytes(patched)\nprint(\"Removed distrusted IBM botocore roots:\", \", \".join(sorted(removed)) or \"none\")""")'
 
 # Install the package
 RUN pip install --no-cache-dir --no-deps -e .
