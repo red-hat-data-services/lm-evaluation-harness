@@ -20,6 +20,14 @@ COPY . .
 
 RUN pip install --no-cache-dir ".[api,ifeval,math,ibm_watsonx_ai]"
 
+# Remove compromised roots from the vendored bundles found by the image check.
+RUN cp /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/lib/python3.12/site-packages/botocore/cacert.pem && \
+    cp /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/lib/python3.12/site-packages/ibm_botocore/cacert.pem && \
+    cp /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/lib/python3.12/site-packages/grpc/_cython/_credentials/roots.pem && \
+    cmp -s /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/lib/python3.12/site-packages/botocore/cacert.pem && \
+    cmp -s /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/lib/python3.12/site-packages/ibm_botocore/cacert.pem && \
+    cmp -s /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/lib/python3.12/site-packages/grpc/_cython/_credentials/roots.pem
+
 # uv is build tooling inherited from the base image, not a runtime dependency.
 # Remove its bundled crypto and the uvx companion (RHOAIENG-99284).
 RUN /opt/app-root/bin/python -m pip uninstall -y uv && \
