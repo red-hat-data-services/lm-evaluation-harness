@@ -229,6 +229,7 @@ grpcio==1.85.1; python_full_version < '3.13' \
     --hash=sha256:c5a914b3a3052d841766946ecd1c6ebdacc8bf166d89a42c83fda70ae8f53aeb \
     --hash=sha256:c6efed2139eb7e6b7e6724ad1d1e5402a11dc12ae948a0e1f98d5cbbf3a8fbd1 \
     --hash=sha256:c9a4a4e504bd914e10c0d6190ffac59b9e21f1c962366b72293075ade097793d \
+    --hash=sha256:ca41d0b37172c2829df0f5877956ae4845f499cec084a0f2b1085b867cbec2a8 \
     --hash=sha256:cfa9bf4daed57dd5bd5fac4be3276f5dc1703f41abf4df0737f4e7952705cbc6 \
     --hash=sha256:d2a776b113e7bd6d139e679f5da281193d6410cce361e4180c9da0d553e01927 \
     --hash=sha256:de520b1555ae445cdc4f8f1cc7ccba12a19992bfafa7c292ebe7fe1fe5da6c53 \
@@ -237,7 +238,8 @@ grpcio==1.85.1; python_full_version < '3.13' \
     --hash=sha256:e768556a2346d1d2921f511f3145e2462e4fe68095c31e4db407558bcd3f1d4f \
     --hash=sha256:e909e0f9145a555d3968dd2a448616b0d3cb58748b9e2053de3e7974b3e429bc \
     --hash=sha256:eaad7e6aa9ac3aded4f6bc86a18bf2cff3de356f972bf32a5558df9788085b85 \
-    --hash=sha256:f0ebfbd8ba42497e0ff7229c8c5e166e07c2b348462c1481dbd90faa978ad8af
+    --hash=sha256:f0ebfbd8ba42497e0ff7229c8c5e166e07c2b348462c1481dbd90faa978ad8af \
+    --hash=sha256:f25c33b6cd239bc097f377596d81349ae81664253357541522f8d1442fb416c2
     # via opentelemetry-exporter-otlp-proto-grpc
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 h11==0.16.0 \
