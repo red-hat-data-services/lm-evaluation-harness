@@ -2,7 +2,7 @@
 # Stage 1 Base builder image with common tooling
 ###############################################################
 
-FROM registry.redhat.io/ubi9/python-312:latest@sha256:5b0c67feb3f2e5637c6301ea22e2839d402dd71d88c3cec8d1fd278ce0f9e69a AS builder
+FROM registry.redhat.io/ubi9/python-312:latest@sha256:2f6c7b05e9446a0121835bce4ae333ad2310a8846dff4f268870745e63558d63 AS builder
 USER root
 
 ENV TORCH_VERSION=2.6.0
