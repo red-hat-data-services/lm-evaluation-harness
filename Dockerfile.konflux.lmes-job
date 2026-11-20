@@ -2,7 +2,7 @@
 # Stage 1 Base builder image with common tooling
 ###############################################################
 
-FROM registry.redhat.io/ubi9/python-312:latest@sha256:105e70cb265e82beef1687b87b77444a05b410c55d8631e9aa9aa6804fcca45d AS builder
+FROM registry.redhat.io/ubi9/python-312:latest@sha256:2f6c7b05e9446a0121835bce4ae333ad2310a8846dff4f268870745e63558d63 AS builder
 USER root
 
 ENV PATH="$HOME/.cargo/bin:$PATH"
