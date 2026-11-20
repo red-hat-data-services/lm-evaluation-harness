@@ -3,6 +3,7 @@ import io
 import json
 import mmap
 import os
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -110,12 +111,15 @@ class TextReader:
     def read_tqdm(self, update_frequency: int = 10000):
         current_file_position = 0
         line_counter = 0
-        with open(self.file_path, "r", encoding="utf-8") as fh, tqdm.tqdm(
-            total=os.path.getsize(self.file_path),
-            dynamic_ncols=True,
-            unit="byte",
-            unit_scale=1,
-        ) as progress:
+        with (
+            open(self.file_path, "r", encoding="utf-8") as fh,
+            tqdm.tqdm(
+                total=os.path.getsize(self.file_path),
+                dynamic_ncols=True,
+                unit="byte",
+                unit_scale=1,
+            ) as progress,
+        ):
             with mmap.mmap(fh.fileno(), length=0, access=mmap.ACCESS_READ) as mmap_obj:
                 for line in iter(mmap_obj.readline, b""):
                     line = line.decode("utf-8")
@@ -156,7 +160,7 @@ class TextReader:
                     yield line[:-1]
 
 
-# Optimized for speed. Decompresses the archive in shell before
+# Optimized for speed. Decompresses the archive before
 # using the mmap'd TextReader.
 class ZStdTextReader:
     def __init__(self, file) -> None:
@@ -165,7 +169,9 @@ class ZStdTextReader:
     def read_tqdm(self):
         decompressed_file = self.file[:-4]
         print("Decompressing file, please wait...")
-        os.system(f"zstd -d {self.file}")  # linux decompress is faster
+        subprocess.run(
+            ["zstd", "-d", "--", self.file], check=True
+        )  # linux decompress is faster
         reader = TextReader(decompressed_file)
         yield from reader.read_tqdm()
         os.remove(decompressed_file)
