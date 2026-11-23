@@ -550,8 +550,9 @@ pyparsing==3.3.3 \
     --hash=sha256:6dedfb6f39ee35ee7b171c18ed8f3b52e82fa381cd13ad09a3568d22035a2fc0
     # via matplotlib
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
-pytablewriter==1.2.0 \
-    --hash=sha256:cb37dfd75cb5681e12cf9922c35abcd75cfb4770c32227aedc5fbe71861f437f
+pytablewriter==1.2.1 \
+    --hash=sha256:7bd0f4f397e070e3b8a34edcf1b9257ccbb18305493d8350a5dbc9957fced959 \
+    --hash=sha256:e906ff7ff5151d70a5f66e0f7b75642a7f2dce8d893c265b79cc9cf6bc04ddb4
     # via lm-eval (pyproject.toml)
     # from https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cuda13.0-ubi9/simple/
 python-dateutil==2.9.0.post0 \
