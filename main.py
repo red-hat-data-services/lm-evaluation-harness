@@ -424,7 +424,6 @@ def _to_finite_float(metric_value: Any) -> float | None:
     return value
 
 
-
 def _normalize_lmeval_metrics(task_results: dict[str, Any]) -> dict[str, float]:
     """Strip any filter suffix, prefer valid unfiltered values, skip invalid numbers."""
     candidates: dict[str, tuple[float, str]] = {}
@@ -451,10 +450,13 @@ def _extract_lmeval_metrics(results: dict[str, Any], task: str) -> dict[str, flo
     totals: dict[str, float] = {}
     counts: dict[str, int] = {}
     for subtask in results.get("group_subtasks", {}).get(task, []):
-        for name, value in _normalize_lmeval_metrics(all_results.get(subtask, {})).items():
+        for name, value in _normalize_lmeval_metrics(
+            all_results.get(subtask, {})
+        ).items():
             totals[name] = totals.get(name, 0.0) + value
             counts[name] = counts.get(name, 0) + 1
     return {name: total / counts[name] for name, total in totals.items()}
+
 
 def _sanitize_error_message(msg: str) -> str:
     """Redact secrets from error text before Eval Hub callbacks."""
@@ -799,6 +801,28 @@ def _chat_template_enabled(parameters: dict[str, Any]) -> bool:
     return enabled
 
 
+_TINYTRUTHFULQA_ANCHOR_COUNT = 100
+
+
+def _tinytruthfulqa_task(task_manager: TaskManager) -> tuple[Any, dict[str, int]]:
+    """Keep the standard estimate only for a complete set of anchor outcomes."""
+    task = task_manager.load_task_or_group("tinyTruthfulQA")["tinyTruthfulQA"]
+    aggregations = task.aggregation()
+    standard_aggregation = aggregations["acc"]
+    observed: dict[str, int] = {}
+
+    def aggregate_complete_anchors(items):
+        observed["num_examples_evaluated"] = len(items)
+        if len(items) != _TINYTRUTHFULQA_ANCHOR_COUNT:
+            return None
+        return standard_aggregation(items)
+
+    # This task instance belongs to this adapter run. Do not alter the shared
+    # task YAML, library estimator or any other task's aggregation behavior.
+    aggregations["acc"] = aggregate_complete_anchors
+    return task, observed
+
+
 def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
     """Derive lm-evaluation-harness model backend + args from job spec.
 
@@ -1046,6 +1070,12 @@ class LMEvalAdapter(FrameworkAdapter):
                     lmeval_task,
                 )
 
+            evaluation_tasks = [lmeval_task]
+            anchor_counts: dict[str, int] = {}
+            if lmeval_task == "tinyTruthfulQA":
+                task, anchor_counts = _tinytruthfulqa_task(task_manager)
+                evaluation_tasks = [task]
+
             # Phase 3: Running evaluation
             callbacks.report_status(
                 JobStatusUpdate(
@@ -1074,7 +1104,7 @@ class LMEvalAdapter(FrameworkAdapter):
                     results = simple_evaluate(
                         model=model_backend,
                         model_args=model_args,
-                        tasks=[lmeval_task],
+                        tasks=evaluation_tasks,
                         num_fewshot=int(num_fewshot),
                         apply_chat_template=apply_chat_template,
                         device="cpu",
@@ -1096,8 +1126,22 @@ class LMEvalAdapter(FrameworkAdapter):
                 )
             )
 
-            # Accept named lm-eval filters as well as unfiltered metrics.
-            metrics = _extract_lmeval_metrics(results, lmeval_task)
+            skipped_aggregation = False
+            if lmeval_task == "tinyTruthfulQA":
+                actual_count = anchor_counts.get("num_examples_evaluated", 0)
+                if actual_count < 1:
+                    raise RuntimeError(
+                        "tinyTruthfulQA produced no completed sample outcomes"
+                    )
+                skipped_aggregation = actual_count != _TINYTRUTHFULQA_ANCHOR_COUNT
+
+            # Preserve stable's named-filter and group-metric handling. Missing
+            # official scores from an incomplete estimate are not zero scores.
+            metrics = (
+                {}
+                if skipped_aggregation
+                else _extract_lmeval_metrics(results, lmeval_task)
+            )
             evaluation_results = [
                 EvaluationResult(metric_name=name, metric_value=value)
                 for name, value in metrics.items()
@@ -1118,6 +1162,29 @@ class LMEvalAdapter(FrameworkAdapter):
 
             # Get number of examples evaluated
             num_examples_evaluated = _get_lmeval_evaluated_count(results, lmeval_task)
+            if skipped_aggregation:
+                num_examples_evaluated = anchor_counts["num_examples_evaluated"]
+                self._run_info.update(
+                    {
+                        "num_examples_evaluated": num_examples_evaluated,
+                        "aggregation": {
+                            "status": "skipped",
+                            "required_examples": _TINYTRUTHFULQA_ANCHOR_COUNT,
+                            "reason": (
+                                "The standard tinyTruthfulQA gpirt estimate requires "
+                                "exactly 100 predefined anchor outcomes in order. "
+                                "Sample execution completed; no official score "
+                                "was calculated."
+                            ),
+                        },
+                    }
+                )
+                logger.info(
+                    "tinyTruthfulQA completed %d sample outcomes; standard "
+                    "aggregation skipped (requires %d anchor outcomes)",
+                    num_examples_evaluated,
+                    _TINYTRUTHFULQA_ANCHOR_COUNT,
+                )
 
             duration = time.time() - start_time
 
@@ -1140,6 +1207,7 @@ class LMEvalAdapter(FrameworkAdapter):
                 results=evaluation_results,
                 metrics_schema=metrics_schema,
                 overall_score=overall_score,
+                additional_info=self._run_info if skipped_aggregation else None,
                 num_examples_evaluated=int(num_examples_evaluated)
                 if num_examples_evaluated is not None
                 else 0,
