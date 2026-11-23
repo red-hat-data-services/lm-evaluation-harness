@@ -88,9 +88,14 @@ RUN if [ "$TARGETARCH" = "ppc64le" ] ; then \
 COPY patches/s390x/parquet-support.patch /tmp/s390x-parquet.patch
 
 RUN if [ "$TARGETARCH" = "s390x" ] ; then \
-    git clone https://github.com/apache/arrow.git --recursive && \
-    cd arrow && git checkout 7c3d4867e40dd0100542247a61cb83520369b2d4      && \
-    git apply /tmp/s390x-parquet.patch                                     && \
+    PYARROW_VERSION=$(sed -n 's/^pyarrow==\([^ ;]*\).*/\1/p' requirements.txt) ; \
+    if [ -z "$PYARROW_VERSION" ]; then \
+        echo "ERROR: pyarrow version not found in requirements.txt" >&2 ; \
+        exit 1 ; \
+    fi ; \
+    export PYARROW_VERSION ; \
+    git clone -b apache-arrow-${PYARROW_VERSION} https://github.com/apache/arrow.git --recursive && \
+    cd arrow && git apply /tmp/s390x-parquet.patch                         && \
     rm -rf .git && mkdir dist                                              && \
     pip3 install -r python/requirements-build.txt                          && \
     pip3 install --force-reinstall "cython==3.2.9"                         && \
