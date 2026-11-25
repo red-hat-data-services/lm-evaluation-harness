@@ -24,6 +24,11 @@ Homepage: \
 * `careqa_open`: Open-Ended QA in english.
 * `careqa_open_perplexity`: Open-Ended QA in english, evaluated with perplexity.
 
+The perplexity task computes likelihood-based metrics and does not load BLEU,
+ROUGE, BERTScore or BLEURT. These metrics are initialized lazily when generated
+answers are scored by `careqa_open`. Generation still requires their dependencies;
+a loading failure identifies the metric that could not be initialized.
+
 ### Citation
 
 ```bibtex
