@@ -1,25 +1,41 @@
+from functools import lru_cache
+
 import numpy as np
 
 
-try:
-    import evaluate
+@lru_cache(maxsize=1)
+def _load_generative_metrics():
+    """Load once when scoring generated answers, not when parsing task YAML."""
+    try:
+        import evaluate
+    except ImportError as exc:
+        raise ModuleNotFoundError(
+            "CAREQA generation metrics require the evaluate package"
+        ) from exc
 
-    bleu = evaluate.load("bleu")
-    rouge = evaluate.load("rouge")
-    bertscore = evaluate.load("bertscore")
-    bleurt = evaluate.load("bleurt", "bleurt-base-512", module_type="metric")
-
-except (ModuleNotFoundError, ImportError):
-    raise ModuleNotFoundError(
-        "Please install evaluation metrics via pip install evaluate and pip install bert-score",
-    )
-except Exception as e:
-    raise RuntimeError(
-        f"Error loading evaluation metrics: {str(e)}. Please check your installation."
-    )
+    metrics = {}
+    for name in ("bleu", "rouge", "bertscore", "bleurt"):
+        try:
+            if name == "bleurt":
+                metrics[name] = evaluate.load(
+                    "bleurt", "bleurt-base-512", module_type="metric"
+                )
+            else:
+                metrics[name] = evaluate.load(name)
+        except Exception as exc:
+            raise RuntimeError(
+                f"Error loading CAREQA generation metric '{name}': {exc}"
+            ) from exc
+    return metrics
 
 
 def doc_eval(pred, refs):
+    metrics = _load_generative_metrics()
+    bleu = metrics["bleu"]
+    rouge = metrics["rouge"]
+    bertscore = metrics["bertscore"]
+    bleurt = metrics["bleurt"]
+
     try:
         bleu_results = bleu.compute(predictions=pred, references=refs)
     except Exception as e:

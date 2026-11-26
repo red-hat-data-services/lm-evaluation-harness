@@ -160,6 +160,7 @@ def test_nested_group_uses_weighted_score_and_actual_coverage(
     config.exports = None
     config.model_dump = lambda: {}
     adapter = main.LMEvalAdapter.__new__(main.LMEvalAdapter)
+    adapter._settings = main.AdapterSettings(mode="k8s")
     result = adapter.run_benchmark_job(config, MagicMock())
     assert evaluate.call_args.kwargs["tasks"] == ["longbench2"]
     assert result.benchmark_id == benchmark

@@ -1,4 +1,4 @@
-import pickle
+import json
 import re
 import string
 import traceback
@@ -137,12 +137,18 @@ class Janitor:
     ##############
 
     def save_contamination_ngrams(self, filename: str) -> None:
-        with open(filename, "wb") as fp:
-            pickle.dump(filename, fp)
+        with open(filename, "w", encoding="utf-8") as fp:
+            json.dump(sorted(self.dirt_ngrams), fp)
 
     def load_contamination_ngrams(self, filename: str) -> None:
-        with open(filename, "rb") as fp:
-            self.dirt_ngrams = pickle.load(fp)
+        with open(filename, "r", encoding="utf-8") as fp:
+            data = json.load(fp)
+
+        if not isinstance(data, list) or any(
+            not isinstance(ngram, str) for ngram in data
+        ):
+            raise ValueError("Expected a JSON list of contamination n-grams")
+        self.dirt_ngrams = set(data)
 
     ##############
     # Call these :)

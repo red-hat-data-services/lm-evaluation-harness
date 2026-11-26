@@ -8,7 +8,8 @@ Required environment variables:
 - REGISTRY_URL: OCI registry URL
 
 Optional environment variables:
-- EVALHUB_JOB_SPEC_PATH: path to the job spec JSON (defaults to ``/meta/job.json``); must resolve under ``/meta``
+- EVALHUB_MODE: ``k8s`` or ``local`` (default: k8s)
+- EVALHUB_JOB_SPEC_PATH: path to the job spec JSON (defaults to ``/meta/job.json``); must resolve under ``/meta`` in k8s mode
 - REGISTRY_USERNAME: Registry username (optional)
 - REGISTRY_PASSWORD: Registry password/token (optional)
 
@@ -25,9 +26,9 @@ need ``parameters.offline``.
 import json
 import logging
 import math
+import mimetypes
 import os
 import re
-import requests
 import sys
 import time
 from contextlib import contextmanager
@@ -36,26 +37,54 @@ from pathlib import Path
 from typing import Any, Iterator
 from urllib.parse import urlparse
 
+import requests
+from evalhub.adapter import (
+    DefaultCallbacks,
+    EvaluationResult,
+    FrameworkAdapter,
+    JobCallbacks,
+    JobPhase,
+    JobResults,
+    JobSpec,
+    JobStatus,
+    JobStatusUpdate,
+    MessageInfo,
+    OCIArtifactSpec,
+)
+from evalhub.adapter.auth import read_model_auth_key, resolve_model_credentials
+from evalhub.adapter.config import EvalHubMode
+from evalhub.adapter.mlflow import MlflowFileArtifact
+from evalhub.adapter.settings import AdapterSettings
+from evalhub.models import MetricSchema, ResultType
+
 
 _TEST_DATA_DIR = "/test_data"
+_JOB_SPEC_ALLOWED_ROOT = Path("/meta")
+
+
+def _load_adapter_settings() -> AdapterSettings:
+    """Resolve one runtime configuration for early job reads and the SDK."""
+    # SDK 1.0.6 defaults to local; this entry point requires explicit local mode.
+    os.environ.setdefault("EVALHUB_MODE", "k8s")
+    return AdapterSettings.from_env()
 
 
 def _get_lmeval_version() -> str:
     from importlib.metadata import PackageNotFoundError, version
+
     try:
         return version("lm_eval")
     except PackageNotFoundError:
         return "unknown"
 
 
-# EvalHub mounts the job spec JSON under this directory only; reject other paths (CWE-22).
-_JOB_SPEC_ALLOWED_ROOT = Path("/meta")
-
 # Benchmarks whose HuggingFace datasets use custom loading scripts and require trust_remote_code.
 # Remove an entry here once the dataset is converted to parquet on the Hub.
-_BENCHMARKS_REQUIRING_REMOTE_CODE: frozenset[str] = frozenset({
-    "ethics_cm",
-})
+_BENCHMARKS_REQUIRING_REMOTE_CODE: frozenset[str] = frozenset(
+    {
+        "ethics_cm",
+    }
+)
 
 
 def _needs_trust_remote_code(benchmark_id: str) -> bool:
@@ -66,11 +95,13 @@ def _needs_trust_remote_code(benchmark_id: str) -> bool:
 # Hugging Face code_eval metric. Keep this allow list narrow: image-level or
 # user-provided HF_ALLOW_CODE_EVAL values must not enable execution for other
 # EvalHub benchmarks.
-_BENCHMARKS_REQUIRING_CODE_EXECUTION: frozenset[str] = frozenset({
-    "humaneval",
-    "humaneval_instruct",
-    "mbpp",
-})
+_BENCHMARKS_REQUIRING_CODE_EXECUTION: frozenset[str] = frozenset(
+    {
+        "humaneval",
+        "humaneval_instruct",
+        "mbpp",
+    }
+)
 
 
 def _needs_code_execution(benchmark_id: str) -> bool:
@@ -92,38 +123,40 @@ def _code_eval_environment(benchmark_id: str) -> Iterator[None]:
             os.environ[env_name] = previous
 
 
-def _resolve_job_spec_path_for_read(path: str) -> Path | None:
-    """Return a resolved path to open, or None if ``path`` is invalid or escapes ``/meta``."""
-    if not isinstance(path, str) or not path.strip():
-        print("WARNING: job spec path is empty; refusing to open", file=sys.stderr)
-        return None
+def _resolve_job_spec_path_for_read(settings: AdapterSettings) -> Path | None:
+    """Resolve the configured job spec path for either Kubernetes or local runtime."""
+    path = settings.resolved_job_spec_path
     try:
-        resolved = Path(path.strip()).resolve()
+        resolved = path.resolve()
     except (OSError, ValueError) as exc:
         print(f"WARNING: invalid job spec path {path!r}: {exc}", file=sys.stderr)
         return None
-    try:
-        allowed = _JOB_SPEC_ALLOWED_ROOT.resolve()
-    except OSError:
-        allowed = _JOB_SPEC_ALLOWED_ROOT
-    if not resolved.is_relative_to(allowed):
-        print(
-            f"WARNING: job spec path {path!r} resolves to {resolved} "
-            f"which is not under {allowed}; refusing to open",
-            file=sys.stderr,
-        )
-        return None
+    # Settings default to k8s; enforce containment only in that mode.
+    if settings.mode == EvalHubMode.K8S:
+        try:
+            allowed = _JOB_SPEC_ALLOWED_ROOT.resolve()
+        except OSError:
+            allowed = _JOB_SPEC_ALLOWED_ROOT
+        if not resolved.is_relative_to(allowed):
+            print(
+                f"WARNING: job spec path {path!r} resolves to {resolved} "
+                f"which is not under {allowed}; refusing to open",
+                file=sys.stderr,
+            )
+            return None
     return resolved
 
 
-def _read_job_spec_parameters_from_path(path: str) -> dict[str, Any] | None:
-    """Load top-level ``parameters`` from the job spec.
+def _read_job_spec_parameters(settings: AdapterSettings) -> dict[str, Any] | None:
+    """Load top-level ``parameters`` object from the job spec JSON file.
 
-    Return ``None`` if the job spec cannot be read or is malformed; a valid spec
-    without a ``parameters`` key returns an empty dict. Only files under ``/meta``
-    are opened (see ``EVALHUB_JOB_SPEC_PATH``).
+    Return None for unreadable or malformed specs, and an empty dict when
+    parameters are absent. In k8s mode (the default), only files whose resolved
+    path stays under ``/meta``
+    are opened (see ``EVALHUB_JOB_SPEC_PATH``). Local mode supports configured
+    paths in local runtime job directories.
     """
-    resolved = _resolve_job_spec_path_for_read(path)
+    resolved = _resolve_job_spec_path_for_read(settings)
     if resolved is None:
         return None
     try:
@@ -138,7 +171,9 @@ def _read_job_spec_parameters_from_path(path: str) -> dict[str, Any] | None:
         )
         return None
     except OSError as exc:
-        print(f"WARNING: I/O error reading job spec {resolved!r}: {exc}", file=sys.stderr)
+        print(
+            f"WARNING: I/O error reading job spec {resolved!r}: {exc}", file=sys.stderr
+        )
         return None
     except json.JSONDecodeError as exc:
         print(f"WARNING: invalid JSON in job spec {resolved!r}: {exc}", file=sys.stderr)
@@ -262,9 +297,8 @@ def configure_hf_offline_environment(hf_home: str) -> None:
     os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
 
-def _seed_hf_offline_before_lm_eval_import() -> None:
-    path = os.environ.get("EVALHUB_JOB_SPEC_PATH", "/meta/job.json")
-    parameters = _read_job_spec_parameters_from_path(path)
+def _seed_hf_offline_before_lm_eval_import(settings: AdapterSettings) -> None:
+    parameters = _read_job_spec_parameters(settings)
     if parameters is None:
         return
     if not _infer_auto_offline_from_local_test_data(
@@ -274,29 +308,14 @@ def _seed_hf_offline_before_lm_eval_import() -> None:
     configure_hf_offline_environment(_TEST_DATA_DIR)
 
 
-from evalhub.adapter import (
-    DefaultCallbacks,
-    EvaluationResult,
-    FrameworkAdapter,
-    JobCallbacks,
-    JobPhase,
-    JobResults,
-    JobSpec,
-    JobStatus,
-    JobStatusUpdate,
-    MessageInfo,
-    OCIArtifactSpec,
-)
-from evalhub.models import MetricSchema, ResultType
-from evalhub.adapter.auth import read_model_auth_key, resolve_model_credentials
-
-
-_seed_hf_offline_before_lm_eval_import()
+_ADAPTER_SETTINGS = _load_adapter_settings()
+_seed_hf_offline_before_lm_eval_import(_ADAPTER_SETTINGS)
 
 # NOTE: keep these imports after _seed_hf_offline_before_lm_eval_import() so HF offline env vars
 # are set before lm_eval (and Hugging Face libraries) are imported.
 from lm_eval import simple_evaluate  # noqa: E402
 from lm_eval.tasks import TaskManager  # noqa: E402
+
 
 # Eval-hub catalog IDs that differ from lm-eval task names. Tags (e.g. winogender) expand
 # to multiple subtasks without a group_subtasks entry, so results are not keyed by the
@@ -405,7 +424,6 @@ def _to_finite_float(metric_value: Any) -> float | None:
     return value
 
 
-
 def _normalize_lmeval_metrics(task_results: dict[str, Any]) -> dict[str, float]:
     """Strip any filter suffix, prefer valid unfiltered values, skip invalid numbers."""
     candidates: dict[str, tuple[float, str]] = {}
@@ -432,10 +450,13 @@ def _extract_lmeval_metrics(results: dict[str, Any], task: str) -> dict[str, flo
     totals: dict[str, float] = {}
     counts: dict[str, int] = {}
     for subtask in results.get("group_subtasks", {}).get(task, []):
-        for name, value in _normalize_lmeval_metrics(all_results.get(subtask, {})).items():
+        for name, value in _normalize_lmeval_metrics(
+            all_results.get(subtask, {})
+        ).items():
             totals[name] = totals.get(name, 0.0) + value
             counts[name] = counts.get(name, 0) + 1
     return {name: total / counts[name] for name, total in totals.items()}
+
 
 def _sanitize_error_message(msg: str) -> str:
     """Redact secrets from error text before Eval Hub callbacks."""
@@ -505,7 +526,9 @@ def _chained_exception_text(exc: BaseException) -> str:
 def _is_huggingface_hub_host(hostname: str) -> bool:
     """True for huggingface.co / hf.co (and subdomains), not Inference Endpoints."""
     host = (hostname or "").lower()
-    return host in {"huggingface.co", "hf.co"} or host.endswith((".huggingface.co", ".hf.co"))
+    return host in {"huggingface.co", "hf.co"} or host.endswith(
+        (".huggingface.co", ".hf.co")
+    )
 
 
 def _is_gated_huggingface_error(exc: BaseException, error_lower: str) -> bool:
@@ -568,8 +591,7 @@ def _evaluation_failure_for_evalhub(exc: BaseException) -> tuple[str, str]:
         if kind == "tokenizer":
             return (
                 "Gated HuggingFace tokenizer error; authentication required. "
-                "Specify an accessible tokenizer, or "
-                + _HF_TOKEN_SECRET_HINT,
+                "Specify an accessible tokenizer, or " + _HF_TOKEN_SECRET_HINT,
                 "gated_tokenizer_auth_required",
             )
         if kind == "dataset":
@@ -683,7 +705,9 @@ def _build_additional_info(
         "dataset": _build_dataset_info(lmeval_results, benchmark_id),
         "task_version": lmeval_results.get("versions", {}).get(benchmark_id),
         # runtime / reproducibility
-        "lmeval_version": str(lmeval_results.get("lm_eval_version") or _get_lmeval_version()),
+        "lmeval_version": str(
+            lmeval_results.get("lm_eval_version") or _get_lmeval_version()
+        ),
         "lmeval_git_hash": lmeval_results.get("git_hash"),
         "evaluation_date": (
             datetime.fromtimestamp(lmeval_results["date"], tz=UTC).isoformat()
@@ -705,7 +729,9 @@ def _build_additional_info(
     return {k: v for k, v in raw.items() if v is not None}
 
 
-def _build_dataset_info(lmeval_results: dict, benchmark_id: str) -> list[dict[str, str]] | None:
+def _build_dataset_info(
+    lmeval_results: dict, benchmark_id: str
+) -> list[dict[str, str]] | None:
     """Build a list of dataset provenance records for the benchmark.
 
     For group tasks (multiple subtasks), collects dataset info from each subtask.
@@ -745,13 +771,18 @@ def _build_dataset_info(lmeval_results: dict, benchmark_id: str) -> list[dict[st
                 config_name=dataset_name,
                 download_config=DownloadConfig(local_files_only=True),
             )
-            for url in (info.download_checksums or {}):
+            for url in info.download_checksums or {}:
                 m = sha_re.search(url)
                 if m:
                     sha = m.group(1)
                     break
         except Exception:
-            logger.debug("_build_dataset_info: could not get SHA for %s/%s", dataset_path, dataset_name, exc_info=True)
+            logger.debug(
+                "_build_dataset_info: could not get SHA for %s/%s",
+                dataset_path,
+                dataset_name,
+                exc_info=True,
+            )
 
         record: dict[str, str] = {"hf_repo": dataset_path}
         if dataset_name:
@@ -768,6 +799,28 @@ def _chat_template_enabled(parameters: dict[str, Any]) -> bool:
     if not isinstance(enabled, bool):
         raise ValueError("parameters.apply_chat_template must be a boolean")
     return enabled
+
+
+_TINYTRUTHFULQA_ANCHOR_COUNT = 100
+
+
+def _tinytruthfulqa_task(task_manager: TaskManager) -> tuple[Any, dict[str, int]]:
+    """Keep the standard estimate only for a complete set of anchor outcomes."""
+    task = task_manager.load_task_or_group("tinyTruthfulQA")["tinyTruthfulQA"]
+    aggregations = task.aggregation()
+    standard_aggregation = aggregations["acc"]
+    observed: dict[str, int] = {}
+
+    def aggregate_complete_anchors(items):
+        observed["num_examples_evaluated"] = len(items)
+        if len(items) != _TINYTRUTHFULQA_ANCHOR_COUNT:
+            return None
+        return standard_aggregation(items)
+
+    # This task instance belongs to this adapter run. Do not alter the shared
+    # task YAML, library estimator or any other task's aggregation behavior.
+    aggregations["acc"] = aggregate_complete_anchors
+    return task, observed
 
 
 def build_lmeval_config(job_spec: JobSpec) -> tuple[str, dict, str | None]:
@@ -901,20 +954,19 @@ class LMEvalAdapter(FrameworkAdapter):
     allowing benchmarks to be executed as EvalHub jobs.
     """
 
-    def __init__(self, job_spec_path: str | None = None):
+    def __init__(self, settings: AdapterSettings):
         """Initialize the LMEval adapter.
 
         Args:
-            job_spec_path: Optional path to job specification file.
-                          If not provided, uses EVALHUB_JOB_SPEC_PATH env var or default.
+            settings: Runtime configuration resolved at startup, including the
+                      job spec path from EVALHUB_JOB_SPEC_PATH or the mode default.
         """
-        super().__init__(job_spec_path=job_spec_path)
+        super().__init__(settings=settings)
         self._run_info: dict[str, Any] = {}
+        self.mlflow_artifacts: list[MlflowFileArtifact] = []
         logger.info("LMEval adapter initialized")
 
-    def generate_additional_info(
-        self, results: JobResults
-    ) -> dict[str, Any] | None:
+    def generate_additional_info(self, results: JobResults) -> dict[str, Any] | None:
         """Return lm-eval-specific supplementary metadata captured during the run."""
         return self._run_info or None
 
@@ -931,6 +983,7 @@ class LMEvalAdapter(FrameworkAdapter):
         Raises:
             RuntimeError: If evaluation fails
         """
+        self.mlflow_artifacts = []
         start_time = time.time()
 
         try:
@@ -1017,6 +1070,12 @@ class LMEvalAdapter(FrameworkAdapter):
                     lmeval_task,
                 )
 
+            evaluation_tasks = [lmeval_task]
+            anchor_counts: dict[str, int] = {}
+            if lmeval_task == "tinyTruthfulQA":
+                task, anchor_counts = _tinytruthfulqa_task(task_manager)
+                evaluation_tasks = [task]
+
             # Phase 3: Running evaluation
             callbacks.report_status(
                 JobStatusUpdate(
@@ -1027,6 +1086,7 @@ class LMEvalAdapter(FrameworkAdapter):
 
             # Some datasets use custom HF loading scripts and require trust_remote_code.
             import datasets as _datasets
+
             _prev_trust_remote_code = _datasets.config.HF_DATASETS_TRUST_REMOTE_CODE
             if _needs_trust_remote_code(benchmark_id):
                 _datasets.config.HF_DATASETS_TRUST_REMOTE_CODE = True
@@ -1044,7 +1104,7 @@ class LMEvalAdapter(FrameworkAdapter):
                     results = simple_evaluate(
                         model=model_backend,
                         model_args=model_args,
-                        tasks=[lmeval_task],
+                        tasks=evaluation_tasks,
                         num_fewshot=int(num_fewshot),
                         apply_chat_template=apply_chat_template,
                         device="cpu",
@@ -1066,8 +1126,22 @@ class LMEvalAdapter(FrameworkAdapter):
                 )
             )
 
-            # Accept named lm-eval filters as well as unfiltered metrics.
-            metrics = _extract_lmeval_metrics(results, lmeval_task)
+            skipped_aggregation = False
+            if lmeval_task == "tinyTruthfulQA":
+                actual_count = anchor_counts.get("num_examples_evaluated", 0)
+                if actual_count < 1:
+                    raise RuntimeError(
+                        "tinyTruthfulQA produced no completed sample outcomes"
+                    )
+                skipped_aggregation = actual_count != _TINYTRUTHFULQA_ANCHOR_COUNT
+
+            # Preserve stable's named-filter and group-metric handling. Missing
+            # official scores from an incomplete estimate are not zero scores.
+            metrics = (
+                {}
+                if skipped_aggregation
+                else _extract_lmeval_metrics(results, lmeval_task)
+            )
             evaluation_results = [
                 EvaluationResult(metric_name=name, metric_value=value)
                 for name, value in metrics.items()
@@ -1088,6 +1162,29 @@ class LMEvalAdapter(FrameworkAdapter):
 
             # Get number of examples evaluated
             num_examples_evaluated = _get_lmeval_evaluated_count(results, lmeval_task)
+            if skipped_aggregation:
+                num_examples_evaluated = anchor_counts["num_examples_evaluated"]
+                self._run_info.update(
+                    {
+                        "num_examples_evaluated": num_examples_evaluated,
+                        "aggregation": {
+                            "status": "skipped",
+                            "required_examples": _TINYTRUTHFULQA_ANCHOR_COUNT,
+                            "reason": (
+                                "The standard tinyTruthfulQA gpirt estimate requires "
+                                "exactly 100 predefined anchor outcomes in order. "
+                                "Sample execution completed; no official score "
+                                "was calculated."
+                            ),
+                        },
+                    }
+                )
+                logger.info(
+                    "tinyTruthfulQA completed %d sample outcomes; standard "
+                    "aggregation skipped (requires %d anchor outcomes)",
+                    num_examples_evaluated,
+                    _TINYTRUTHFULQA_ANCHOR_COUNT,
+                )
 
             duration = time.time() - start_time
 
@@ -1110,6 +1207,7 @@ class LMEvalAdapter(FrameworkAdapter):
                 results=evaluation_results,
                 metrics_schema=metrics_schema,
                 overall_score=overall_score,
+                additional_info=self._run_info if skipped_aggregation else None,
                 num_examples_evaluated=int(num_examples_evaluated)
                 if num_examples_evaluated is not None
                 else 0,
@@ -1132,7 +1230,10 @@ class LMEvalAdapter(FrameworkAdapter):
             )
 
             # Save results to file
-            output_dir = Path(__file__).parent / "output"
+            if self.local_jobs_base_path is not None:
+                output_dir = self.local_jobs_base_path / "output"
+            else:
+                output_dir = Path(__file__).parent / "output"
             output_dir.mkdir(parents=True, exist_ok=True)
 
             results_file = output_dir / f"results_{job_id}.json"
@@ -1144,13 +1245,28 @@ class LMEvalAdapter(FrameworkAdapter):
                     default=str,
                 )
 
+            # Keep output files available until the synchronous MLflow save returns.
+            # The SDK streams these files without loading them into memory.
+            self.mlflow_artifacts = [
+                MlflowFileArtifact(
+                    path=file.relative_to(output_dir).as_posix(),
+                    local_path=file,
+                    content_type=mimetypes.guess_type(file.name)[0]
+                    or "application/octet-stream",
+                )
+                for file in sorted(output_dir.rglob("*"))
+                if not file.is_symlink() and file.is_file()
+            ]
+
             # Create OCI artifact (only when exports are configured)
             oci_exports = config.exports.oci if config.exports else None
             if oci_exports is not None:
                 coords = oci_exports.coordinates.model_copy(deep=True)
                 coords.annotations.update(
                     {
-                        "org.opencontainers.image.created": datetime.now(UTC).isoformat(),
+                        "org.opencontainers.image.created": datetime.now(
+                            UTC
+                        ).isoformat(),
                         "io.github.eval-hub.benchmark": benchmark_id,
                         "io.github.eval-hub.model": model_name,
                         "io.github.eval-hub.job_id": job_id,
@@ -1190,27 +1306,49 @@ class LMEvalAdapter(FrameworkAdapter):
             raise RuntimeError(error_message) from e
 
 
+def _save_mlflow_best_effort(
+    callbacks: DefaultCallbacks,
+    results: JobResults,
+    job_spec: JobSpec,
+    artifacts: list[MlflowFileArtifact],
+) -> str | None:
+    """Export to MLflow without failing a completed evaluation."""
+    mlflow = callbacks.mlflow
+    # The SDK reports FAILED before raising when an MLflow export fails.
+    # Detach only its status callback during the synchronous save;
+    # remove this private-attribute workaround when the SDK supports best effort.
+    original_callbacks = mlflow._callbacks
+    try:
+        mlflow._callbacks = None
+        return mlflow.save(results, job_spec, artifacts=artifacts)
+    except Exception as exc:
+        logger.warning(
+            "MLflow export failed; continuing with evaluation results: %s",
+            _sanitize_error_message(str(exc)),
+        )
+        return None
+    finally:
+        mlflow._callbacks = original_callbacks
+
+
 def main() -> int:
     """Main entry point.
 
-    The adapter automatically loads:
-    - Settings from environment variables (REGISTRY_URL, etc.)
-    - JobSpec from /meta/job.json (mounted via ConfigMap in Kubernetes)
+    The adapter uses settings resolved at startup to load:
+    - Configuration from environment variables (REGISTRY_URL, etc.)
+    - JobSpec from EVALHUB_JOB_SPEC_PATH, defaulting to /meta/job.json in Kubernetes
 
     Returns:
         int: Exit code (0 for success, 1 for failure)
     """
-    import os
-
     try:
-        # Create adapter with job spec path from environment or default
-        job_spec_path = os.getenv("EVALHUB_JOB_SPEC_PATH", "/meta/job.json")
-        adapter = LMEvalAdapter(job_spec_path=job_spec_path)
+        # Create adapter with the settings shared by early job reads and the SDK.
+        adapter = LMEvalAdapter(settings=_ADAPTER_SETTINGS)
 
         logger.info("=" * 80)
         logger.info("LMEval EvalHub Adapter")
         logger.info("=" * 80)
-        logger.info(f"Loaded job spec from: {job_spec_path}")
+        logger.info("Loaded job spec from: %s", adapter.settings.resolved_job_spec_path)
         logger.info("Job spec configuration:")
         logger.info(f"  Job ID: {adapter.job_spec.id}")
         logger.info(f"  Benchmark: {adapter.job_spec.benchmark_id}")
@@ -1243,7 +1381,9 @@ def main() -> int:
         logger.info("=" * 80)
 
         # MLflow first; run id from save() is sent on report_results when SDK returns it.
-        mlflow_run_id = callbacks.mlflow.save(results, adapter.job_spec)
+        mlflow_run_id = _save_mlflow_best_effort(
+            callbacks, results, adapter.job_spec, adapter.mlflow_artifacts
+        )
         if mlflow_run_id:
             results.mlflow_run_id = mlflow_run_id
 

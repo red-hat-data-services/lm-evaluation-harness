@@ -441,6 +441,15 @@ def test_janitor7():
     assert result == expected_result
 
 
-def test_janitor8():
-    # This will test the save and load contams
-    pass
+def test_janitor8(tmp_path):
+    contamination_file = tmp_path / "contamination.json"
+
+    janitor = Janitor(ngram_n=6)
+    janitor.register_contaminant(JANITOR_FILTH1)
+    janitor.register_contaminant(JANITOR_FILTH2)
+    janitor.save_contamination_ngrams(str(contamination_file))
+
+    loaded_janitor = Janitor(ngram_n=6)
+    loaded_janitor.load_contamination_ngrams(str(contamination_file))
+
+    assert loaded_janitor.dirt_ngrams == janitor.dirt_ngrams
