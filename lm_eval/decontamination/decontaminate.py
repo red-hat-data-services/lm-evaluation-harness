@@ -2,12 +2,46 @@ import collections
 import glob
 import json
 import os
-import pickle
 import random
 import time
 
 from .archiver import ZStdTextReader
 from .janitor import Janitor, word_ngrams
+
+
+def _load_json(path: str) -> object:
+    with open(path, "r", encoding="utf-8") as fp:
+        return json.load(fp)
+
+
+def _load_overlap_cache(path: str) -> set[int]:
+    data = _load_json(path)
+    if not isinstance(data, list) or any(
+        not isinstance(doc_id, int) or isinstance(doc_id, bool) or doc_id < 0
+        for doc_id in data
+    ):
+        raise ValueError(f"Invalid overlap cache format: {path}")
+    return set(data)
+
+
+def _load_lookup_cache(path: str) -> dict[str, set[int]]:
+    data = _load_json(path)
+    if not isinstance(data, dict):
+        raise ValueError(f"Invalid lookup cache format: {path}")
+
+    lookup: dict[str, set[int]] = {}
+    for ngram, doc_ids in data.items():
+        if (
+            not isinstance(ngram, str)
+            or not isinstance(doc_ids, list)
+            or any(
+                not isinstance(doc_id, int) or isinstance(doc_id, bool) or doc_id < 0
+                for doc_id in doc_ids
+            )
+        ):
+            raise ValueError(f"Invalid lookup cache format: {path}")
+        lookup[ngram] = set(doc_ids)
+    return lookup
 
 
 # Was used for testing the evaluator decoupled from the full logic below
@@ -48,7 +82,7 @@ def get_train_overlap(docs_by_task_set: dict, ngrams_path: str, limit: int) -> d
     start = time.perf_counter()
 
     def get_overlaps_dump_path(task_name, task_set, ngrams_n_size, limit) -> str:
-        return f"data/{task_name}/{task_set}_{ngrams_n_size}grams_limit{limit}.overlaps"
+        return f"data/{task_name}/{task_set}_{ngrams_n_size}grams_limit{limit}.overlaps.json"
 
     lookups = {}
     duplicates = {}  # (task_name, task_set): set(doc_ids)}
@@ -63,9 +97,7 @@ def get_train_overlap(docs_by_task_set: dict, ngrams_path: str, limit: int) -> d
             task_name, task_set, ngrams_n_size, limit
         )
         if os.path.exists(overlaps_dump_path):
-            duplicates[(task_name, task_set)] = pickle.load(
-                open(overlaps_dump_path, "rb")
-            )
+            duplicates[(task_name, task_set)] = _load_overlap_cache(overlaps_dump_path)
             sets_to_decontaminate -= 1
             continue
         else:
@@ -73,13 +105,11 @@ def get_train_overlap(docs_by_task_set: dict, ngrams_path: str, limit: int) -> d
 
         # Build/load the task lookup {ngram: set(documents)}.
         task_set_lookup_path = (
-            f"data/{task_name}/{task_set}_{ngrams_n_size}grams_limit{limit}.lookup"
+            f"data/{task_name}/{task_set}_{ngrams_n_size}grams_limit{limit}.lookup.json"
         )
         if os.path.exists(task_set_lookup_path):
             print(f"{task_set_lookup_path} available, loading...")
-            lookups[(task_name, task_set)] = pickle.load(
-                open(task_set_lookup_path, "rb")
-            )
+            lookups[(task_name, task_set)] = _load_lookup_cache(task_set_lookup_path)
         else:
             print(f"{task_set_lookup_path} not available, building...")
             lookup = collections.defaultdict(set)
@@ -89,7 +119,11 @@ def get_train_overlap(docs_by_task_set: dict, ngrams_path: str, limit: int) -> d
                 for ngram in ngrams:
                     lookup[ngram].add(doc_id)
 
-            pickle.dump(lookup, open(task_set_lookup_path, "wb"))
+            with open(task_set_lookup_path, "w", encoding="utf-8") as fp:
+                json.dump(
+                    {ngram: sorted(doc_ids) for ngram, doc_ids in lookup.items()},
+                    fp,
+                )
             lookups[(task_name, task_set)] = lookup
 
     elapsed = time.perf_counter() - start
@@ -160,7 +194,8 @@ def get_train_overlap(docs_by_task_set: dict, ngrams_path: str, limit: int) -> d
             overlaps_dump_path = get_overlaps_dump_path(
                 task_name, task_set, ngrams_n_size, limit
             )
-            pickle.dump(doc_ids, open(overlaps_dump_path, "wb"))
+            with open(overlaps_dump_path, "w", encoding="utf-8") as fp:
+                json.dump(sorted(doc_ids), fp)
 
     # Strip task set and return
     return {task_name: doc_ids for (task_name, task_set), doc_ids in duplicates.items()}

@@ -48,6 +48,7 @@ def test_adapter_passes_chat_template_to_evaluator(monkeypatch, tmp_path, enable
         model_dump=lambda: {},
     )
     adapter = main.LMEvalAdapter.__new__(main.LMEvalAdapter)
+    adapter._settings = main.AdapterSettings(mode="k8s")
     result = adapter.run_benchmark_job(config, MagicMock())
     assert result.overall_score == 1.0
     assert evaluate.call_args.kwargs["apply_chat_template"] is enabled
